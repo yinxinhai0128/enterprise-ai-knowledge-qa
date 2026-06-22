@@ -11,6 +11,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -126,7 +127,13 @@ def vectorstore(monkeypatch, fake_embeddings):
 
     store = Chroma(collection_name="test_kb", embedding_function=fake_embeddings)
 
-    for module in ("app.core.vectorstore", "app.core.retriever_tool", "app.services.ingest"):
+    for module in (
+        "app.core.vectorstore",
+        "app.core.retriever_tool",
+        "app.services.ingest",
+        "app.services.vector_ops",
+        "app.services.consistency",
+    ):
         monkeypatch.setattr(f"{module}.get_vectorstore", lambda: store)
 
     # 假向量的 l2 距离普遍较大，测试里放开距离阈值，保证有命中能被返回
@@ -169,16 +176,20 @@ async def _setup_db():
     from app.core.limits import request_limiter
 
     await request_limiter.reset()
+    for directory in ("quarantine", "documents"):
+        shutil.rmtree(Path(_TMP) / directory, ignore_errors=True)
     async with database_module.engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
     async with database_module.engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
+    for directory in ("quarantine", "documents"):
+        shutil.rmtree(Path(_TMP) / directory, ignore_errors=True)
 
 
 @pytest.fixture
 async def client(auth_headers):
-    """httpx 异步客户端（ASGI 直连，BackgroundTasks 会在响应前跑完）。"""
+    """httpx 异步客户端（ASGI 直连；摄入任务由测试 Worker 显式执行）。"""
     from httpx import ASGITransport, AsyncClient
 
     from app.main import app
@@ -190,6 +201,17 @@ async def client(auth_headers):
         headers=auth_headers(),
     ) as ac:
         yield ac
+
+
+@pytest.fixture
+def worker_once():
+    """执行一个持久化摄入任务，模拟独立 Worker 进程。"""
+    from app.services.ingest_jobs import run_worker_once
+
+    async def _run(**kwargs):
+        return await run_worker_once(worker_id="test-worker", **kwargs)
+
+    return _run
 
 
 @pytest.fixture

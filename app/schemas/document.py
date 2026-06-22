@@ -19,3 +19,21 @@ class DocumentOut(BaseModel):
     chunk_count: int
     error_msg: str | None = None
     created_at: datetime
+
+
+class IngestJobOut(BaseModel):
+    """持久化摄入任务出参。"""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    document_id: int
+    job_type: str
+    status: str
+    attempt: int
+    max_attempts: int
+    next_retry_at: datetime | None = None
+    lease_expires_at: datetime | None = None
+    error_msg: str | None = None
+    created_at: datetime
+    updated_at: datetime

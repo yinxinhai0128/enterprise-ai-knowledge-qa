@@ -13,7 +13,6 @@ import app.core.database as database_module
 from app.config import settings
 from app.core.limits import request_limiter
 from app.models.usage_daily import UsageDaily
-from app.services.ingest import IngestResult
 
 
 async def test_million_character_question_returns_422(client):
@@ -53,11 +52,6 @@ async def test_qa_ask_rate_limit_returns_429(client, agent_factory, monkeypatch)
 
 async def test_upload_rate_limit_returns_429(client, monkeypatch):
     monkeypatch.setattr(settings, "upload_rate_limit_per_minute", 1)
-
-    async def fast_ingest(**kwargs) -> IngestResult:
-        return IngestResult(success=True, chunk_count=1)
-
-    monkeypatch.setattr("app.api.documents.ingest_document", fast_ingest)
     first = await client.post(
         "/documents/upload",
         files={"file": ("one.txt", b"one", "text/plain")},

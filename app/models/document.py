@@ -21,6 +21,8 @@ class Document(Base):
     # 租户与上传者均来自已验证 JWT，不接受请求体覆盖。
     tenant_id: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
     uploaded_by: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
+    # 上传文件原始字节的 SHA-256；旧记录可为空，新上传用于租户内幂等。
+    content_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     # 用户原始文件名（展示用）
     filename: Mapped[str] = mapped_column(String(512), nullable=False)
     # 落盘路径（storage/ 下，文件名已加 uuid 前缀）

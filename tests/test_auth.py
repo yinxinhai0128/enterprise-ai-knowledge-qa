@@ -113,6 +113,7 @@ async def test_user_cannot_read_another_users_thread(
 async def test_tenant_cannot_list_get_or_retrieve_other_tenant_document(
     auth_headers,
     vectorstore,
+    worker_once,
 ):
     async with await _client(
         auth_headers(tenant_id="tenant-a", user_id="user-a")
@@ -129,6 +130,7 @@ async def test_tenant_cannot_list_get_or_retrieve_other_tenant_document(
         )
         assert uploaded.status_code == 201
         doc_id = uploaded.json()["id"]
+    assert await worker_once() is True
 
     async with await _client(
         auth_headers(tenant_id="tenant-b", user_id="user-b")

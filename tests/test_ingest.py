@@ -54,7 +54,7 @@ def _oversized_docx_zip() -> bytes:
     return output.getvalue()
 
 
-async def test_upload_success_then_indexed(client, vectorstore):
+async def test_upload_success_then_indexed(client, vectorstore, worker_once):
     """上传合法 txt：返回 201；后台索引跑完后状态变 indexed 且切片数 > 0。"""
     files = {"file": ("guide.txt", "公司报销流程：先在系统提单，再上传发票。".encode(), "text/plain")}
     resp = await client.post("/documents/upload", files=files)
@@ -65,7 +65,8 @@ async def test_upload_success_then_indexed(client, vectorstore):
     # POST 返回时状态还是 uploading（后台任务在响应后回填）
     assert body["status"] == "uploading"
 
-    # 再查一次：ASGI 直连下 BackgroundTasks 已执行完，应为 indexed
+    # 独立 Worker 领取持久化任务后，文档才进入 indexed。
+    assert await worker_once() is True
     detail = await client.get(f"/documents/{doc_id}")
     assert detail.status_code == 200
     data = detail.json()
@@ -75,7 +76,8 @@ async def test_upload_success_then_indexed(client, vectorstore):
     assert vectorstore._collection.count() > 0
     stored = vectorstore._collection.get(include=["metadatas"])
     assert stored["ids"][0] == stored["metadatas"][0]["chunk_id"]
-    assert len(stored["ids"][0]) == 64  # SHA-256 稳定 ID，而非 Chroma 自动 UUID
+    assert stored["ids"][0].startswith(f"tenant-a:{doc_id}:0:")
+    assert len(stored["ids"][0].rsplit(":", 1)[1]) == 64
 
 
 @pytest.mark.parametrize("filename", ["bad.zip", "evil.exe", "noext"])
@@ -222,12 +224,15 @@ async def test_archive_expansion_limit_returns_413(client, monkeypatch):
     assert "展开后" in response.json()["detail"]
 
 
-async def test_successful_file_promoted_out_of_quarantine(client, vectorstore):
+async def test_successful_file_promoted_out_of_quarantine(
+    client, vectorstore, worker_once
+):
     response = await client.post(
         "/documents/upload",
         files={"file": ("trusted.txt", b"trusted text", "text/plain")},
     )
     assert response.status_code == 201
+    assert await worker_once() is True
     async with database_module.AsyncSessionLocal() as db:
         document = (
             await db.execute(select(Document).where(Document.id == response.json()["id"]))
@@ -260,13 +265,16 @@ def test_parser_uses_independent_process_pool():
 async def test_parser_timeout_is_explicit_and_stays_quarantined(
     client,
     monkeypatch,
+    worker_once,
 ):
+    monkeypatch.setattr(settings, "ingest_job_max_attempts", 1)
     monkeypatch.setattr(settings, "parser_timeout_seconds", 0.000001)
     response = await client.post(
         "/documents/upload",
         files={"file": ("timeout.txt", b"safe text", "text/plain")},
     )
     assert response.status_code == 201
+    assert await worker_once() is True
     detail = await client.get(f"/documents/{response.json()['id']}")
     assert detail.json()["status"] == "failed"
     assert detail.json()["error_msg"] == "文档解析超时"
@@ -295,8 +303,8 @@ async def test_malware_scanner_can_reject_quarantined_file(client):
 async def test_slow_upload_background_work_does_not_block_health(
     client,
     monkeypatch,
+    worker_once,
 ):
-    monkeypatch.setattr(settings, "upload_max_concurrency", 1)
     started = asyncio.Event()
     release = asyncio.Event()
 
@@ -305,20 +313,15 @@ async def test_slow_upload_background_work_does_not_block_health(
         await release.wait()
         return IngestResult(success=True, chunk_count=1)
 
-    monkeypatch.setattr("app.api.documents.ingest_document", slow_ingest)
-    upload = asyncio.create_task(
-        client.post(
-            "/documents/upload",
-            files={"file": ("slow.txt", b"safe", "text/plain")},
-        )
-    )
-    await asyncio.wait_for(started.wait(), timeout=2)
-    concurrent = await client.post(
+    monkeypatch.setattr("app.services.ingest_jobs.ingest_document", slow_ingest)
+    upload = await client.post(
         "/documents/upload",
-        files={"file": ("second.txt", b"second", "text/plain")},
+        files={"file": ("slow.txt", b"safe", "text/plain")},
     )
-    assert concurrent.status_code == 429
+    assert upload.status_code == 201
+    worker = asyncio.create_task(worker_once())
+    await asyncio.wait_for(started.wait(), timeout=2)
     health = await asyncio.wait_for(client.get("/health"), timeout=0.5)
     assert health.status_code == 200
     release.set()
-    assert (await upload).status_code == 201
+    assert await worker is True

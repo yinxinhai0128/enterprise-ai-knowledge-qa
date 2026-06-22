@@ -85,6 +85,13 @@ class Settings(BaseSettings):
     max_parsed_chars: int = Field(default=2_000_000, ge=1)
     malware_scan_required: bool = Field(default=False)
 
+    # ---------- 持久化摄入任务 ----------
+    ingest_job_max_attempts: int = Field(default=3, ge=1, le=20)
+    ingest_job_lease_seconds: int = Field(default=300, ge=30)
+    ingest_job_poll_seconds: float = Field(default=2.0, gt=0)
+    ingest_job_retry_base_seconds: int = Field(default=30, ge=1)
+    ingest_worker_concurrency: int = Field(default=1, ge=1, le=8)
+
     # ---------- 身份认证（HS256 JWT，仅验证，不提供 Token 签发接口） ----------
     auth_jwt_secret: SecretStr = Field(
         default=SecretStr(""), description="JWT HMAC 密钥，至少 32 字符"

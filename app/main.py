@@ -20,6 +20,7 @@ from app.config import settings
 from app.core.database import init_db
 from app.core.process_pool import shutdown_parser_pool
 from app.core.vectorstore import migrate_legacy_vector_metadata
+from app.services.ingest_jobs import recover_stale_ingest_state
 
 
 def _configure_logging() -> None:
@@ -46,8 +47,14 @@ async def lifespan(app: FastAPI):
 
     # 建表（开发期 create_all；生产改 Alembic）
     await init_db()
+    recovered = await recover_stale_ingest_state()
     migrated_vectors = await asyncio.to_thread(migrate_legacy_vector_metadata)
-    logger.info("数据库已就绪 | legacy_vectors_migrated={}", migrated_vectors)
+    logger.info(
+        "数据库已就绪 | recovered_jobs={} | repaired_documents={} | legacy_vectors_migrated={}",
+        recovered["jobs"],
+        recovered["documents"],
+        migrated_vectors,
+    )
 
     # TODO: 如需可在此预热向量库 / Agent，挂到 app.state
     yield

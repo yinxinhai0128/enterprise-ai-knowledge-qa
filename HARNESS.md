@@ -104,7 +104,7 @@
 | 2 | 身份认证、授权与租户隔离 | complete | JWT/角色/tenant-user 隔离；25 tests passed；正式数据迁移完整 |
 | 3 | 可信检索、结构化来源与拒答 | complete | artifact 驱动来源/拒答；稳定 chunk ID；29 tests passed |
 | 4 | 输入、上传与解析安全 | complete | 资源/费用/文件/解析边界；54 tests passed |
-| 5 | 持久化摄入任务与数据一致性 | pending | |
+| 5 | 持久化摄入任务与数据一致性 | complete | 验收通过 |
 | 6 | 会话、审计与人工介入持久化 | pending | |
 | 7 | LangSmith 与数据治理 | pending | |
 | 8 | 依赖、Chroma CVE 与容器加固 | pending | |
@@ -289,29 +289,29 @@
 
 ### 任务
 
-- [ ] 新增 `ingest_jobs` 表：状态、attempt、next_retry_at、lease、error。
-- [ ] 文档上传只负责落盘、建记录、创建 Job。
-- [ ] Worker 领取 Job，具备超时租约和崩溃恢复。
-- [ ] 应用启动时修复长期停留在 `uploading/parsing` 的记录。
-- [ ] 文件保存时计算 SHA-256，建立租户内幂等键。
-- [ ] 为每个 chunk 生成稳定 ID：`tenant:doc_id:chunk_index:content_hash`。
-- [ ] Chroma 写入失败时不得标记 indexed。
-- [ ] DB 更新失败时执行向量补偿删除或记录 reconciliation job。
-- [ ] 新增重试、取消和重新索引接口。
-- [ ] 新增文档删除：数据库、文件、向量同步清理。
-- [ ] 新增一致性巡检命令。
+- [x] 新增 `ingest_jobs` 表：状态、attempt、next_retry_at、lease、error。
+- [x] 文档上传只负责落盘、建记录、创建 Job。
+- [x] Worker 领取 Job，具备超时租约和崩溃恢复。
+- [x] 应用启动时修复长期停留在 `uploading/parsing` 的记录。
+- [x] 文件保存时计算 SHA-256，建立租户内幂等键。
+- [x] 为每个 chunk 生成稳定 ID：`tenant:doc_id:chunk_index:content_hash`。
+- [x] Chroma 写入失败时不得标记 indexed。
+- [x] DB 更新失败时执行向量补偿删除或记录 reconciliation job。
+- [x] 新增重试、取消和重新索引接口。
+- [x] 新增文档删除：数据库、文件、向量同步清理。
+- [x] 新增一致性巡检命令。
 
 ### 必测场景
 
-- [ ] Worker 在向量写入前/后崩溃均可恢复。
-- [ ] 重复上传不会产生重复 chunk。
-- [ ] 删除文档后三个存储层均无残留。
-- [ ] 同一 Job 多次执行结果一致。
+- [x] Worker 在向量写入前/后崩溃均可恢复。
+- [x] 重复上传不会产生重复 chunk。
+- [x] 删除文档后三个存储层均无残留。
+- [x] 同一 Job 多次执行结果一致。
 
 ### 验收门
 
-- [ ] API 重启不会丢失摄入任务。
-- [ ] 一致性巡检结果为零缺失、零孤儿。
+- [x] API 重启不会丢失摄入任务。
+- [x] 一致性巡检结果为零缺失、零孤儿。
 
 ---
 
@@ -702,3 +702,36 @@ docker compose config --quiet
 - 安全影响：问题/会话/文件名、单文件、压缩展开、页/表/单元格/文本均有配置上限；QA/上传/管理具备速率与并发限制；模型调用和 Token 预算按用户/租户持久化预留；文件在 quarantine 完成扫描/隔离解析后才晋升；超时 Worker 会被硬终止；客户端错误不含路径或堆栈。
 - 已知遗留：分钟限流是当前单 API 进程内状态，多进程部署需共享限流后端；`BackgroundTasks` 将由阶段 5 持久任务队列替换；生产需接入实际恶意软件扫描器并启用 required；`langchain-community` 弃用警告留待依赖阶段。
 - 下一步：停止本次执行；下一次从阶段 5 开始。
+
+### 2026-06-22 - 阶段 5 开始
+
+- 状态：in_progress
+- 范围：持久化 ingest_jobs、独立 Worker 租约/恢复/重试、SHA-256 幂等、删除/重建与一致性巡检。
+- 阶段边界：只持久化摄入工作流；会话与人工介入持久化仍由阶段 6 处理。
+- 数据保护：新增任务表和文档哈希字段前创建新的 `storage`、`chroma_db` 快照。
+- 下一步：实现可恢复任务和三存储补偿，验收未通过不得进入阶段 6。
+
+### 2026-06-22 18:47 - 阶段 5：持久化摄入任务与数据一致性
+
+- 状态：complete
+- 修改文件：
+  - `.env.example`、`README.md`、`HARNESS.md`、`docker-compose.yml`
+  - `app/config.py`、`app/core/database.py`、`app/main.py`、`app/worker.py`
+  - `app/models/document.py`、`app/models/ingest_job.py`、`app/models/__init__.py`
+  - `app/api/documents.py`、`app/schemas/document.py`
+  - `app/services/ingest.py`、`app/services/ingest_jobs.py`、`app/services/vector_ops.py`、`app/services/consistency.py`
+  - `app/commands/check_consistency.py`
+  - `tests/conftest.py`、`tests/test_api.py`、`tests/test_auth.py`、`tests/test_ingest.py`、`tests/test_ingest_jobs.py`、`tests/test_limits.py`
+- 数据迁移：执行前备份至 `backups/stage5_20260622_182858/` 且源与备份 SQLite SHA-256 一致；正式库新增 `documents.content_sha256`、租户内部分唯一索引和空 `ingest_jobs` 表；迁移连续执行两次幂等。
+- 验证命令：
+  - `.\.venv\Scripts\python.exe -m compileall -q app tests`
+  - `.\.venv\Scripts\python.exe -m pytest -q`
+  - `.\.venv\Scripts\python.exe -m app.commands.check_consistency`
+  - `.\.venv\Scripts\python.exe -m pip check`
+  - `docker compose config --quiet`
+  - SQLite 完整性、表/列/索引、原表计数与 Git 提交范围秘密候选检查
+- 验证结果：64 passed；无损坏依赖；Compose 配置解析通过；API 新实例仍能读取 pending Job；向量前/后崩溃、DB 提交失败补偿、重复 Job、重试/取消/重建及三层删除用例全绿。
+- 数据证据：迁移前后 documents=1、chat_records=4、usage_daily=0；新增 ingest_jobs=0；`integrity_check=ok`；正式一致性巡检 missing/extra/orphan 六项与 total_issues 均为 0。
+- 可靠性影响：上传与 Job 同事务落库；独立 Worker 通过租约、心跳、指数退避和启动修复恢复；租户内文件 SHA-256 与稳定 chunk ID 保证幂等；向量/DB 失败有补偿删除；文档删除覆盖关系库、文件和 Chroma。
+- 已知遗留：SQLite 适合当前单机部署，多主机 Worker 需迁移 PostgreSQL 并采用行锁领取；分钟限流仍为单 API 进程内状态；`langchain-community` 弃用警告留待阶段 8。
+- 下一步：停止本次执行；下一次从阶段 6 开始。

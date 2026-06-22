@@ -115,14 +115,13 @@ def _load_and_split(
         raise ParseLimitError(PARSE_LIMIT_MESSAGE)
     chunks = _SPLITTER.split_documents(raw_docs)
     for index, chunk in enumerate(chunks):
-        digest_input = (
-            f"{tenant_id}\0{doc_id}\0{index}\0{chunk.page_content}"
-        ).encode("utf-8")
-        chunk_id = hashlib.sha256(digest_input).hexdigest()
+        content_hash = hashlib.sha256(chunk.page_content.encode("utf-8")).hexdigest()
+        chunk_id = f"{tenant_id}:{doc_id}:{index}:{content_hash}"
         chunk.metadata.update(
             {
                 "doc_id": doc_id,
                 "chunk_id": chunk_id,
+                "content_hash": content_hash,
                 "source": source,
                 "chunk_index": index,
                 "tenant_id": tenant_id,
@@ -183,7 +182,8 @@ async def ingest_document(
         trusted_dir = settings.storage_dir / "documents" / tenant_id
         await asyncio.to_thread(trusted_dir.mkdir, parents=True, exist_ok=True)
         trusted_path = trusted_dir / path.name
-        await asyncio.to_thread(path.replace, trusted_path)
+        if path.resolve() != trusted_path.resolve():
+            await asyncio.to_thread(path.replace, trusted_path)
     except OSError:
         logger.exception("隔离文件归档失败 doc_id={}", doc_id)
         return IngestResult(success=False, error_msg="文件归档失败")

@@ -32,13 +32,16 @@ async def test_production_disables_api_documentation(monkeypatch):
             assert "strict-transport-security" in response.headers
 
 
-async def test_end_to_end_upload_index_ask(client, vectorstore, agent_factory):
+async def test_end_to_end_upload_index_ask(
+    client, vectorstore, agent_factory, worker_once
+):
     """完整链路：上传文档、确认索引、提问拿到结构化回答、历史可回溯。"""
     # 1) 上传并完成索引
     files = {"file": ("e2e.txt", "差旅报销标准：市内交通每日上限 50 元。".encode(), "text/plain")}
     up = await client.post("/documents/upload", files=files)
     assert up.status_code == 201
     doc_id = up.json()["id"]
+    assert await worker_once() is True
 
     detail = await client.get(f"/documents/{doc_id}")
     assert detail.json()["status"] == "indexed"

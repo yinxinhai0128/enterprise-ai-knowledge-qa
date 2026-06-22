@@ -40,6 +40,7 @@ def _migrate_schema(connection: Connection) -> None:
         "documents": (
             ("tenant_id", "VARCHAR(128) NOT NULL DEFAULT 'legacy'"),
             ("uploaded_by", "VARCHAR(128) NOT NULL DEFAULT 'legacy'"),
+            ("content_sha256", "VARCHAR(64) NULL"),
         ),
         "chat_records": (
             ("tenant_id", "VARCHAR(128) NOT NULL DEFAULT 'legacy'"),
@@ -78,6 +79,13 @@ def _ensure_tenant_indexes(connection: Connection) -> None:
         text(
             "CREATE INDEX IF NOT EXISTS ix_documents_tenant_created "
             "ON documents (tenant_id, created_at)"
+        )
+    )
+    connection.execute(
+        text(
+            "CREATE UNIQUE INDEX IF NOT EXISTS uq_documents_tenant_sha256 "
+            "ON documents (tenant_id, content_sha256) "
+            "WHERE content_sha256 IS NOT NULL"
         )
     )
     connection.execute(
