@@ -32,9 +32,11 @@ SOURCE_MARK = "[来源:"
 
 @dataclass
 class EnterpriseContext:
-    """运行时上下文：调用 Agent 时传入 session_id 用于落库。"""
+    """运行时可信上下文：只能由已认证 API 层构造。"""
 
-    session_id: str = "default"
+    session_id: str
+    tenant_id: str
+    user_id: str
 
 
 class EnterpriseState(AgentState):
@@ -98,10 +100,15 @@ class EnterpriseAuditMiddleware(AgentMiddleware):
         has_source = SOURCE_MARK in answer
         question = _latest_question(messages)
         need_human = bool(state.get("need_human", False))
-        session_id = runtime.context.session_id if runtime.context else "default"
+        if runtime.context is None:
+            logger.error("缺少 Agent 可信运行时上下文，拒绝写入审计记录")
+            return {"has_source": has_source}
+        session_id = runtime.context.session_id
 
         await self._save(
             session_id=session_id,
+            tenant_id=runtime.context.tenant_id,
+            user_id=runtime.context.user_id,
             question=question,
             answer=answer,
             has_source=has_source,
@@ -113,6 +120,8 @@ class EnterpriseAuditMiddleware(AgentMiddleware):
     async def _save(
         *,
         session_id: str,
+        tenant_id: str,
+        user_id: str,
         question: str,
         answer: str,
         has_source: bool,
@@ -124,6 +133,8 @@ class EnterpriseAuditMiddleware(AgentMiddleware):
                 db.add(
                     ChatRecord(
                         session_id=session_id,
+                        tenant_id=tenant_id,
+                        user_id=user_id,
                         question=question,
                         answer=answer,
                         has_source=has_source,

@@ -4,6 +4,7 @@
 """
 from __future__ import annotations
 
+import asyncio
 import sys
 from contextlib import asynccontextmanager
 
@@ -17,6 +18,7 @@ from app.api.documents import router as documents_router
 from app.api.qa import router as qa_router
 from app.config import settings
 from app.core.database import init_db
+from app.core.vectorstore import migrate_legacy_vector_metadata
 
 
 def _configure_logging() -> None:
@@ -43,7 +45,8 @@ async def lifespan(app: FastAPI):
 
     # 建表（开发期 create_all；生产改 Alembic）
     await init_db()
-    logger.info("数据库已就绪")
+    migrated_vectors = await asyncio.to_thread(migrate_legacy_vector_metadata)
+    logger.info("数据库已就绪 | legacy_vectors_migrated={}", migrated_vectors)
 
     # TODO: 如需可在此预热向量库 / Agent，挂到 app.state
     yield

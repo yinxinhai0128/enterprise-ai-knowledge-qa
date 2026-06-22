@@ -88,26 +88,47 @@ def _select_loader(path: Path):
     raise ValueError(f"不支持的文件类型：{ext}")
 
 
-def _load_and_split(path: Path, doc_id: int, source: str) -> list[Document]:
+def _load_and_split(
+    path: Path,
+    doc_id: int,
+    source: str,
+    tenant_id: str,
+    uploaded_by: str,
+) -> list[Document]:
     """同步：加载 + 切片 + 打 metadata（在线程池中调用）。"""
     loader = _select_loader(path)
     raw_docs = loader.load()
     chunks = _SPLITTER.split_documents(raw_docs)
     for index, chunk in enumerate(chunks):
         chunk.metadata.update(
-            {"doc_id": doc_id, "source": source, "chunk_index": index}
+            {
+                "doc_id": doc_id,
+                "source": source,
+                "chunk_index": index,
+                "tenant_id": tenant_id,
+                "uploaded_by": uploaded_by,
+            }
         )
     # 清掉 loader 可能带入的复杂/None metadata，避免 Chroma 写入报错
     return filter_complex_metadata(chunks)
 
 
-async def ingest_document(*, doc_id: int, file_path: str, source: str) -> IngestResult:
+async def ingest_document(
+    *,
+    doc_id: int,
+    file_path: str,
+    source: str,
+    tenant_id: str,
+    uploaded_by: str,
+) -> IngestResult:
     """摄入单个文档：解析、切片、异步写入向量库。
 
     Args:
         doc_id: 数据库中的文档主键，写入每个 chunk 的 metadata。
         file_path: 落盘文件路径。
         source: 展示用源文件名（写入 metadata.source）。
+        tenant_id: 已验证 JWT 中的租户标识，用于向量检索隔离。
+        uploaded_by: 已验证 JWT 中的用户标识，用于审计。
 
     Returns:
         IngestResult: 含成功标志、切片数、错误信息。
@@ -116,7 +137,14 @@ async def ingest_document(*, doc_id: int, file_path: str, source: str) -> Ingest
     logger.info("开始摄入 doc_id={} source={}", doc_id, source)
     try:
         # 解析与切片为 CPU/IO 阻塞操作，丢线程池
-        chunks = await asyncio.to_thread(_load_and_split, path, doc_id, source)
+        chunks = await asyncio.to_thread(
+            _load_and_split,
+            path,
+            doc_id,
+            source,
+            tenant_id,
+            uploaded_by,
+        )
         if not chunks:
             return IngestResult(success=False, error_msg="未解析出任何文本内容")
 

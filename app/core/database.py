@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator
 
+from sqlalchemy import Connection, inspect, text
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -31,13 +32,54 @@ class Base(DeclarativeBase):
     """所有 ORM 模型的声明基类。"""
 
 
+def _migrate_tenant_columns(connection: Connection) -> None:
+    """为阶段 2 前的 SQLite 表补齐租户字段并保留既有数据。"""
+    inspector = inspect(connection)
+    tables = set(inspector.get_table_names())
+    migrations = {
+        "documents": (
+            ("tenant_id", "VARCHAR(128) NOT NULL DEFAULT 'legacy'"),
+            ("uploaded_by", "VARCHAR(128) NOT NULL DEFAULT 'legacy'"),
+        ),
+        "chat_records": (
+            ("tenant_id", "VARCHAR(128) NOT NULL DEFAULT 'legacy'"),
+            ("user_id", "VARCHAR(128) NOT NULL DEFAULT 'legacy'"),
+        ),
+    }
+    for table, columns in migrations.items():
+        if table not in tables:
+            continue
+        existing = {column["name"] for column in inspector.get_columns(table)}
+        for name, ddl in columns:
+            if name not in existing:
+                connection.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {ddl}"))
+
+
+def _ensure_tenant_indexes(connection: Connection) -> None:
+    """建立高频租户过滤索引；语句可安全重复执行。"""
+    connection.execute(
+        text(
+            "CREATE INDEX IF NOT EXISTS ix_documents_tenant_created "
+            "ON documents (tenant_id, created_at)"
+        )
+    )
+    connection.execute(
+        text(
+            "CREATE INDEX IF NOT EXISTS ix_chat_tenant_user_session "
+            "ON chat_records (tenant_id, user_id, session_id)"
+        )
+    )
+
+
 async def init_db() -> None:
     """建表（开发期用 create_all；生产应改用 Alembic 迁移）。"""
     # 导入模型以注册到 Base.metadata
     from app import models  # noqa: F401
 
     async with engine.begin() as conn:
+        await conn.run_sync(_migrate_tenant_columns)
         await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(_ensure_tenant_indexes)
 
 
 async def get_session() -> AsyncIterator[AsyncSession]:

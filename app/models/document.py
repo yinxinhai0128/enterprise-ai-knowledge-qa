@@ -18,6 +18,9 @@ class Document(Base):
     __tablename__ = "documents"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    # 租户与上传者均来自已验证 JWT，不接受请求体覆盖。
+    tenant_id: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
+    uploaded_by: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
     # 用户原始文件名（展示用）
     filename: Mapped[str] = mapped_column(String(512), nullable=False)
     # 落盘路径（storage/ 下，文件名已加 uuid 前缀）

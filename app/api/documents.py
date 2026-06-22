@@ -21,6 +21,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.core.auth import UserAuth
 from app.core.database import AsyncSessionLocal, get_session
 from app.models.document import Document
 from app.schemas.document import DocumentOut
@@ -34,10 +35,23 @@ MAX_FILE_SIZE = 50 * 1024 * 1024  # 50 MB
 _CHUNK = 1024 * 1024  # 流式落盘块大小 1 MB
 
 
-async def _run_ingest(doc_id: int, file_path: str, source: str) -> None:
+async def _run_ingest(
+    doc_id: int,
+    file_path: str,
+    source: str,
+    tenant_id: str,
+    uploaded_by: str,
+) -> None:
     """后台任务：推进状态机并回填结果（独立 DB 会话）。"""
     async with AsyncSessionLocal() as db:
-        doc = await db.get(Document, doc_id)
+        doc = (
+            await db.execute(
+                select(Document).where(
+                    Document.id == doc_id,
+                    Document.tenant_id == tenant_id,
+                )
+            )
+        ).scalar_one_or_none()
         if doc is None:
             logger.warning("后台索引找不到文档 doc_id={}", doc_id)
             return
@@ -45,7 +59,13 @@ async def _run_ingest(doc_id: int, file_path: str, source: str) -> None:
         doc.status = "parsing"
         await db.commit()
 
-        result = await ingest_document(doc_id=doc_id, file_path=file_path, source=source)
+        result = await ingest_document(
+            doc_id=doc_id,
+            file_path=file_path,
+            source=source,
+            tenant_id=tenant_id,
+            uploaded_by=uploaded_by,
+        )
 
         if result.success:
             doc.status = "indexed"
@@ -66,6 +86,7 @@ async def _run_ingest(doc_id: int, file_path: str, source: str) -> None:
 async def upload_document(
     file: UploadFile,
     background_tasks: BackgroundTasks,
+    auth: UserAuth,
     db: AsyncSession = Depends(get_session),
 ) -> Document:
     """接收单个文件，校验、落盘、登记，并异步触发索引。"""
@@ -79,9 +100,10 @@ async def upload_document(
         )
 
     # 文件名加 uuid 前缀，避免冲突
-    settings.storage_dir.mkdir(parents=True, exist_ok=True)
+    tenant_storage = settings.storage_dir / "uploads" / auth.tenant_id
+    tenant_storage.mkdir(parents=True, exist_ok=True)
     stored_name = f"{uuid4().hex}_{original_name}"
-    dest = settings.storage_dir / stored_name
+    dest = tenant_storage / stored_name
 
     # 流式落盘，边写边校验大小
     size = 0
@@ -108,30 +130,65 @@ async def upload_document(
         )
 
     # 登记 DB
-    doc = Document(filename=original_name, file_path=str(dest), status="uploading")
+    doc = Document(
+        tenant_id=auth.tenant_id,
+        uploaded_by=auth.user_id,
+        filename=original_name,
+        file_path=str(dest),
+        status="uploading",
+    )
     db.add(doc)
     await db.commit()
     await db.refresh(doc)
 
     # 异步索引
-    background_tasks.add_task(_run_ingest, doc.id, str(dest), original_name)
-    logger.info("已接收文档 doc_id={} filename={}", doc.id, original_name)
+    background_tasks.add_task(
+        _run_ingest,
+        doc.id,
+        str(dest),
+        original_name,
+        auth.tenant_id,
+        auth.user_id,
+    )
+    logger.info(
+        "已接收文档 tenant={} user={} doc_id={} filename={}",
+        auth.tenant_id,
+        auth.user_id,
+        doc.id,
+        original_name,
+    )
     return doc
 
 
 @router.get("", response_model=list[DocumentOut], summary="文档列表")
-async def list_documents(db: AsyncSession = Depends(get_session)) -> list[Document]:
-    """返回全部文档，按创建时间倒序。"""
-    result = await db.execute(select(Document).order_by(Document.created_at.desc()))
+async def list_documents(
+    auth: UserAuth,
+    db: AsyncSession = Depends(get_session),
+) -> list[Document]:
+    """返回当前租户文档，按创建时间倒序。"""
+    result = await db.execute(
+        select(Document)
+        .where(Document.tenant_id == auth.tenant_id)
+        .order_by(Document.created_at.desc())
+    )
     return list(result.scalars().all())
 
 
 @router.get("/{doc_id}", response_model=DocumentOut, summary="文档详情")
 async def get_document(
-    doc_id: int, db: AsyncSession = Depends(get_session)
+    doc_id: int,
+    auth: UserAuth,
+    db: AsyncSession = Depends(get_session),
 ) -> Document:
-    """按 id 返回单个文档。"""
-    doc = await db.get(Document, doc_id)
+    """按 id 返回当前租户内的单个文档。"""
+    doc = (
+        await db.execute(
+            select(Document).where(
+                Document.id == doc_id,
+                Document.tenant_id == auth.tenant_id,
+            )
+        )
+    ).scalar_one_or_none()
     if doc is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="文档不存在"

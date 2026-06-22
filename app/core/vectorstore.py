@@ -12,6 +12,9 @@ from langchain_chroma import Chroma
 from app.config import settings
 from app.core.llm import init_embeddings
 
+LEGACY_TENANT_ID = "legacy"
+_MIGRATION_BATCH_SIZE = 500
+
 
 @lru_cache(maxsize=1)
 def get_vectorstore() -> Chroma:
@@ -21,3 +24,38 @@ def get_vectorstore() -> Chroma:
         embedding_function=init_embeddings(),
         persist_directory=str(settings.chroma_dir),
     )
+
+
+def migrate_legacy_vector_metadata() -> int:
+    """为阶段 2 前的向量补齐租户标签，返回更新数量。
+
+    旧数据统一归入受控的 ``legacy`` 租户；检索始终带 tenant filter，
+    因此迁移中断时缺少标签的向量也不会泄露给任何租户。
+    """
+    collection = get_vectorstore()._collection
+    total = collection.count()
+    updated = 0
+    for offset in range(0, total, _MIGRATION_BATCH_SIZE):
+        batch = collection.get(
+            limit=_MIGRATION_BATCH_SIZE,
+            offset=offset,
+            include=["metadatas"],
+        )
+        ids_to_update: list[str] = []
+        metadatas_to_update: list[dict] = []
+        for item_id, metadata in zip(
+            batch.get("ids", []),
+            batch.get("metadatas", []),
+            strict=True,
+        ):
+            normalized = dict(metadata or {})
+            if "tenant_id" in normalized:
+                continue
+            normalized["tenant_id"] = LEGACY_TENANT_ID
+            normalized.setdefault("uploaded_by", LEGACY_TENANT_ID)
+            ids_to_update.append(item_id)
+            metadatas_to_update.append(normalized)
+        if ids_to_update:
+            collection.update(ids=ids_to_update, metadatas=metadatas_to_update)
+            updated += len(ids_to_update)
+    return updated

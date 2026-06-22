@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict
 from sqlalchemy import case, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.auth import AdminAuth
 from app.core.database import get_session
 from app.models.chat_record import ChatRecord
 from app.models.document import Document
@@ -48,6 +49,8 @@ class AdminQARecord(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    tenant_id: str
+    user_id: str
     session_id: str
     question: str
     answer: str
@@ -62,8 +65,11 @@ def _refused_condition():
 
 
 @router.get("/stats", response_model=AdminStats, summary="管理统计")
-async def get_stats(db: AsyncSession = Depends(get_session)) -> AdminStats:
-    """返回文档总量/状态以及问答拒答率、转人工率。"""
+async def get_stats(
+    auth: AdminAuth,
+    db: AsyncSession = Depends(get_session),
+) -> AdminStats:
+    """返回当前租户文档与问答统计。"""
     document_row = (
         await db.execute(
             select(
@@ -74,7 +80,7 @@ async def get_stats(db: AsyncSession = Depends(get_session)) -> AdminStats:
                 func.coalesce(
                     func.sum(case((Document.status == "failed", 1), else_=0)), 0
                 ),
-            )
+            ).where(Document.tenant_id == auth.tenant_id)
         )
     ).one()
 
@@ -90,7 +96,7 @@ async def get_stats(db: AsyncSession = Depends(get_session)) -> AdminStats:
                     func.sum(case((ChatRecord.need_human.is_(True), 1), else_=0)),
                     0,
                 ),
-            )
+            ).where(ChatRecord.tenant_id == auth.tenant_id)
         )
     ).one()
 
@@ -117,12 +123,16 @@ async def get_stats(db: AsyncSession = Depends(get_session)) -> AdminStats:
     summary="最近拒答问题",
 )
 async def list_refused(
+    auth: AdminAuth,
     db: AsyncSession = Depends(get_session),
 ) -> list[ChatRecord]:
     """返回最近 20 条知识库无答案的问答记录。"""
     result = await db.execute(
         select(ChatRecord)
-        .where(_refused_condition())
+        .where(
+            ChatRecord.tenant_id == auth.tenant_id,
+            _refused_condition(),
+        )
         .order_by(ChatRecord.created_at.desc(), ChatRecord.id.desc())
         .limit(20)
     )
@@ -135,12 +145,16 @@ async def list_refused(
     summary="最近转人工问题",
 )
 async def list_human(
+    auth: AdminAuth,
     db: AsyncSession = Depends(get_session),
 ) -> list[ChatRecord]:
     """返回最近 20 条命中敏感词、需要人工介入的问答记录。"""
     result = await db.execute(
         select(ChatRecord)
-        .where(ChatRecord.need_human.is_(True))
+        .where(
+            ChatRecord.tenant_id == auth.tenant_id,
+            ChatRecord.need_human.is_(True),
+        )
         .order_by(ChatRecord.created_at.desc(), ChatRecord.id.desc())
         .limit(20)
     )

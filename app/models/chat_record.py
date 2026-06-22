@@ -15,6 +15,8 @@ class ChatRecord(Base):
     __tablename__ = "chat_records"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    tenant_id: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
+    user_id: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
     # 会话标识（= 多轮记忆的 thread_id）
     session_id: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
     question: Mapped[str] = mapped_column(Text, nullable=False)

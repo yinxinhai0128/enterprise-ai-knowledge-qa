@@ -1,15 +1,23 @@
 """问答接口的出入参模型。"""
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class AskRequest(BaseModel):
     """提问入参。"""
 
+    # 兼容旧客户端时忽略多余 user_id，但可信身份始终来自已验签 JWT。
+    model_config = ConfigDict(extra="ignore")
+
     question: str = Field(..., min_length=1, description="用户问题")
-    user_id: str = Field(..., description="用户标识（审计用）")
-    session_id: str = Field(..., description="会话标识，作为多轮记忆 thread_id")
+    session_id: str = Field(
+        ...,
+        min_length=1,
+        max_length=64,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*$",
+        description="客户端会话标识；服务端会与可信 tenant/user 组合成 thread ID",
+    )
 
 
 class AskResponse(BaseModel):

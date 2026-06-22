@@ -101,7 +101,7 @@
 |---|---|---|---|
 | 0 | 安全基线、备份与版本控制 | complete | 基线提交 `678638d`；备份/秘密扫描/测试/连接验收通过；旧 Key 已吊销 |
 | 1 | 紧急暴露面收敛 | complete | Compose 仅绑定本机；生产文档端点 404；16 tests passed |
-| 2 | 身份认证、授权与租户隔离 | pending | |
+| 2 | 身份认证、授权与租户隔离 | complete | JWT/角色/tenant-user 隔离；25 tests passed；正式数据迁移完整 |
 | 3 | 可信检索、结构化来源与拒答 | pending | |
 | 4 | 输入、上传与解析安全 | pending | |
 | 5 | 持久化摄入任务与数据一致性 | pending | |
@@ -176,31 +176,31 @@
 
 ### 任务
 
-- [ ] 新增 `AuthContext(user_id, tenant_id, roles)`。
-- [ ] 从 Bearer Token 的受验证 claims 获取身份。
-- [ ] 删除 `AskRequest.user_id`，或忽略并最终移除该字段。
-- [ ] 普通用户路由要求 `user` 角色。
-- [ ] `/admin/*` 要求 `admin` 角色。
-- [ ] 文档记录增加 `tenant_id`、`uploaded_by`。
-- [ ] 聊天记录增加 `tenant_id`、`user_id`。
-- [ ] thread ID 改为服务端生成的 `tenant:user:session`。
-- [ ] 文档列表、详情、检索、历史均强制 tenant/user 过滤。
-- [ ] 禁止跨用户读取历史，禁止跨租户检索向量。
-- [ ] 使用常量时间比较密钥或标准 JWT 库，禁止自行实现密码学。
+- [x] 新增 `AuthContext(user_id, tenant_id, roles)`。
+- [x] 从 Bearer Token 的受验证 claims 获取身份。
+- [x] 删除 `AskRequest.user_id`，或忽略并最终移除该字段。
+- [x] 普通用户路由要求 `user` 角色。
+- [x] `/admin/*` 要求 `admin` 角色。
+- [x] 文档记录增加 `tenant_id`、`uploaded_by`。
+- [x] 聊天记录增加 `tenant_id`、`user_id`。
+- [x] thread ID 改为服务端生成的 `tenant:user:session`。
+- [x] 文档列表、详情、检索、历史均强制 tenant/user 过滤。
+- [x] 禁止跨用户读取历史，禁止跨租户检索向量。
+- [x] 使用常量时间比较密钥或标准 JWT 库，禁止自行实现密码学。
 
 ### 必测场景
 
-- [ ] 无 Token：401。
-- [ ] 普通用户访问管理接口：403。
-- [ ] 用户 A 读取用户 B 会话：403/404。
-- [ ] 租户 A 无法检索租户 B 文档。
-- [ ] 伪造请求体 `user_id` 不改变服务端身份。
+- [x] 无 Token：401。
+- [x] 普通用户访问管理接口：403。
+- [x] 用户 A 读取用户 B 会话：403/404。
+- [x] 租户 A 无法检索租户 B 文档。
+- [x] 伪造请求体 `user_id` 不改变服务端身份。
 
 ### 验收门
 
-- [ ] OpenAPI 存在安全方案。
-- [ ] 所有非健康检查端点均受保护。
-- [ ] 跨租户、跨用户自动化测试全绿。
+- [x] OpenAPI 存在安全方案。
+- [x] 所有非健康检查端点均受保护。
+- [x] 跨租户、跨用户自动化测试全绿。
 
 ---
 
@@ -608,3 +608,34 @@ docker compose config --quiet
 - 安全影响：未完成鉴权前默认限制为本机访问；生产环境关闭文档端点；健康响应最小化；统一添加基础安全响应头。
 - 已知遗留：身份认证、授权与租户隔离尚未实现，由阶段 2 处理；`langchain-community` 弃用警告按后续依赖阶段处理。
 - 下一步：停止本次执行；下一次从阶段 2 开始。
+
+### 2026-06-22 - 阶段 2 开始
+
+- 状态：in_progress
+- 范围：JWT 验证、角色授权、可信身份、关系库与向量库租户隔离、服务端线程标识。
+- 数据保护：数据库结构修改前创建新的 `storage`、`chroma_db` 快照，不覆盖已有备份。
+- 下一步：完成备份后实施并验证阶段 2；验收未通过不进入阶段 3。
+
+### 2026-06-22 13:25 - 阶段 2：身份认证、授权与租户隔离
+
+- 状态：complete
+- 修改文件：
+  - `.env.example`、`requirements.txt`、`README.md`
+  - `app/core/auth.py`、`app/core/database.py`、`app/core/retriever_tool.py`、`app/core/vectorstore.py`
+  - `app/api/admin.py`、`app/api/documents.py`、`app/api/qa.py`
+  - `app/models/chat_record.py`、`app/models/document.py`
+  - `app/schemas/document.py`、`app/schemas/qa.py`
+  - `app/agent/__init__.py`、`app/agent/middleware.py`、`app/main.py`、`app/services/ingest.py`
+  - `tests/conftest.py`、`tests/test_agent.py`、`tests/test_auth.py`
+- 数据迁移：执行前备份至 `backups/stage2_20260622_131157/`，源与备份 SQLite SHA-256 一致；正式库新增 tenant/user 字段和复合索引，旧关系记录与 1 条旧向量归入 `legacy`；二次执行更新数为 0。
+- 验证命令：
+  - `.\.venv\Scripts\python.exe -m compileall -q app tests`
+  - `.\.venv\Scripts\python.exe -m pytest -q`
+  - `.\.venv\Scripts\python.exe -m pip check`
+  - SQLite 完整性、记录数、NULL 身份字段和 Chroma tenant metadata 聚合检查
+  - Git 跟踪文件秘密候选扫描
+- 验证结果：25 passed；无损坏依赖；OpenAPI 声明 `BearerAuth`；匿名业务请求 401、普通用户访问管理接口 403、跨用户读取 404；跨租户列表/详情/检索均隔离；秘密候选 0。
+- 数据证据：迁移前后均为 documents=1、chat_records=4、vectors=1；`integrity_check=ok`；身份字段 NULL=0；缺少 tenant metadata 的向量=0。
+- 安全影响：身份只取自固定 HS256 算法验签后的 claims；示例/弱密钥失败关闭；无 Token 签发接口；thread ID、关系查询、管理统计与向量检索均带租户边界。
+- 已知遗留：正式运行前需在 `.env`/秘密管理系统配置至少 32 字符随机 `AUTH_JWT_SECRET` 并由可信身份系统签发 Token；持久化会话和可信来源由后续阶段处理；`langchain-community` 弃用警告仍留待依赖阶段。
+- 下一步：停止本次执行；下一次从阶段 3 开始。

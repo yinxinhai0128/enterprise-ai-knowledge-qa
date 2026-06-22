@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Literal
 
 from dotenv import load_dotenv
-from pydantic import Field
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # 项目根目录（app/ 的上一级）
@@ -47,6 +47,13 @@ class Settings(BaseSettings):
     app_host: str = Field(default="127.0.0.1", description="服务监听地址")
     app_port: int = Field(default=8000, description="服务监听端口")
     log_level: str = Field(default="INFO", description="日志级别")
+
+    # ---------- 身份认证（HS256 JWT，仅验证，不提供 Token 签发接口） ----------
+    auth_jwt_secret: SecretStr = Field(
+        default=SecretStr(""), description="JWT HMAC 密钥，至少 32 字符"
+    )
+    auth_jwt_issuer: str = Field(default="enterprise-idp", description="JWT issuer")
+    auth_jwt_audience: str = Field(default="enterprise-kb", description="JWT audience")
 
     # ---------- 路径（容器内 /app 下，与挂载卷对齐） ----------
     storage_dir: Path = Field(default=BASE_DIR / "storage", description="业务文件存储目录")

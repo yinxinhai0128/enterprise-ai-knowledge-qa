@@ -13,6 +13,7 @@ from loguru import logger
 
 from app.agent.agent import build_agent
 from app.agent.middleware import EnterpriseContext
+from app.core.auth import UserAuth, build_thread_id
 from app.schemas.qa import (
     AskRequest,
     AskResponse,
@@ -66,7 +67,7 @@ def _role_of(msg) -> str:
 
 
 @router.post("/ask", response_model=AskResponse, summary="提问")
-async def ask(req: AskRequest) -> AskResponse:
+async def ask(req: AskRequest, auth: UserAuth) -> AskResponse:
     """单轮提问；同一 session_id 自动带多轮记忆。"""
     if not req.question.strip():
         raise HTTPException(
@@ -74,13 +75,23 @@ async def ask(req: AskRequest) -> AskResponse:
         )
 
     agent = build_agent()
-    config = {"configurable": {"thread_id": req.session_id}}
-    logger.info("提问 user={} session={}", req.user_id, req.session_id)
+    thread_id = build_thread_id(auth, req.session_id)
+    config = {"configurable": {"thread_id": thread_id}}
+    logger.info(
+        "提问 tenant={} user={} session={}",
+        auth.tenant_id,
+        auth.user_id,
+        req.session_id,
+    )
 
     result = await agent.ainvoke(
         {"messages": [{"role": "user", "content": req.question}]},
         config=config,
-        context=EnterpriseContext(session_id=req.session_id),
+        context=EnterpriseContext(
+            session_id=thread_id,
+            tenant_id=auth.tenant_id,
+            user_id=auth.user_id,
+        ),
     )
 
     messages = result.get("messages", [])
@@ -102,10 +113,18 @@ async def ask(req: AskRequest) -> AskResponse:
     response_model=HistoryResponse,
     summary="会话历史",
 )
-async def history(session_id: str) -> HistoryResponse:
-    """从 checkpointer 取该会话的消息历史。"""
+async def history(session_id: str, auth: UserAuth) -> HistoryResponse:
+    """从当前租户、当前用户专属 thread 读取消息历史。"""
+    try:
+        thread_id = build_thread_id(auth, session_id)
+    except ValueError as exc:
+        # 不接受客户端传入内部 tenant:user:session 标识，避免用户枚举他人 thread。
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="会话不存在",
+        ) from exc
     agent = build_agent()
-    config = {"configurable": {"thread_id": session_id}}
+    config = {"configurable": {"thread_id": thread_id}}
 
     snapshot = await agent.aget_state(config)
     raw_messages = snapshot.values.get("messages", []) if snapshot.values else []

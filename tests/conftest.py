@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import os
 import tempfile
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 # ---------- 必须在导入任何 app 模块之前设置环境 ----------
@@ -26,7 +27,11 @@ os.environ["CHROMA_DIR"] = _TMP
 os.environ["LANGCHAIN_TRACING_V2"] = "false"
 os.environ["LANGSMITH_TRACING"] = "false"
 os.environ["LANGSMITH_API_KEY"] = ""
+os.environ["AUTH_JWT_SECRET"] = "test-only-jwt-secret-at-least-32-characters-long"
+os.environ["AUTH_JWT_ISSUER"] = "test-idp"
+os.environ["AUTH_JWT_AUDIENCE"] = "test-enterprise-kb"
 
+import jwt  # noqa: E402
 import pytest  # noqa: E402
 from langchain_core.embeddings import DeterministicFakeEmbedding  # noqa: E402
 from langchain_core.language_models.fake_chat_models import (  # noqa: E402
@@ -46,6 +51,35 @@ database_module.AsyncSessionLocal = async_sessionmaker(
 )
 
 from app.core.database import Base  # noqa: E402
+
+
+@pytest.fixture
+def auth_headers():
+    """生成仅用于测试的已签名身份头，不调用真实身份系统。"""
+
+    def _make(
+        *,
+        tenant_id: str = "tenant-a",
+        user_id: str = "user-a",
+        roles: tuple[str, ...] = ("user",),
+    ) -> dict[str, str]:
+        now = datetime.now(timezone.utc)
+        token = jwt.encode(
+            {
+                "sub": user_id,
+                "tenant_id": tenant_id,
+                "roles": list(roles),
+                "iss": os.environ["AUTH_JWT_ISSUER"],
+                "aud": os.environ["AUTH_JWT_AUDIENCE"],
+                "iat": now,
+                "exp": now + timedelta(minutes=5),
+            },
+            os.environ["AUTH_JWT_SECRET"],
+            algorithm="HS256",
+        )
+        return {"Authorization": f"Bearer {token}"}
+
+    return _make
 
 
 class FakeChatModel(GenericFakeChatModel):
@@ -135,12 +169,30 @@ async def _setup_db():
 
 
 @pytest.fixture
-async def client():
+async def client(auth_headers):
     """httpx 异步客户端（ASGI 直连，BackgroundTasks 会在响应前跑完）。"""
     from httpx import ASGITransport, AsyncClient
 
     from app.main import app
 
     transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=transport,
+        base_url="http://test",
+        headers=auth_headers(),
+    ) as ac:
+        yield ac
+
+
+@pytest.fixture
+async def anonymous_client():
+    """不带认证头的客户端，用于 401 验收。"""
+    from httpx import ASGITransport, AsyncClient
+
+    from app.main import app
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as ac:
         yield ac

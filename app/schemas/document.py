@@ -12,6 +12,8 @@ class DocumentOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    tenant_id: str
+    uploaded_by: str
     filename: str
     status: str
     chunk_count: int
