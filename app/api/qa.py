@@ -7,12 +7,16 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, status
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
+from langchain.agents.middleware.model_call_limit import ModelCallLimitExceededError
+from langchain.agents.middleware.tool_call_limit import ToolCallLimitExceededError
 from loguru import logger
 
 from app.agent.agent import build_agent
 from app.agent.middleware import EnterpriseContext
-from app.core.auth import UserAuth, build_thread_id
+from app.config import settings
+from app.core.auth import build_thread_id
 from app.core.evidence import validated_evidence_list
+from app.core.limits import QAAuth, reserve_daily_model_budget
 from app.schemas.qa import (
     AskRequest,
     AskResponse,
@@ -53,16 +57,20 @@ def _role_of(msg) -> str:
 
 
 @router.post("/ask", response_model=AskResponse, summary="提问")
-async def ask(req: AskRequest, auth: UserAuth) -> AskResponse:
+async def ask(req: AskRequest, auth: QAAuth) -> AskResponse:
     """单轮提问；同一 session_id 自动带多轮记忆。"""
     if not req.question.strip():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="问题不能为空"
         )
 
+    await reserve_daily_model_budget(auth, req.question)
     agent = build_agent()
     thread_id = build_thread_id(auth, req.session_id)
-    config = {"configurable": {"thread_id": thread_id}}
+    config = {
+        "configurable": {"thread_id": thread_id},
+        "recursion_limit": settings.agent_max_steps,
+    }
     logger.info(
         "提问 tenant={} user={} session={}",
         auth.tenant_id,
@@ -70,15 +78,22 @@ async def ask(req: AskRequest, auth: UserAuth) -> AskResponse:
         req.session_id,
     )
 
-    result = await agent.ainvoke(
-        {"messages": [{"role": "user", "content": req.question}]},
-        config=config,
-        context=EnterpriseContext(
-            session_id=thread_id,
-            tenant_id=auth.tenant_id,
-            user_id=auth.user_id,
-        ),
-    )
+    try:
+        result = await agent.ainvoke(
+            {"messages": [{"role": "user", "content": req.question}]},
+            config=config,
+            context=EnterpriseContext(
+                session_id=thread_id,
+                tenant_id=auth.tenant_id,
+                user_id=auth.user_id,
+            ),
+        )
+    except (ModelCallLimitExceededError, ToolCallLimitExceededError) as exc:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="单次 Agent 调用预算已用尽",
+            headers={"Retry-After": "1"},
+        ) from exc
 
     messages = result.get("messages", [])
     answer = _text(messages[-1]) if messages else ""
@@ -99,7 +114,7 @@ async def ask(req: AskRequest, auth: UserAuth) -> AskResponse:
     response_model=HistoryResponse,
     summary="会话历史",
 )
-async def history(session_id: str, auth: UserAuth) -> HistoryResponse:
+async def history(session_id: str, auth: QAAuth) -> HistoryResponse:
     """从当前租户、当前用户专属 thread 读取消息历史。"""
     try:
         thread_id = build_thread_id(auth, session_id)

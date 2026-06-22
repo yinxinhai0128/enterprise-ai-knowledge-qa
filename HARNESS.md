@@ -103,7 +103,7 @@
 | 1 | 紧急暴露面收敛 | complete | Compose 仅绑定本机；生产文档端点 404；16 tests passed |
 | 2 | 身份认证、授权与租户隔离 | complete | JWT/角色/tenant-user 隔离；25 tests passed；正式数据迁移完整 |
 | 3 | 可信检索、结构化来源与拒答 | complete | artifact 驱动来源/拒答；稳定 chunk ID；29 tests passed |
-| 4 | 输入、上传与解析安全 | pending | |
+| 4 | 输入、上传与解析安全 | complete | 资源/费用/文件/解析边界；54 tests passed |
 | 5 | 持久化摄入任务与数据一致性 | pending | |
 | 6 | 会话、审计与人工介入持久化 | pending | |
 | 7 | LangSmith 与数据治理 | pending | |
@@ -251,29 +251,29 @@
 
 ### 任务
 
-- [ ] 为 `question`、`session_id`、文件名、用户可控 metadata 增加最大长度。
-- [ ] 对 `/qa/ask`、上传和管理接口增加限流与并发限制。
-- [ ] 限制单用户/租户每日模型调用量和 Token 成本。
-- [ ] 文件名安全规范化并限制长度，超长返回 400，而不是 500。
-- [ ] 不只检查扩展名，同时验证 MIME 和 magic bytes。
-- [ ] 增加压缩后展开大小、PDF 页数、工作表数、单元格数和文本总量限制。
-- [ ] 上传文件进入隔离目录，解析成功前不得视为可信。
-- [ ] 为恶意软件扫描预留接口。
-- [ ] 解析任务与 API 进程隔离，至少放入独立 Worker。
-- [ ] 对同步磁盘写入和解析设置超时。
+- [x] 为 `question`、`session_id`、文件名、用户可控 metadata 增加最大长度。
+- [x] 对 `/qa/ask`、上传和管理接口增加限流与并发限制。
+- [x] 限制单用户/租户每日模型调用量和 Token 成本。
+- [x] 文件名安全规范化并限制长度，超长返回 400，而不是 500。
+- [x] 不只检查扩展名，同时验证 MIME 和 magic bytes。
+- [x] 增加压缩后展开大小、PDF 页数、工作表数、单元格数和文本总量限制。
+- [x] 上传文件进入隔离目录，解析成功前不得视为可信。
+- [x] 为恶意软件扫描预留接口。
+- [x] 解析任务与 API 进程隔离，至少放入独立 Worker。
+- [x] 对同步磁盘写入和解析设置超时。
 
 ### 必测场景
 
-- [ ] 300 字符文件名返回 400。
-- [ ] 百万字符问题返回 422/413。
-- [ ] 扩展名伪造被拒绝。
-- [ ] 空文件、超 50MB、超页数、超单元格均有明确错误。
-- [ ] 并发上传不会阻塞问答健康检查。
+- [x] 300 字符文件名返回 400。
+- [x] 百万字符问题返回 422/413。
+- [x] 扩展名伪造被拒绝。
+- [x] 空文件、超 50MB、超页数、超单元格均有明确错误。
+- [x] 并发上传不会阻塞问答健康检查。
 
 ### 验收门
 
-- [ ] 所有资源限制均来自配置并有默认安全值。
-- [ ] 解析错误不泄露服务器绝对路径或内部堆栈。
+- [x] 所有资源限制均来自配置并有默认安全值。
+- [x] 解析错误不泄露服务器绝对路径或内部堆栈。
 
 ---
 
@@ -670,3 +670,35 @@ docker compose config --quiet
 - 安全影响：API sources、`has_source`、`refused` 和管理统计只认真实 ToolMessage artifact/结构化字段；无证据强制拒答；模型自报引用被清除；文档内容显式标记为不可信数据。
 - 已知遗留：当前 relevance 由 Chroma L2 distance 单调换算，仍需按真实 embedding 校准；持久化 evidence 审计、重排与更强注入检测留待后续阶段；`langchain-community` 弃用警告留待依赖阶段。
 - 下一步：停止本次执行；下一次从阶段 4 开始。
+
+### 2026-06-22 - 阶段 4 开始
+
+- 状态：in_progress
+- 范围：请求/费用/并发边界、文件真实性与展开限制、隔离目录、恶意软件扫描接口、解析进程与超时。
+- 阶段边界：解析使用独立进程池；持久化摄入队列仍由阶段 5 实现。
+- 数据保护：新增每日用量账本前创建新的 `storage`、`chroma_db` 快照。
+- 下一步：逐项完成资源限制和必测场景，验收未通过不得进入阶段 5。
+
+### 2026-06-22 14:12 - 阶段 4：输入、上传与解析安全
+
+- 状态：complete
+- 修改文件：
+  - `.env.example`、`README.md`、`HARNESS.md`
+  - `app/config.py`、`app/core/auth.py`、`app/core/llm.py`
+  - `app/core/limits.py`、`app/core/process_pool.py`
+  - `app/services/file_security.py`、`app/services/ingest.py`
+  - `app/api/qa.py`、`app/api/documents.py`、`app/api/admin.py`、`app/agent/agent.py`、`app/main.py`
+  - `app/models/usage_daily.py`、`app/models/__init__.py`、`app/schemas/qa.py`
+  - `tests/conftest.py`、`tests/test_ingest.py`、`tests/test_limits.py`
+- 数据迁移：执行前备份至 `backups/stage4_20260622_134704/` 且 SQLite SHA-256 一致；新增空 `usage_daily` 表；二次迁移幂等。
+- 验证命令：
+  - `.\.venv\Scripts\python.exe -m compileall -q app tests`
+  - `.\.venv\Scripts\python.exe -m pytest -q`
+  - `.\.venv\Scripts\python.exe -m pip check`
+  - SQLite 完整性、原表计数与 `usage_daily` 聚合检查
+  - 资源配置覆盖、异常直出、Git 提交范围秘密候选扫描
+- 验证结果：54 passed；无损坏依赖；资源配置缺失 0；异常对象直出模式 0；秘密候选 0。
+- 数据证据：迁移前后 documents=1、chat_records=4；`integrity_check=ok`；usage_daily=0。
+- 安全影响：问题/会话/文件名、单文件、压缩展开、页/表/单元格/文本均有配置上限；QA/上传/管理具备速率与并发限制；模型调用和 Token 预算按用户/租户持久化预留；文件在 quarantine 完成扫描/隔离解析后才晋升；超时 Worker 会被硬终止；客户端错误不含路径或堆栈。
+- 已知遗留：分钟限流是当前单 API 进程内状态，多进程部署需共享限流后端；`BackgroundTasks` 将由阶段 5 持久任务队列替换；生产需接入实际恶意软件扫描器并启用 required；`langchain-community` 弃用警告留待依赖阶段。
+- 下一步：停止本次执行；下一次从阶段 5 开始。

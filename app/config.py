@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     # ---------- 模型 ----------
     llm_model: str = Field(default="deepseek-v3", description="对话大模型")
     embed_model: str = Field(default="text-embedding-v3", description="向量模型")
+    llm_max_output_tokens: int = Field(default=2048, ge=1, le=8192)
+    agent_max_steps: int = Field(default=30, ge=3, le=50)
+    max_model_calls_per_request: int = Field(default=4, ge=1, le=20)
+    max_retrieval_calls_per_request: int = Field(default=3, ge=1, le=20)
 
     # ---------- LangSmith 可观测 ----------
     langsmith_api_key: str = Field(default="", description="LangSmith API Key，可空")
@@ -47,6 +51,39 @@ class Settings(BaseSettings):
     app_host: str = Field(default="127.0.0.1", description="服务监听地址")
     app_port: int = Field(default=8000, description="服务监听端口")
     log_level: str = Field(default="INFO", description="日志级别")
+
+    # ---------- 请求、并发与每日费用边界 ----------
+    max_question_chars: int = Field(default=4000, ge=1, le=100_000)
+    max_session_id_chars: int = Field(default=64, ge=1, le=128)
+    qa_rate_limit_per_minute: int = Field(default=30, ge=1)
+    upload_rate_limit_per_minute: int = Field(default=10, ge=1)
+    admin_rate_limit_per_minute: int = Field(default=60, ge=1)
+    qa_max_concurrency: int = Field(default=8, ge=1)
+    upload_max_concurrency: int = Field(default=2, ge=1)
+    admin_max_concurrency: int = Field(default=10, ge=1)
+    daily_user_model_calls: int = Field(default=200, ge=1)
+    daily_tenant_model_calls: int = Field(default=5000, ge=1)
+    daily_user_token_budget: int = Field(default=500_000, ge=1)
+    daily_tenant_token_budget: int = Field(default=10_000_000, ge=1)
+
+    # ---------- 上传、压缩包与解析器资源边界 ----------
+    max_filename_chars: int = Field(default=200, ge=1, le=255)
+    max_file_size_bytes: int = Field(default=50 * 1024 * 1024, ge=1)
+    upload_chunk_bytes: int = Field(default=1024 * 1024, ge=4096)
+    upload_write_timeout_seconds: float = Field(default=30.0, gt=0)
+    file_validation_timeout_seconds: float = Field(default=30.0, gt=0)
+    parser_timeout_seconds: float = Field(default=120.0, gt=0)
+    parser_workers: int = Field(default=2, ge=1, le=8)
+    max_archive_entries: int = Field(default=2000, ge=1)
+    max_archive_uncompressed_bytes: int = Field(
+        default=100 * 1024 * 1024, ge=1
+    )
+    max_archive_compression_ratio: float = Field(default=100.0, gt=1.0)
+    max_pdf_pages: int = Field(default=500, ge=1)
+    max_xlsx_sheets: int = Field(default=100, ge=1)
+    max_xlsx_cells: int = Field(default=1_000_000, ge=1)
+    max_parsed_chars: int = Field(default=2_000_000, ge=1)
+    malware_scan_required: bool = Field(default=False)
 
     # ---------- 身份认证（HS256 JWT，仅验证，不提供 Token 签发接口） ----------
     auth_jwt_secret: SecretStr = Field(
@@ -75,7 +112,13 @@ class Settings(BaseSettings):
 
     def ensure_dirs(self) -> None:
         """确保运行所需的可写目录存在。"""
-        for path in (self.storage_dir, self.chroma_dir, self.log_dir):
+        for path in (
+            self.storage_dir,
+            self.storage_dir / "quarantine",
+            self.storage_dir / "documents",
+            self.chroma_dir,
+            self.log_dir,
+        ):
             path.mkdir(parents=True, exist_ok=True)
 
 

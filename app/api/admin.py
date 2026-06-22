@@ -8,8 +8,8 @@ from pydantic import BaseModel, ConfigDict
 from sqlalchemy import case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.auth import AdminAuth
 from app.core.database import get_session
+from app.core.limits import LimitedAdminAuth
 from app.models.chat_record import ChatRecord
 from app.models.document import Document
 
@@ -57,7 +57,7 @@ class AdminQARecord(BaseModel):
 
 @router.get("/stats", response_model=AdminStats, summary="管理统计")
 async def get_stats(
-    auth: AdminAuth,
+    auth: LimitedAdminAuth,
     db: AsyncSession = Depends(get_session),
 ) -> AdminStats:
     """返回当前租户文档与问答统计。"""
@@ -113,7 +113,7 @@ async def get_stats(
     summary="最近拒答问题",
 )
 async def list_refused(
-    auth: AdminAuth,
+    auth: LimitedAdminAuth,
     db: AsyncSession = Depends(get_session),
 ) -> list[ChatRecord]:
     """返回最近 20 条知识库无答案的问答记录。"""
@@ -135,7 +135,7 @@ async def list_refused(
     summary="最近转人工问题",
 )
 async def list_human(
-    auth: AdminAuth,
+    auth: LimitedAdminAuth,
     db: AsyncSession = Depends(get_session),
 ) -> list[ChatRecord]:
     """返回最近 20 条命中敏感词、需要人工介入的问答记录。"""

@@ -5,9 +5,11 @@
 """
 from __future__ import annotations
 
+import asyncio
 from pathlib import Path
 from uuid import uuid4
 
+import anyio
 from fastapi import (
     APIRouter,
     BackgroundTasks,
@@ -23,17 +25,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.core.auth import UserAuth
 from app.core.database import AsyncSessionLocal, get_session
+from app.core.limits import UploadAuth
+from app.core.process_pool import run_in_parser_process
 from app.models.document import Document
 from app.schemas.document import DocumentOut
 from app.services.ingest import ingest_document
+from app.services.file_security import (
+    FileValidationError,
+    current_file_validation_limits,
+    normalize_filename,
+    scan_quarantined_file,
+    validate_uploaded_file,
+)
 
 router = APIRouter(prefix="/documents", tags=["documents"])
-
-# 允许的扩展名与体积上限
-ALLOWED_EXTENSIONS = {".pdf", ".docx", ".xlsx", ".txt"}
-MAX_FILE_SIZE = 50 * 1024 * 1024  # 50 MB
-_CHUNK = 1024 * 1024  # 流式落盘块大小 1 MB
-
 
 async def _run_ingest(
     doc_id: int,
@@ -67,6 +72,9 @@ async def _run_ingest(
             uploaded_by=uploaded_by,
         )
 
+        if result.trusted_path is not None:
+            doc.file_path = result.trusted_path
+
         if result.success:
             doc.status = "indexed"
             doc.chunk_count = result.chunk_count
@@ -86,48 +94,65 @@ async def _run_ingest(
 async def upload_document(
     file: UploadFile,
     background_tasks: BackgroundTasks,
-    auth: UserAuth,
+    auth: UploadAuth,
     db: AsyncSession = Depends(get_session),
 ) -> Document:
     """接收单个文件，校验、落盘、登记，并异步触发索引。"""
-    # 取纯文件名，防路径穿越
-    original_name = Path(file.filename or "").name
-    ext = Path(original_name).suffix.lower()
-    if ext not in ALLOWED_EXTENSIONS:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"不支持的文件类型：{ext or '未知'}，仅支持 pdf/docx/xlsx/txt",
-        )
+    try:
+        original_name, ext = normalize_filename(file.filename)
+    except FileValidationError as exc:
+        await file.close()
+        raise HTTPException(status_code=exc.status_code, detail=exc.safe_message) from exc
 
-    # 文件名加 uuid 前缀，避免冲突
-    tenant_storage = settings.storage_dir / "uploads" / auth.tenant_id
-    tenant_storage.mkdir(parents=True, exist_ok=True)
+    # 未完成格式校验、恶意软件扫描和解析前，只能进入隔离目录。
+    tenant_storage = settings.storage_dir / "quarantine" / auth.tenant_id
+    await asyncio.to_thread(tenant_storage.mkdir, parents=True, exist_ok=True)
     stored_name = f"{uuid4().hex}_{original_name}"
     dest = tenant_storage / stored_name
 
-    # 流式落盘，边写边校验大小
     size = 0
     try:
-        with dest.open("wb") as buffer:
-            while chunk := await file.read(_CHUNK):
-                size += len(chunk)
-                if size > MAX_FILE_SIZE:
-                    raise HTTPException(
-                        status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                        detail="文件超过 50MB 上限",
-                    )
-                buffer.write(chunk)
-    except HTTPException:
-        dest.unlink(missing_ok=True)
-        raise
+        async with asyncio.timeout(settings.upload_write_timeout_seconds):
+            async with await anyio.open_file(dest, "wb") as buffer:
+                while chunk := await file.read(settings.upload_chunk_bytes):
+                    size += len(chunk)
+                    if size > settings.max_file_size_bytes:
+                        raise FileValidationError(
+                            f"文件超过 {settings.max_file_size_bytes} 字节上限",
+                            status.HTTP_413_CONTENT_TOO_LARGE,
+                        )
+                    await buffer.write(chunk)
+        if size == 0:
+            raise FileValidationError("空文件")
+        try:
+            await run_in_parser_process(
+                validate_uploaded_file,
+                dest,
+                ext,
+                file.content_type,
+                current_file_validation_limits(),
+                timeout=settings.file_validation_timeout_seconds,
+            )
+            await asyncio.wait_for(
+                scan_quarantined_file(dest),
+                timeout=settings.file_validation_timeout_seconds,
+            )
+        except TimeoutError as exc:
+            raise FileValidationError("文件安全校验超时", 408) from exc
+    except FileValidationError as exc:
+        await asyncio.to_thread(dest.unlink, missing_ok=True)
+        raise HTTPException(status_code=exc.status_code, detail=exc.safe_message) from exc
+    except TimeoutError as exc:
+        await asyncio.to_thread(dest.unlink, missing_ok=True)
+        raise HTTPException(status_code=408, detail="文件写入超时") from exc
+    except OSError as exc:
+        await asyncio.to_thread(dest.unlink, missing_ok=True)
+        raise HTTPException(
+            status_code=status.HTTP_507_INSUFFICIENT_STORAGE,
+            detail="文件写入失败",
+        ) from exc
     finally:
         await file.close()
-
-    if size == 0:
-        dest.unlink(missing_ok=True)
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="空文件"
-        )
 
     # 登记 DB
     doc = Document(

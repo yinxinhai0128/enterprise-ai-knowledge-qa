@@ -24,6 +24,7 @@ def init_llm(**overrides) -> ChatOpenAI:
         api_key=settings.dashscope_api_key,
         base_url=settings.dashscope_base_url,
         temperature=0.0,
+        max_tokens=settings.llm_max_output_tokens,
         timeout=60,
         max_retries=2,
     )

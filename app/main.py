@@ -18,6 +18,7 @@ from app.api.documents import router as documents_router
 from app.api.qa import router as qa_router
 from app.config import settings
 from app.core.database import init_db
+from app.core.process_pool import shutdown_parser_pool
 from app.core.vectorstore import migrate_legacy_vector_metadata
 
 
@@ -51,6 +52,7 @@ async def lifespan(app: FastAPI):
     # TODO: 如需可在此预热向量库 / Agent，挂到 app.state
     yield
 
+    shutdown_parser_pool()
     logger.info("服务关闭，资源已释放。")
 
 

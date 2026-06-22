@@ -49,7 +49,7 @@ def _validated_identifier(value: object, claim: str) -> str:
     if not isinstance(value, str):
         raise _unauthorized(f"访问令牌缺少有效的 {claim}")
     normalized = value.strip()
-    if not (1 <= len(normalized) <= 64) or any(
+    if not (1 <= len(normalized) <= settings.max_session_id_chars) or any(
         char not in _IDENTIFIER_CHARS for char in normalized
     ):
         raise _unauthorized(f"访问令牌中的 {claim} 格式无效")

@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.config import settings
+
 
 class AskRequest(BaseModel):
     """提问入参。"""
@@ -10,11 +12,16 @@ class AskRequest(BaseModel):
     # 兼容旧客户端时忽略多余 user_id，但可信身份始终来自已验签 JWT。
     model_config = ConfigDict(extra="ignore")
 
-    question: str = Field(..., min_length=1, description="用户问题")
+    question: str = Field(
+        ...,
+        min_length=1,
+        max_length=settings.max_question_chars,
+        description="用户问题",
+    )
     session_id: str = Field(
         ...,
         min_length=1,
-        max_length=64,
+        max_length=settings.max_session_id_chars,
         pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*$",
         description="客户端会话标识；服务端会与可信 tenant/user 组合成 thread ID",
     )

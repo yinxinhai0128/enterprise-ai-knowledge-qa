@@ -9,13 +9,16 @@ from functools import lru_cache
 
 from langchain.agents import create_agent
 from langchain.agents.middleware import (
+    ModelCallLimitMiddleware,
     ModelRetryMiddleware,
     PIIMiddleware,
     SummarizationMiddleware,
+    ToolCallLimitMiddleware,
 )
 from langgraph.checkpoint.memory import InMemorySaver
 
 from app.agent.middleware import EnterpriseAuditMiddleware, EnterpriseContext
+from app.config import settings
 from app.core.llm import init_llm
 from app.core.retriever_tool import search_knowledge_base
 
@@ -48,6 +51,16 @@ def build_agent():
             ),
             # 内置：模型调用失败自动重试
             ModelRetryMiddleware(max_retries=2),
+            # 内置：费用边界，与每日预算的最坏情况预留保持一致
+            ModelCallLimitMiddleware(
+                run_limit=settings.max_model_calls_per_request,
+                exit_behavior="error",
+            ),
+            ToolCallLimitMiddleware(
+                tool_name="search_knowledge_base",
+                run_limit=settings.max_retrieval_calls_per_request,
+                exit_behavior="error",
+            ),
             # 自定义：敏感词拦截 + 问答审计落库
             EnterpriseAuditMiddleware(),
         ],
