@@ -1,0 +1,14 @@
+# 不打进镜像的内容
+.env
+.git
+.gitignore
+__pycache__/
+*.pyc
+.venv/
+venv/
+storage/
+chroma_db/
+logs/
+backups/
+*.md
+.pytest_cache/

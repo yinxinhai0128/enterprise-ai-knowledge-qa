@@ -1,0 +1,28 @@
+# ============================================================
+# 企业级 Agentic RAG 知识库 —— 本地 / 部署编排
+#   启动：docker compose up -d --build
+#   日志：docker compose logs -f api
+# ============================================================
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: enterprise-kb-api:latest
+    container_name: enterprise-kb-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    volumes:
+      # 持久化：业务存储、向量库、日志
+      - ./storage:/app/storage
+      - ./chroma_db:/app/chroma_db
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health').status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s

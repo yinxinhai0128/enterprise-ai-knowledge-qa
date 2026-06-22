@@ -1,0 +1,22 @@
+# 密钥与环境
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# 运行产物（挂载卷）
+storage/
+chroma_db/
+logs/
+backups/
+
+# 本地 Agent 配置
+.claude/settings.local.json
+
+# IDE
+.idea/
+.vscode/
