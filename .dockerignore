@@ -1,14 +1,43 @@
-# 不打进镜像的内容
+# Secrets and local configuration
 .env
+.env.*
+!.env.example
+
+# VCS, agent metadata and editor state
 .git
 .gitignore
+.gitattributes
+.github
+.claude
+.agents
+.codex
+.vscode
+.idea
+
+# Development/test-only inputs
+tests
+pytest.ini
+requirements-dev.txt
+requirements-dev.lock
+test_connection.py
 __pycache__/
-*.pyc
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 .venv/
 venv/
+
+# Formal/runtime data and backups must be mounted, never baked in
 storage/
 chroma_db/
 logs/
 backups/
+kb_test_*/
+
+# Documentation and duplicate/legacy project copies
+docs/
 *.md
-.pytest_cache/
+enterprise-kb/

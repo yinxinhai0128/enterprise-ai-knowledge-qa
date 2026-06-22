@@ -1,35 +1,39 @@
-# syntax=docker/dockerfile:1
-# ============================================================
-# 企业级 Agentic RAG 知识库 —— 运行镜像
-# 基础镜像：python:3.12-slim，以非 root 用户运行
-# ============================================================
-FROM python:3.12-slim
+# syntax=docker/dockerfile:1.7
+# Pin both the Python patch release and the multi-platform manifest digest.
+FROM python:3.12.12-slim-bookworm@sha256:593bd06efe90efa80dc4eee3948be7c0fde4134606dd40d8dd8dbcade98e669c
 
-# 不写 .pyc、日志实时刷新
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    HOME=/home/appuser
 
 WORKDIR /app
 
-# 先装依赖以利用 Docker 层缓存
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN groupadd --gid 10001 appuser \
+    && useradd --uid 10001 --gid 10001 --create-home --shell /usr/sbin/nologin appuser
 
-# 拷贝项目源码
-COPY . .
+# Production installs only the fully resolved, hash-checked runtime graph.
+COPY --chown=root:root requirements.lock /app/requirements.lock
+RUN python -m pip install --require-hashes --no-deps -r /app/requirements.lock \
+    && python -m pip check
 
-# 创建非 root 用户，并把可写目录交给它
-RUN useradd --create-home --uid 1000 appuser \
-    && mkdir -p /app/storage /app/chroma_db /app/logs \
-    && chown -R appuser:appuser /app
-USER appuser
+# Deliberately copy only runtime source/config. Secrets, tests, Git metadata,
+# backups and formal data are excluded from both context and image.
+COPY --chown=root:root app /app/app
+COPY --chown=root:root config /app/config
 
+# Source remains root-owned and read-only to the runtime identity. Only these
+# three persistence mount points are writable by appuser.
+RUN mkdir -p /app/storage /app/chroma_db /app/logs \
+    && chown appuser:appuser /app/storage /app/chroma_db /app/logs \
+    && chmod 0750 /app/storage /app/chroma_db /app/logs \
+    && chmod -R a-w /app/app /app/config /app/requirements.lock
+
+USER 10001:10001
 EXPOSE 8000
 
-# 容器健康检查，命中 /health
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-    CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health').status==200 else 1)"
+    CMD ["python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health').status==200 else 1)"]
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -107,7 +107,7 @@
 | 5 | 持久化摄入任务与数据一致性 | complete | 验收通过 |
 | 6 | 会话、审计与人工介入持久化 | complete | 验收通过 |
 | 7 | LangSmith 与数据治理 | complete | 验收通过 |
-| 8 | 依赖、Chroma CVE 与容器加固 | pending | |
+| 8 | 依赖、Chroma CVE 与容器加固 | blocked | 88 tests passed；依赖审计仅 1 项有期限接受；Docker Engine 持续 `starting`，真实镜像门未完成 |
 | 9 | 测试体系与 CI | pending | |
 | 10 | 可观测性、运维与恢复 | pending | |
 | 11 | README、威胁模型和部署文档 | pending | |
@@ -373,23 +373,23 @@
 
 ### 任务
 
-- [ ] 生成锁文件或精确版本约束，禁止只有无上限的 `>=`。
-- [ ] 引入持续依赖漏洞扫描。
-- [ ] 记录 `CVE-2026-45829` 补偿控制：不得启动/暴露 Chroma HTTP Server。
-- [ ] 监控 Chroma 修复版本；修复发布后升级并回归。
-- [ ] 评估迁移 PGVector/Qdrant/Milvus 的成本与安全收益。
-- [ ] 跟踪 `langchain-community` 独立集成迁移。
-- [ ] `.dockerignore` 排除 tests、`.claude`、`requirements-dev.txt`、重复目录和开发文件。
-- [ ] Docker 镜像中源码由 root 拥有，仅数据目录交给 appuser 写入。
-- [ ] 增加只读根文件系统、drop capabilities、`no-new-privileges`、资源限制。
-- [ ] 固定基础镜像版本/摘要，并执行镜像漏洞扫描。
-- [ ] 容器不包含 `.env`、备份、测试数据和 Git 元数据。
+- [x] 生成锁文件或精确版本约束，禁止只有无上限的 `>=`。
+- [x] 引入持续依赖漏洞扫描。
+- [x] 记录 `CVE-2026-45829` 补偿控制：不得启动/暴露 Chroma HTTP Server。
+- [x] 监控 Chroma 修复版本；修复发布后升级并回归。
+- [x] 评估迁移 PGVector/Qdrant/Milvus 的成本与安全收益。
+- [x] 跟踪 `langchain-community` 独立集成迁移。
+- [x] `.dockerignore` 排除 tests、`.claude`、`requirements-dev.txt`、重复目录和开发文件。
+- [x] Docker 镜像中源码由 root 拥有，仅数据目录交给 appuser 写入。
+- [x] 增加只读根文件系统、drop capabilities、`no-new-privileges`、资源限制。
+- [ ] 固定基础镜像版本/摘要，并执行镜像漏洞扫描。（版本/摘要已固定；真实构建与扫描被本机 Docker Engine 阻塞）
+- [x] 容器不包含 `.env`、备份、测试数据和 Git 元数据。
 
 ### 验收门
 
-- [ ] 依赖扫描无未接受的 Critical/High 风险。
+- [x] 依赖扫描无未接受的 Critical/High 风险。
 - [ ] 镜像以非 root 运行且不能修改应用源码。
-- [ ] Compose 不暴露 Chroma 服务。
+- [x] Compose 不暴露 Chroma 服务。
 
 ---
 
@@ -802,3 +802,30 @@ docker compose config --quiet
 - 治理影响：外部追踪默认和未审批时均强制关闭；获批时所有输入/输出字符串只发送带密钥 HMAC 与长度，metadata 白名单化，event/attachment/runtime/manifest 清空，error 二次脱敏；采样、工作区、区域、保留和审批均成为启用硬门；每次决策本地审计。
 - 已知遗留：远端 workspace 权限、数据驻留和保留期必须由组织管理员按治理文档实际配置并提供确认，代码不会代替合同/控制台审批；SDK 升级后需重新审计全部外发字段；依赖加固由阶段 8 处理。
 - 下一步：停止本次执行；下一次从阶段 8 开始。
+
+### 2026-06-22 23:51 - 阶段 8 开始
+
+- 状态：in_progress
+- 范围：精确依赖锁与持续漏洞扫描、Chroma CVE 补偿控制和替代方案、容器构建上下文及最小权限加固。
+- 阶段边界：只处理供应链与容器安全；测试体系与 CI 仍由阶段 9 处理。
+- 数据保护：变更依赖前备份至 `backups/stage8_20260622_235139/`，源与备份 SQLite SHA-256 一致，并备份现有 Chroma 数据目录。
+- 环境发现：Docker CLI 可用，但本机 Docker Engine 尚未运行；先完成不依赖引擎的实现与验证，最终镜像构建/扫描仍是本阶段硬门。
+- 下一步：核验上游修复状态、生成锁文件并执行依赖审计；未通过不得进入阶段 9。
+
+### 2026-06-23 00:52 - 阶段 8：依赖与容器加固（阻塞）
+
+- 状态：blocked；阶段 9 未开始。
+- 已完成实现：
+  - 运行顶层依赖与开发工具全部精确版本化；`requirements.lock` 锁定 120 个运行依赖并包含 SHA-256 哈希，生产镜像使用 `--require-hashes`。
+  - `pip-audit==2.10.1` + `scripts/dependency_audit.py` 对未登记/过期漏洞 fail closed；Dependabot 每周检查 pip 与 Docker。
+  - 官方 PyPI 核验 `chromadb` 最新仍为 1.5.9；审计仅发现 `CVE-2026-45829` 且无修复版。例外限定包/版本、owner、控制与 2026-07-22 到期日；文档强制嵌入式客户端，禁止 Chroma HTTP Server。
+  - 完成 pgvector/Qdrant/Milvus 评估及 `langchain-community` 两处遗留依赖跟踪。
+  - 基础镜像固定为 `python:3.12.12-slim-bookworm@sha256:593bd06efe90efa80dc4eee3948be7c0fde4134606dd40d8dd8dbcade98e669c`；Dockerfile 仅复制运行文件，源码 root-owned，运行 UID/GID 10001；Compose 配置只读根文件系统、drop ALL capabilities、`no-new-privileges`、PID/CPU/内存限制和受限 tmpfs；无 Chroma 服务。
+- 验证通过：
+  - `python -m pytest -q`：88 passed（仅保留已记录的 `langchain-community` sunset warning）。
+  - 容器/依赖静态安全测试：5 passed；`compileall`、`pip check`、`docker compose config --quiet`、`git diff --check` 通过。
+  - `scripts/dependency_audit.py`：dependencies=120、findings=1、accepted=1、unaccepted=0。
+  - 三存储一致性巡检 `total_issues=0`；正式 SQLite 与阶段备份 SHA-256 仍一致。
+- 阻塞证据：Docker CLI/Scout 可用，但 Docker Desktop Engine 连续多次保持 `starting`；构建在 `/_ping` 返回 HTTP 500。重新打开 Desktop、`docker desktop restart`、终止 `docker-desktop` WSL 后端、完整 `wsl --shutdown` 后均复现；WSL 内只有 `vpnkit-bridge`，没有 `dockerd/containerd`，日志持续 `backend is not running` / `context deadline exceeded`。
+- 尚未通过的硬门：无法执行 `docker compose build --pull api`、镜像内 UID/源码不可写检查以及 Docker Scout Critical/High 扫描，因此不得将阶段 8 标为 complete。
+- 恢复条件：修复或重装本机 Docker Desktop/重启 Windows，使 `docker desktop status --format json` 返回 `running`；随后执行 `scripts/scan_container.ps1`，若全绿再更新本阶段为 complete 并提交，仍不得跳过该门进入阶段 9。
