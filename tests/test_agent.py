@@ -188,6 +188,12 @@ async def test_agent_tool_no_result_is_structured_refusal(vectorstore, agent_fac
         ).scalar_one()
     assert record.refused is True
     assert record.has_source is False
+    assert record.tool_used is True
+    assert record.sources == []
+    assert record.trace_id
+    assert record.model
+    assert record.audit_status == "completed"
+    assert record.latency_ms >= 0
 
 
 async def test_document_prompt_injection_remains_untrusted(vectorstore, agent_factory):

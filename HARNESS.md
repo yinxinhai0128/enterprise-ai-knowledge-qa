@@ -105,7 +105,7 @@
 | 3 | 可信检索、结构化来源与拒答 | complete | artifact 驱动来源/拒答；稳定 chunk ID；29 tests passed |
 | 4 | 输入、上传与解析安全 | complete | 资源/费用/文件/解析边界；54 tests passed |
 | 5 | 持久化摄入任务与数据一致性 | complete | 验收通过 |
-| 6 | 会话、审计与人工介入持久化 | pending | |
+| 6 | 会话、审计与人工介入持久化 | complete | 验收通过 |
 | 7 | LangSmith 与数据治理 | pending | |
 | 8 | 依赖、Chroma CVE 与容器加固 | pending | |
 | 9 | 测试体系与 CI | pending | |
@@ -323,21 +323,21 @@
 
 ### 任务
 
-- [ ] 将 `InMemorySaver` 替换为持久化 Checkpointer。
-- [ ] thread/checkpoint 按 tenant/user 隔离。
-- [ ] 为会话设置生命周期、最大消息数和清理任务。
-- [ ] 审计表增加：user、tenant、refused、tool_used、sources、trace_id、model、tokens、latency。
-- [ ] 审计写入不得静默失败；明确选择 fail-closed、outbox 或告警策略。
-- [ ] `need_human` 不只返回布尔值，建立人工队列表、状态流转和处理人。
-- [ ] 敏感词规则可配置、可版本化，并避免简单子串误报。
-- [ ] 对工资、健康、法律等数据建立访问策略，而不是只标记。
+- [x] 将 `InMemorySaver` 替换为持久化 Checkpointer。
+- [x] thread/checkpoint 按 tenant/user 隔离。
+- [x] 为会话设置生命周期、最大消息数和清理任务。
+- [x] 审计表增加：user、tenant、refused、tool_used、sources、trace_id、model、tokens、latency。
+- [x] 审计写入不得静默失败；明确选择 fail-closed、outbox 或告警策略。
+- [x] `need_human` 不只返回布尔值，建立人工队列表、状态流转和处理人。
+- [x] 敏感词规则可配置、可版本化，并避免简单子串误报。
+- [x] 对工资、健康、法律等数据建立访问策略，而不是只标记。
 
 ### 验收门
 
-- [ ] 重启后同一用户会话可恢复。
-- [ ] 多 Worker 下会话一致。
-- [ ] 审计写入故障可观测且可补偿。
-- [ ] 人工任务可查询、领取、完成、审计。
+- [x] 重启后同一用户会话可恢复。
+- [x] 多 Worker 下会话一致。
+- [x] 审计写入故障可观测且可补偿。
+- [x] 人工任务可查询、领取、完成、审计。
 
 ---
 
@@ -735,3 +735,39 @@ docker compose config --quiet
 - 可靠性影响：上传与 Job 同事务落库；独立 Worker 通过租约、心跳、指数退避和启动修复恢复；租户内文件 SHA-256 与稳定 chunk ID 保证幂等；向量/DB 失败有补偿删除；文档删除覆盖关系库、文件和 Chroma。
 - 已知遗留：SQLite 适合当前单机部署，多主机 Worker 需迁移 PostgreSQL 并采用行锁领取；分钟限流仍为单 API 进程内状态；`langchain-community` 弃用警告留待阶段 8。
 - 下一步：停止本次执行；下一次从阶段 6 开始。
+
+### 2026-06-22 - 阶段 6 开始
+
+- 状态：in_progress
+- 范围：持久化 Checkpointer、会话生命周期、可靠审计、人工任务状态流、可配置敏感规则与分类访问策略。
+- 阶段边界：只处理会话、审计和人工介入；LangSmith 数据治理仍由阶段 7 处理。
+- 数据保护：结构迁移前备份至 `backups/stage6_20260622_185311/`，源与备份 SQLite SHA-256 一致。
+- 下一步：完成跨重启/多 Worker 会话和人工任务验收；未通过不得进入阶段 7。
+
+### 2026-06-22 19:21 - 阶段 6：会话、审计与人工介入持久化
+
+- 状态：complete
+- 修改文件：
+  - `.env.example`、`requirements.txt`、`README.md`、`HARNESS.md`
+  - `config/sensitive_rules.json`
+  - `app/config.py`、`app/main.py`、`app/core/database.py`、`app/core/checkpointer.py`
+  - `app/agent/agent.py`、`app/agent/context.py`、`app/agent/middleware.py`
+  - `app/api/qa.py`、`app/api/admin.py`、`app/schemas/qa.py`
+  - `app/models/chat_record.py`、`app/models/conversation_session.py`、`app/models/human_task.py`、`app/models/__init__.py`
+  - `app/services/audit.py`、`app/services/conversations.py`、`app/services/sensitive_policy.py`
+  - `app/commands/cleanup_sessions.py`
+  - `tests/conftest.py`、`tests/test_agent.py`、`tests/test_auth.py`、`tests/test_persistence.py`
+- 数据迁移：执行前备份至 `backups/stage6_20260622_185311/` 且源与备份 SQLite SHA-256 一致；正式库新增审计列、`conversation_sessions`、`human_tasks`、`human_task_events`，并创建 `storage/checkpoints.db`；迁移连续执行两次幂等。
+- 验证命令：
+  - `.\.venv\Scripts\python.exe -m compileall -q app tests`
+  - `.\.venv\Scripts\python.exe -m pytest -q`
+  - `.\.venv\Scripts\python.exe -m pip check`
+  - `.\.venv\Scripts\python.exe -m app.commands.cleanup_sessions`
+  - `.\.venv\Scripts\python.exe -m app.commands.check_consistency`
+  - `docker compose config --quiet`
+  - 业务/Checkpoint SQLite 完整性、表/列/计数、Git 差异与秘密候选检查
+- 验证结果：76 passed；无损坏依赖；Compose 配置解析通过；跨重启与两个并存 Checkpointer 连接共享会话；同会话租约拒绝并发写；TTL、消息裁剪和清理用例全绿。
+- 数据证据：迁移前后 documents=1、chat_records=4、usage_daily=0、ingest_jobs=0；新增会话/人工表均为 0；业务库与 checkpoint 库 `integrity_check=ok`；正式三存储巡检 total_issues=0。
+- 可靠性与治理影响：问答先预登记审计，写入重试后仍失败则 503 fail-closed，pending 记录可由管理接口观测；审计记录结构化 tool/sources/trace/model/tokens/latency；人工任务支持 pending→claimed→completed 且全程事件审计；工资/健康/法律规则按可信 JWT 角色拒绝越权。
+- 已知遗留：SQLite Checkpointer 支持当前单机多进程部署；跨主机或高写入生产规模应迁移 PostgreSQL Checkpointer/数据库行锁；LangSmith 数据治理由阶段 7 处理；`langchain-community` 弃用警告留待阶段 8。
+- 下一步：停止本次执行；下一次从阶段 7 开始。

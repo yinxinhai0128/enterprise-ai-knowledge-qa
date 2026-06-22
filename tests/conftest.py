@@ -24,6 +24,7 @@ os.environ.setdefault("DASHSCOPE_API_KEY", "test-key-not-used")
 os.environ["DATABASE_URL"] = f"sqlite+aiosqlite:///{_DB_PATH}"
 os.environ["STORAGE_DIR"] = _TMP
 os.environ["CHROMA_DIR"] = _TMP
+os.environ["CHECKPOINT_DB_PATH"] = str(Path(_TMP) / "checkpoints.db")
 # 测试不得把假 Agent 调用上传到真实 LangSmith 项目。
 os.environ["LANGCHAIN_TRACING_V2"] = "false"
 os.environ["LANGSMITH_TRACING"] = "false"
@@ -155,6 +156,7 @@ def agent_factory(monkeypatch):
     全新的 InMemorySaver（隔离多轮记忆）。
     """
     from app.agent.agent import build_agent
+    from langgraph.checkpoint.memory import InMemorySaver
 
     def _make(responses: list[str | AIMessage]):
         messages = [
@@ -163,6 +165,8 @@ def agent_factory(monkeypatch):
         ]
         model = FakeChatModel(messages=iter(messages))
         monkeypatch.setattr("app.agent.agent.init_llm", lambda **kw: model)
+        memory = InMemorySaver()
+        monkeypatch.setattr("app.agent.agent.get_checkpointer", lambda: memory)
         build_agent.cache_clear()
         return build_agent()
 

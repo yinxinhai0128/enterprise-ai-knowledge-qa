@@ -1,17 +1,18 @@
 """管理接口：文档与问答统计、拒答列表、人工介入列表。"""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel, ConfigDict
-from sqlalchemy import case, func, select
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, ConfigDict, Field
+from sqlalchemy import case, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_session
 from app.core.limits import LimitedAdminAuth
 from app.models.chat_record import ChatRecord
 from app.models.document import Document
+from app.models.human_task import HUMAN_TASK_STATUS, HumanTask, HumanTaskEvent
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -52,7 +53,53 @@ class AdminQARecord(BaseModel):
     has_source: bool
     refused: bool
     need_human: bool
+    tool_used: bool
+    sources: list[dict]
+    trace_id: str | None
+    model: str | None
+    total_tokens: int
+    latency_ms: float
+    audit_status: str
+    audit_error: str | None
     created_at: datetime
+
+
+class HumanTaskOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    chat_record_id: int
+    tenant_id: str
+    user_id: str
+    session_id: str
+    category: str
+    rule_id: str
+    rule_version: str
+    reason: str
+    status: str
+    assigned_to: str | None
+    claimed_at: datetime | None
+    completed_at: datetime | None
+    resolution: str | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class HumanTaskEventOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    task_id: int
+    actor_user_id: str
+    action: str
+    from_status: str | None
+    to_status: str
+    note: str | None
+    created_at: datetime
+
+
+class CompleteHumanTaskRequest(BaseModel):
+    resolution: str = Field(min_length=1, max_length=4000)
 
 
 @router.get("/stats", response_model=AdminStats, summary="管理统计")
@@ -149,3 +196,156 @@ async def list_human(
         .limit(20)
     )
     return list(result.scalars().all())
+
+
+@router.get(
+    "/human-tasks",
+    response_model=list[HumanTaskOut],
+    summary="人工任务队列",
+)
+async def list_human_tasks(
+    auth: LimitedAdminAuth,
+    task_status: str | None = Query(default=None, alias="status"),
+    db: AsyncSession = Depends(get_session),
+) -> list[HumanTask]:
+    if task_status is not None and task_status not in HUMAN_TASK_STATUS:
+        raise HTTPException(status_code=422, detail="人工任务状态无效")
+    statement = select(HumanTask).where(HumanTask.tenant_id == auth.tenant_id)
+    if task_status is not None:
+        statement = statement.where(HumanTask.status == task_status)
+    result = await db.execute(
+        statement.order_by(HumanTask.created_at.desc(), HumanTask.id.desc()).limit(100)
+    )
+    return list(result.scalars())
+
+
+@router.post(
+    "/human-tasks/{task_id}/claim",
+    response_model=HumanTaskOut,
+    summary="领取人工任务",
+)
+async def claim_human_task(
+    task_id: int,
+    auth: LimitedAdminAuth,
+    db: AsyncSession = Depends(get_session),
+) -> HumanTask:
+    now = datetime.now(timezone.utc)
+    result = await db.execute(
+        update(HumanTask)
+        .where(
+            HumanTask.id == task_id,
+            HumanTask.tenant_id == auth.tenant_id,
+            HumanTask.status == "pending",
+        )
+        .values(status="claimed", assigned_to=auth.user_id, claimed_at=now)
+    )
+    if result.rowcount != 1:
+        task = await db.get(HumanTask, task_id)
+        if task is None or task.tenant_id != auth.tenant_id:
+            raise HTTPException(status_code=404, detail="人工任务不存在")
+        raise HTTPException(status_code=409, detail="人工任务已被领取或已结束")
+    db.add(
+        HumanTaskEvent(
+            task_id=task_id,
+            tenant_id=auth.tenant_id,
+            actor_user_id=auth.user_id,
+            action="claimed",
+            from_status="pending",
+            to_status="claimed",
+        )
+    )
+    await db.commit()
+    task = await db.get(HumanTask, task_id)
+    return task
+
+
+@router.post(
+    "/human-tasks/{task_id}/complete",
+    response_model=HumanTaskOut,
+    summary="完成人工任务",
+)
+async def complete_human_task(
+    task_id: int,
+    payload: CompleteHumanTaskRequest,
+    auth: LimitedAdminAuth,
+    db: AsyncSession = Depends(get_session),
+) -> HumanTask:
+    now = datetime.now(timezone.utc)
+    result = await db.execute(
+        update(HumanTask)
+        .where(
+            HumanTask.id == task_id,
+            HumanTask.tenant_id == auth.tenant_id,
+            HumanTask.status == "claimed",
+            HumanTask.assigned_to == auth.user_id,
+        )
+        .values(
+            status="completed",
+            completed_at=now,
+            resolution=payload.resolution,
+        )
+    )
+    if result.rowcount != 1:
+        task = await db.get(HumanTask, task_id)
+        if task is None or task.tenant_id != auth.tenant_id:
+            raise HTTPException(status_code=404, detail="人工任务不存在")
+        raise HTTPException(status_code=409, detail="任务未由当前管理员领取或已结束")
+    db.add(
+        HumanTaskEvent(
+            task_id=task_id,
+            tenant_id=auth.tenant_id,
+            actor_user_id=auth.user_id,
+            action="completed",
+            from_status="claimed",
+            to_status="completed",
+            note=payload.resolution,
+        )
+    )
+    await db.commit()
+    task = await db.get(HumanTask, task_id)
+    return task
+
+
+@router.get(
+    "/human-tasks/{task_id}/events",
+    response_model=list[HumanTaskEventOut],
+    summary="人工任务审计事件",
+)
+async def list_human_task_events(
+    task_id: int,
+    auth: LimitedAdminAuth,
+    db: AsyncSession = Depends(get_session),
+) -> list[HumanTaskEvent]:
+    task = await db.get(HumanTask, task_id)
+    if task is None or task.tenant_id != auth.tenant_id:
+        raise HTTPException(status_code=404, detail="人工任务不存在")
+    result = await db.execute(
+        select(HumanTaskEvent)
+        .where(
+            HumanTaskEvent.task_id == task_id,
+            HumanTaskEvent.tenant_id == auth.tenant_id,
+        )
+        .order_by(HumanTaskEvent.id)
+    )
+    return list(result.scalars())
+
+
+@router.get(
+    "/audits/pending",
+    response_model=list[AdminQARecord],
+    summary="待补偿审计记录",
+)
+async def list_pending_audits(
+    auth: LimitedAdminAuth,
+    db: AsyncSession = Depends(get_session),
+) -> list[ChatRecord]:
+    result = await db.execute(
+        select(ChatRecord)
+        .where(
+            ChatRecord.tenant_id == auth.tenant_id,
+            ChatRecord.audit_status == "pending",
+        )
+        .order_by(ChatRecord.created_at, ChatRecord.id)
+        .limit(100)
+    )
+    return list(result.scalars())

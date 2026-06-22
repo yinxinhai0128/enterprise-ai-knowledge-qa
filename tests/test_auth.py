@@ -30,6 +30,8 @@ async def test_missing_token_is_401_on_all_business_routes(anonymous_client):
         ("GET", "/admin/stats", None),
         ("GET", "/admin/refused", None),
         ("GET", "/admin/human", None),
+        ("GET", "/admin/human-tasks", None),
+        ("GET", "/admin/audits/pending", None),
     )
     for method, path, payload in requests:
         response = await anonymous_client.request(method, path, json=payload)

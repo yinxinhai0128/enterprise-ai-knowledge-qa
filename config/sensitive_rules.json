@@ -1,0 +1,33 @@
+{
+  "version": "2026-06-22.v1",
+  "rules": [
+    {
+      "id": "personal-compensation",
+      "category": "salary",
+      "pattern": "(?:我的|本人|个人).{0,8}(?:工资|薪资|绩效)|(?:工资|薪资|绩效).{0,12}(?:明细|多少|为什么|低|调整|查询)",
+      "required_roles": ["hr", "admin"],
+      "human_review": true
+    },
+    {
+      "id": "personal-health",
+      "category": "health",
+      "pattern": "(?:我的|本人|个人).{0,8}(?:病历|诊断|健康|病假)|(?:病历|诊断|健康数据).{0,8}(?:查询|记录|明细)",
+      "required_roles": ["hr", "admin"],
+      "human_review": true
+    },
+    {
+      "id": "legal-case",
+      "category": "legal",
+      "pattern": "(?:我要|我想|本人).{0,8}(?:起诉|诉讼|仲裁)|(?:法律意见|诉讼策略|律师函)",
+      "required_roles": ["legal", "admin"],
+      "human_review": true
+    },
+    {
+      "id": "employee-relations",
+      "category": "employee_relations",
+      "pattern": "(?:裁员|正式投诉|隐私泄露)",
+      "required_roles": [],
+      "human_review": true
+    }
+  ]
+}

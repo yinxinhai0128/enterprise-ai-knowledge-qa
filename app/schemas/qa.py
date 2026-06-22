@@ -49,6 +49,9 @@ class AskResponse(BaseModel):
     )
     refused: bool = Field(..., description="是否因无相关资料而拒答")
     need_human: bool = Field(..., description="是否命中敏感词、需转人工")
+    human_task_id: int | None = Field(
+        default=None, description="已建立的人工任务 ID；无需人工时为空"
+    )
 
 
 class HistoryMessage(BaseModel):

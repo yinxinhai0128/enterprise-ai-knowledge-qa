@@ -16,11 +16,14 @@ from starlette.responses import Response
 from app.api.admin import router as admin_router
 from app.api.documents import router as documents_router
 from app.api.qa import router as qa_router
+from app.agent.agent import build_agent
 from app.config import settings
+from app.core.checkpointer import close_checkpointer, init_checkpointer
 from app.core.database import init_db
 from app.core.process_pool import shutdown_parser_pool
 from app.core.vectorstore import migrate_legacy_vector_metadata
 from app.services.ingest_jobs import recover_stale_ingest_state
+from app.services.conversations import cleanup_expired_conversations
 
 
 def _configure_logging() -> None:
@@ -47,10 +50,13 @@ async def lifespan(app: FastAPI):
 
     # 建表（开发期 create_all；生产改 Alembic）
     await init_db()
+    await init_checkpointer()
+    expired_sessions = await cleanup_expired_conversations()
     recovered = await recover_stale_ingest_state()
     migrated_vectors = await asyncio.to_thread(migrate_legacy_vector_metadata)
     logger.info(
-        "数据库已就绪 | recovered_jobs={} | repaired_documents={} | legacy_vectors_migrated={}",
+        "数据库已就绪 | expired_sessions={} | recovered_jobs={} | repaired_documents={} | legacy_vectors_migrated={}",
+        expired_sessions,
         recovered["jobs"],
         recovered["documents"],
         migrated_vectors,
@@ -60,6 +66,8 @@ async def lifespan(app: FastAPI):
     yield
 
     shutdown_parser_pool()
+    build_agent.cache_clear()
+    await close_checkpointer()
     logger.info("服务关闭，资源已释放。")
 
 

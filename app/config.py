@@ -92,6 +92,15 @@ class Settings(BaseSettings):
     ingest_job_retry_base_seconds: int = Field(default=30, ge=1)
     ingest_worker_concurrency: int = Field(default=1, ge=1, le=8)
 
+    # ---------- 会话、审计与人工介入 ----------
+    checkpoint_db_path: Path = Path("storage/checkpoints.db")
+    conversation_ttl_days: int = Field(default=30, ge=1, le=3650)
+    conversation_max_messages: int = Field(default=100, ge=4, le=1000)
+    conversation_lease_seconds: int = Field(default=300, ge=30, le=3600)
+    conversation_cleanup_batch: int = Field(default=200, ge=1, le=5000)
+    audit_write_retries: int = Field(default=3, ge=1, le=10)
+    sensitive_rules_path: Path = Path("config/sensitive_rules.json")
+
     # ---------- 身份认证（HS256 JWT，仅验证，不提供 Token 签发接口） ----------
     auth_jwt_secret: SecretStr = Field(
         default=SecretStr(""), description="JWT HMAC 密钥，至少 32 字符"
@@ -125,6 +134,7 @@ class Settings(BaseSettings):
             self.storage_dir / "documents",
             self.chroma_dir,
             self.log_dir,
+            self.checkpoint_db_path.parent,
         ):
             path.mkdir(parents=True, exist_ok=True)
 

@@ -46,6 +46,18 @@ def _migrate_schema(connection: Connection) -> None:
             ("tenant_id", "VARCHAR(128) NOT NULL DEFAULT 'legacy'"),
             ("user_id", "VARCHAR(128) NOT NULL DEFAULT 'legacy'"),
             ("refused", "BOOLEAN NOT NULL DEFAULT 0"),
+            ("tool_used", "BOOLEAN NOT NULL DEFAULT 0"),
+            ("sources", "JSON NOT NULL DEFAULT '[]'"),
+            ("trace_id", "VARCHAR(64) NULL"),
+            ("model", "VARCHAR(128) NULL"),
+            ("input_tokens", "INTEGER NOT NULL DEFAULT 0"),
+            ("output_tokens", "INTEGER NOT NULL DEFAULT 0"),
+            ("total_tokens", "INTEGER NOT NULL DEFAULT 0"),
+            ("latency_ms", "FLOAT NOT NULL DEFAULT 0"),
+            ("audit_status", "VARCHAR(32) NOT NULL DEFAULT 'completed'"),
+            ("audit_error", "TEXT NULL"),
+            ("policy_category", "VARCHAR(64) NULL"),
+            ("policy_rule_version", "VARCHAR(64) NULL"),
         ),
     }
     for table, columns in migrations.items():
@@ -92,6 +104,12 @@ def _ensure_tenant_indexes(connection: Connection) -> None:
         text(
             "CREATE INDEX IF NOT EXISTS ix_chat_tenant_user_session "
             "ON chat_records (tenant_id, user_id, session_id)"
+        )
+    )
+    connection.execute(
+        text(
+            "CREATE UNIQUE INDEX IF NOT EXISTS uq_chat_trace_id "
+            "ON chat_records (trace_id) WHERE trace_id IS NOT NULL"
         )
     )
 
