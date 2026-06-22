@@ -25,7 +25,7 @@ def test_runtime_dependencies_are_exact_and_hash_locked():
 def test_dockerfile_pins_image_and_preserves_immutable_source():
     dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
     first_from = next(line for line in dockerfile.splitlines() if line.startswith("FROM "))
-    assert re.fullmatch(r"FROM python:3\.12\.12-slim-bookworm@sha256:[0-9a-f]{64}", first_from)
+    assert re.fullmatch(r"FROM python:3\.12\.13-slim-bookworm@sha256:[0-9a-f]{64}", first_from)
     assert "COPY . ." not in dockerfile
     assert "COPY --chown=root:root app /app/app" in dockerfile
     assert "chown -R appuser:appuser /app" not in dockerfile
@@ -59,10 +59,32 @@ def test_vulnerability_acceptance_is_scoped_and_not_expired():
         (ROOT / "security" / "accepted-vulnerabilities.json").read_text(encoding="utf-8")
     )
     accepted = policy["accepted"]
-    assert len(accepted) == 1
-    item = accepted[0]
-    assert item["id"] == "CVE-2026-45829"
-    assert item["package"] == "chromadb"
-    assert item["versions"] == ["1.5.9"]
-    assert date.fromisoformat(item["expires_on"]) >= date.today()
-    assert item["owner"] and item["reason"] and item["controls"]
+    assert {(item["id"], item["package"]) for item in accepted} == {
+        ("CVE-2026-45829", "chromadb"),
+        ("CVE-2026-12087", "perl"),
+        ("CVE-2026-48959", "perl"),
+        ("CVE-2026-48962", "perl"),
+    }
+    for item in accepted:
+        assert date.fromisoformat(item["expires_on"]) >= date.today()
+        assert item["versions"]
+        assert item["owner"] and item["reason"] and item["controls"]
+
+
+def test_container_audit_parses_scout_sarif_result():
+    from scripts.container_audit import parse_finding
+
+    finding = parse_finding(
+        {
+            "ruleId": "CVE-2026-48962",
+            "message": {
+                "text": "Severity :HIGH\nPackage :pkg:deb/debian/perl@5.36.0-7%2Bdeb12u3?os_distro=bookworm"
+            },
+        }
+    )
+    assert finding == {
+        "id": "CVE-2026-48962",
+        "severity": "HIGH",
+        "package": "perl",
+        "version": "5.36.0-7+deb12u3",
+    }

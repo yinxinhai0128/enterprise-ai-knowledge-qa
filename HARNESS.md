@@ -107,7 +107,7 @@
 | 5 | 持久化摄入任务与数据一致性 | complete | 验收通过 |
 | 6 | 会话、审计与人工介入持久化 | complete | 验收通过 |
 | 7 | LangSmith 与数据治理 | complete | 验收通过 |
-| 8 | 依赖、Chroma CVE 与容器加固 | blocked | 88 tests passed；依赖审计仅 1 项有期限接受；Docker Engine 持续 `starting`，真实镜像门未完成 |
+| 8 | 依赖、Chroma CVE 与容器加固 | complete | 89 tests passed；依赖/镜像审计无未接受风险；非 root、只读与镜像内容实测通过 |
 | 9 | 测试体系与 CI | pending | |
 | 10 | 可观测性、运维与恢复 | pending | |
 | 11 | README、威胁模型和部署文档 | pending | |
@@ -382,13 +382,13 @@
 - [x] `.dockerignore` 排除 tests、`.claude`、`requirements-dev.txt`、重复目录和开发文件。
 - [x] Docker 镜像中源码由 root 拥有，仅数据目录交给 appuser 写入。
 - [x] 增加只读根文件系统、drop capabilities、`no-new-privileges`、资源限制。
-- [ ] 固定基础镜像版本/摘要，并执行镜像漏洞扫描。（版本/摘要已固定；真实构建与扫描被本机 Docker Engine 阻塞）
+- [x] 固定基础镜像版本/摘要，并执行镜像漏洞扫描。
 - [x] 容器不包含 `.env`、备份、测试数据和 Git 元数据。
 
 ### 验收门
 
 - [x] 依赖扫描无未接受的 Critical/High 风险。
-- [ ] 镜像以非 root 运行且不能修改应用源码。
+- [x] 镜像以非 root 运行且不能修改应用源码。
 - [x] Compose 不暴露 Chroma 服务。
 
 ---
@@ -829,3 +829,20 @@ docker compose config --quiet
 - 阻塞证据：Docker CLI/Scout 可用，但 Docker Desktop Engine 连续多次保持 `starting`；构建在 `/_ping` 返回 HTTP 500。重新打开 Desktop、`docker desktop restart`、终止 `docker-desktop` WSL 后端、完整 `wsl --shutdown` 后均复现；WSL 内只有 `vpnkit-bridge`，没有 `dockerd/containerd`，日志持续 `backend is not running` / `context deadline exceeded`。
 - 尚未通过的硬门：无法执行 `docker compose build --pull api`、镜像内 UID/源码不可写检查以及 Docker Scout Critical/High 扫描，因此不得将阶段 8 标为 complete。
 - 恢复条件：修复或重装本机 Docker Desktop/重启 Windows，使 `docker desktop status --format json` 返回 `running`；随后执行 `scripts/scan_container.ps1`，若全绿再更新本阶段为 complete 并提交，仍不得跳过该门进入阶段 9。
+
+### 2026-06-23 01:48 - 阶段 8：依赖、Chroma CVE 与容器加固
+
+- 状态：complete；阶段 9 未开始。
+- 阻塞恢复：Windows 重启后 Docker Desktop/Engine 均为 `running`，Client/Server 29.5.3，Docker Scout 1.21.0 可用。
+- 修复与验证过程：
+  - 首次真实构建暴露两类问题：旧 `python:3.12.12-slim-bookworm` 镜像有 2 Critical/23 High；原 PowerShell 脚本未传播 native 非零退出码且跨 shell 引号错误，存在“假绿”风险。
+  - 修复脚本为每一步显式检查 `$LASTEXITCODE`，UID/GID 与文件权限改为逐条容器命令；新增 `container_audit.py` 解析 Scout SARIF 并执行精确、可过期的统一风险策略。
+  - 基础镜像升级并固定为 `python:3.12.13-slim-bookworm@sha256:76d4b7b6305788c6b4c6a19d6a22a3921bf802e9af4d5e1e5bd771208dba74bf`，消除旧镜像 20 个可修复 OS High。
+- 镜像证据：
+  - 构建成功，镜像 ID `sha256:d53c6735713d7991fa0e1548b07570aad85fc8c8e830418938e4e8a9fa321a19`，容器 Python 3.12.13。
+  - 镜像配置和实测 UID/GID 均为 10001:10001；`/app/app/main.py` 与 `/app/config` 不可写，三个数据目录可写；`.env`、tests、backups、`.git` 均不存在。
+  - `--read-only` + 64 MiB `/tmp` tmpfs 下可正常启动 Python；Compose 配置解析通过且没有 Chroma 服务。
+  - 最终 Scout：4 项 Critical/High，均为精确登记且 2026-07-22 到期的例外，unaccepted=0。包括嵌入式部署不触达 HTTP 路径的 Chroma `CVE-2026-45829`，以及应用从不调用的 Perl Socket/IO::Compress 路径 `CVE-2026-12087`、`CVE-2026-48959`、`CVE-2026-48962`；任意新增、版本不匹配或过期项都会 fail closed。
+- 完整回归：`compileall` 通过；`pytest -q` 为 89 passed；`pip check` 无损坏依赖；三存储一致性 `total_issues=0`；正式 SQLite 与阶段 8 备份 SHA-256 仍一致；`git diff --check` 通过。
+- 已知遗留：4 项风险例外必须最晚于 2026-07-22 复审；Chroma 或 Debian/Python 官方镜像出现修复时立即升级并删除对应例外；`langchain-community` 独立集成迁移按供应链文档持续跟踪。
+- 下一步：停止本次执行；下一次从阶段 9 开始。

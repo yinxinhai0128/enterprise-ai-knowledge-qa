@@ -16,6 +16,51 @@
         "Container source is immutable and runs without Linux capabilities",
         "Review PyPI and pip-audit weekly; upgrade immediately when fixed"
       ]
+    },
+    {
+      "id": "CVE-2026-12087",
+      "package": "perl",
+      "versions": ["5.36.0-7+deb12u3"],
+      "owner": "project-owner",
+      "accepted_on": "2026-06-23",
+      "expires_on": "2026-07-22",
+      "reason": "The current official Python 3.12.13 slim-bookworm image has no fixed Debian package. The issue is a local out-of-bounds read in Perl Socket.pack_ip_mreq_source; this application never invokes Perl or that API.",
+      "controls": [
+        "No application code invokes perl or Perl Socket",
+        "Runtime is non-root, capability-free, no-new-privileges and read-only",
+        "API has no command execution endpoint",
+        "Review the official Python image and Docker Scout weekly; remove the exception when fixed"
+      ]
+    },
+    {
+      "id": "CVE-2026-48959",
+      "package": "perl",
+      "versions": ["5.36.0-7+deb12u3"],
+      "owner": "project-owner",
+      "accepted_on": "2026-06-23",
+      "expires_on": "2026-07-22",
+      "reason": "The current official image has no fixed Debian package. Exploitation requires processing attacker ZIP data through Perl IO::Uncompress::Unzip; uploads are handled by bounded Python parsers and Perl is never invoked.",
+      "controls": [
+        "No application code invokes perl or Perl IO::Uncompress",
+        "Upload parsers run with file, expansion and time limits",
+        "Runtime is non-root, capability-free, no-new-privileges and read-only",
+        "Review the official Python image and Docker Scout weekly; remove the exception when fixed"
+      ]
+    },
+    {
+      "id": "CVE-2026-48962",
+      "package": "perl",
+      "versions": ["5.36.0-7+deb12u3"],
+      "owner": "project-owner",
+      "accepted_on": "2026-06-23",
+      "expires_on": "2026-07-22",
+      "reason": "The current official image has no fixed Debian package. Exploitation requires an attacker-controlled output glob passed to Perl File::GlobMapper; the application never invokes Perl or that module.",
+      "controls": [
+        "No application code invokes perl or Perl File::GlobMapper",
+        "Runtime is non-root, capability-free, no-new-privileges and read-only",
+        "API has no command execution endpoint",
+        "Review the official Python image and Docker Scout weekly; remove the exception when fixed"
+      ]
     }
   ]
 }

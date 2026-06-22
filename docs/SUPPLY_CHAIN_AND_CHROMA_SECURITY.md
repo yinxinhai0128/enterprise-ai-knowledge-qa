@@ -60,7 +60,9 @@ Chroma 已使用独立包 `langchain-chroma`，文本切分已使用 `langchain-
 
 ## 容器构建与扫描
 
-基础镜像固定为 `python:3.12.12-slim-bookworm` 的不可变多架构摘要。Dockerfile 只复制运行时源码/config/锁文件，源码归 root 且 appuser 不可写；`.env`、测试、备份、正式数据和 Git 元数据不进入构建上下文。
+基础镜像固定为 `python:3.12.13-slim-bookworm@sha256:76d4b7b6305788c6b4c6a19d6a22a3921bf802e9af4d5e1e5bd771208dba74bf`。Dockerfile 只复制运行时源码/config/锁文件，源码归 root 且 appuser 不可写；`.env`、测试、备份、正式数据和 Git 元数据不进入构建上下文。
+
+Docker Scout 对该官方镜像仍报告 `perl==5.36.0-7+deb12u3` 的 `CVE-2026-12087`、`CVE-2026-48959`、`CVE-2026-48962`，且 Debian 当前无修复包。三者分别要求应用调用 Perl Socket、IO::Uncompress 或 File::GlobMapper 的脆弱路径；本项目不启动/调用 Perl，运行时又受非 root、只读根文件系统和零 capabilities 限制。它们已按精确 CVE/包/版本登记至统一风险接受文件，并与 Chroma 例外同时于 2026-07-22 到期。`scripts/container_audit.py` 解析 Scout SARIF，任何未登记、版本不匹配或过期的 Critical/High 都会失败。
 
 发布前运行：
 
@@ -69,6 +71,6 @@ Chroma 已使用独立包 `langchain-chroma`，文本切分已使用 `langchain-
 docker compose config --quiet
 ```
 
-脚本验证 UID 与镜像内容/源码权限，并用本机 Trivy 或 Docker Scout 阻断仍存在的 Critical/High 镜像漏洞。Compose 的数据目录是唯一可写卷，`/tmp` 是受限 tmpfs；不得通过新增源码 bind mount 绕过只读边界。
+脚本验证 UID 与镜像内容/源码权限，并用 Docker Scout + 本地到期策略阻断未接受的 Critical/High 镜像漏洞。Compose 的数据目录是唯一可写卷，`/tmp` 是受限 tmpfs；不得通过新增源码 bind mount 绕过只读边界。
 
 在原生 Linux 主机首次部署前，运维必须预创建 `storage`、`chroma_db`、`logs` 并将其 owner 设为 `10001:10001`、权限设为最小可用范围；禁止为了省事给数据目录 `0777`。Docker Desktop 的文件共享语义不同，仍应以容器内实际写入检查为准。
