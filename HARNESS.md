@@ -106,7 +106,7 @@
 | 4 | 输入、上传与解析安全 | complete | 资源/费用/文件/解析边界；54 tests passed |
 | 5 | 持久化摄入任务与数据一致性 | complete | 验收通过 |
 | 6 | 会话、审计与人工介入持久化 | complete | 验收通过 |
-| 7 | LangSmith 与数据治理 | pending | |
+| 7 | LangSmith 与数据治理 | complete | 验收通过 |
 | 8 | 依赖、Chroma CVE 与容器加固 | pending | |
 | 9 | 测试体系与 CI | pending | |
 | 10 | 可观测性、运维与恢复 | pending | |
@@ -349,19 +349,19 @@
 
 ### 任务
 
-- [ ] 生产默认 `LANGCHAIN_TRACING_V2=false`。
-- [ ] 追踪开启必须经过环境和组织策略批准。
-- [ ] 记录会发送哪些输入、输出、文档片段和 metadata。
-- [ ] 对用户问题和工具结果实施追踪前脱敏。
-- [ ] 工具结果默认不发送完整文档内容，必要时只发送 hash/doc_id。
-- [ ] 设置采样率、项目权限和保留周期。
-- [ ] 测试环境强制关闭追踪并断言不会产生网络请求。
-- [ ] 将数据驻留、供应商协议和删除流程写入文档。
+- [x] 生产默认 `LANGCHAIN_TRACING_V2=false`。
+- [x] 追踪开启必须经过环境和组织策略批准。
+- [x] 记录会发送哪些输入、输出、文档片段和 metadata。
+- [x] 对用户问题和工具结果实施追踪前脱敏。
+- [x] 工具结果默认不发送完整文档内容，必要时只发送 hash/doc_id。
+- [x] 设置采样率、项目权限和保留周期。
+- [x] 测试环境强制关闭追踪并断言不会产生网络请求。
+- [x] 将数据驻留、供应商协议和删除流程写入文档。
 
 ### 验收门
 
-- [ ] 使用假敏感数据验证 LangSmith 中不可见原文。
-- [ ] 关闭追踪时不创建任何 LangSmith run。
+- [x] 使用假敏感数据验证 LangSmith 中不可见原文。
+- [x] 关闭追踪时不创建任何 LangSmith run。
 
 ---
 
@@ -771,3 +771,34 @@ docker compose config --quiet
 - 可靠性与治理影响：问答先预登记审计，写入重试后仍失败则 503 fail-closed，pending 记录可由管理接口观测；审计记录结构化 tool/sources/trace/model/tokens/latency；人工任务支持 pending→claimed→completed 且全程事件审计；工资/健康/法律规则按可信 JWT 角色拒绝越权。
 - 已知遗留：SQLite Checkpointer 支持当前单机多进程部署；跨主机或高写入生产规模应迁移 PostgreSQL Checkpointer/数据库行锁；LangSmith 数据治理由阶段 7 处理；`langchain-community` 弃用警告留待阶段 8。
 - 下一步：停止本次执行；下一次从阶段 7 开始。
+
+### 2026-06-22 - 阶段 7 开始
+
+- 状态：in_progress
+- 范围：LangSmith 显式授权、采样、外发前最小化/脱敏、治理审计、驻留/权限/保留/删除文档与无网络测试。
+- 阶段边界：只处理外部追踪数据治理；依赖与容器加固仍由阶段 8 处理。
+- 数据保护：新增治理审计表前备份至 `backups/stage7_20260622_192830/`，源与备份 SQLite SHA-256 一致。
+- 下一步：验证假敏感原文无法进入最终外发载荷，关闭追踪时不创建 run；未通过不得进入阶段 8。
+
+### 2026-06-22 19:43 - 阶段 7：LangSmith 与数据治理
+
+- 状态：complete
+- 修改文件：
+  - `.env.example`、`README.md`、`HARNESS.md`
+  - `app/config.py`、`app/main.py`、`app/core/tracing.py`
+  - `app/models/trace_governance_event.py`、`app/models/__init__.py`
+  - `docs/LANGSMITH_DATA_GOVERNANCE.md`
+  - `tests/conftest.py`、`tests/test_tracing.py`
+- 数据迁移：执行前备份至 `backups/stage7_20260622_192830/` 且源与备份 SQLite SHA-256 一致；正式库新增 `trace_governance_events`；迁移连续执行两次幂等。
+- 验证命令：
+  - `.\.venv\Scripts\python.exe -m compileall -q app tests`
+  - `.\.venv\Scripts\python.exe -m pytest -q`
+  - `.\.venv\Scripts\python.exe -m pip check`
+  - `.\.venv\Scripts\python.exe -m app.commands.check_consistency`
+  - `docker compose config --quiet`
+  - SDK 最终 run 字典假敏感原文扫描、强制断网、业务 SQLite 完整性/计数与 Git 秘密候选检查
+- 验证结果：83 passed；无损坏依赖；Compose 与三存储巡检通过；最终外发载荷不含假问题、邮箱、工资/健康内容、文档原文、错误原文或 thread ID；关闭追踪时 `Client.create_run/update_run` 与任意 HTTP 均为零调用。
+- 数据证据：迁移前后 documents=1、chat_records=4、usage_daily=0、ingest_jobs=0；新增治理事件 1 条；`integrity_check=ok`。当前真实配置虽请求追踪，但未提供审批/远端策略确认，治理决策为 `denied`、实际 `enabled=false`，未输出任何秘密。
+- 治理影响：外部追踪默认和未审批时均强制关闭；获批时所有输入/输出字符串只发送带密钥 HMAC 与长度，metadata 白名单化，event/attachment/runtime/manifest 清空，error 二次脱敏；采样、工作区、区域、保留和审批均成为启用硬门；每次决策本地审计。
+- 已知遗留：远端 workspace 权限、数据驻留和保留期必须由组织管理员按治理文档实际配置并提供确认，代码不会代替合同/控制台审批；SDK 升级后需重新审计全部外发字段；依赖加固由阶段 8 处理。
+- 下一步：停止本次执行；下一次从阶段 8 开始。

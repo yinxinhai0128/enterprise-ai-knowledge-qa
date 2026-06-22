@@ -56,6 +56,16 @@ from app.core.database import Base  # noqa: E402
 import app.models  # noqa: E402, F401  # 注册所有 ORM 表
 
 
+@pytest.fixture(autouse=True)
+def _force_external_tracing_off():
+    """任何自动化测试都先在 SDK 全局上下文强制关闭外部追踪。"""
+    import langsmith as ls
+
+    ls.configure(client=None, enabled=False, project_name=None, tags=None, metadata=None)
+    yield
+    ls.configure(client=None, enabled=False, project_name=None, tags=None, metadata=None)
+
+
 @pytest.fixture
 def auth_headers():
     """生成仅用于测试的已签名身份头，不调用真实身份系统。"""

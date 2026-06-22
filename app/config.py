@@ -43,6 +43,17 @@ class Settings(BaseSettings):
     langsmith_api_key: str = Field(default="", description="LangSmith API Key，可空")
     langchain_tracing_v2: bool = Field(default=False, description="是否开启链路追踪")
     langchain_project: str = Field(default="enterprise-kb", description="LangSmith 项目名")
+    langsmith_org_approved: bool = Field(default=False)
+    langsmith_approval_reference: str = Field(default="")
+    langsmith_remote_policy_confirmed: bool = Field(default=False)
+    langsmith_tracing_sampling_rate: float = Field(default=0.0, ge=0.0, le=1.0)
+    langsmith_workspace_id: str = Field(default="")
+    langsmith_endpoint: str = Field(default="")
+    langsmith_data_region: Literal["disabled", "us", "eu", "self-hosted"] = Field(
+        default="disabled"
+    )
+    langsmith_retention_days: int = Field(default=14, ge=1, le=365)
+    langsmith_redaction_secret: SecretStr = Field(default=SecretStr(""))
 
     # ---------- 应用 ----------
     app_env: Literal["development", "production"] = Field(

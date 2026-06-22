@@ -21,6 +21,12 @@ from app.config import settings
 from app.core.checkpointer import close_checkpointer, init_checkpointer
 from app.core.database import init_db
 from app.core.process_pool import shutdown_parser_pool
+from app.core.tracing import (
+    TracePolicyError,
+    configure_langsmith,
+    record_trace_decision,
+    shutdown_langsmith,
+)
 from app.core.vectorstore import migrate_legacy_vector_metadata
 from app.services.ingest_jobs import recover_stale_ingest_state
 from app.services.conversations import cleanup_expired_conversations
@@ -50,6 +56,13 @@ async def lifespan(app: FastAPI):
 
     # 建表（开发期 create_all；生产改 Alembic）
     await init_db()
+    try:
+        trace_decision = configure_langsmith()
+    except TracePolicyError as exc:
+        # 仅关闭未获批的外部追踪，不牺牲知识库核心服务可用性。
+        trace_decision = exc.decision
+        logger.warning("LangSmith 追踪被治理门拒绝 reason={}", trace_decision.reason)
+    await record_trace_decision(trace_decision)
     await init_checkpointer()
     expired_sessions = await cleanup_expired_conversations()
     recovered = await recover_stale_ingest_state()
@@ -68,6 +81,7 @@ async def lifespan(app: FastAPI):
     shutdown_parser_pool()
     build_agent.cache_clear()
     await close_checkpointer()
+    shutdown_langsmith()
     logger.info("服务关闭，资源已释放。")
 
 
