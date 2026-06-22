@@ -138,8 +138,10 @@ async def test_tenant_cannot_list_get_or_retrieve_other_tenant_document(
         assert listing.json() == []
         assert (await tenant_b.get(f"/documents/{doc_id}")).status_code == 404
 
-    assert "青松" in search_tenant_knowledge_base("报销口令", "tenant-a")
-    assert search_tenant_knowledge_base("报销口令", "tenant-b") == "未找到相关文档"
+    content_a, evidence_a = search_tenant_knowledge_base("报销口令", "tenant-a")
+    assert "青松" in content_a
+    assert evidence_a
+    assert search_tenant_knowledge_base("报销口令", "tenant-b")[1] == []
 
 
 async def test_admin_queries_are_limited_to_token_tenant(

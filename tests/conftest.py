@@ -148,8 +148,12 @@ def agent_factory(monkeypatch):
     """
     from app.agent.agent import build_agent
 
-    def _make(responses: list[str]):
-        model = FakeChatModel(messages=iter([AIMessage(content=r) for r in responses]))
+    def _make(responses: list[str | AIMessage]):
+        messages = [
+            response if isinstance(response, AIMessage) else AIMessage(content=response)
+            for response in responses
+        ]
+        model = FakeChatModel(messages=iter(messages))
         monkeypatch.setattr("app.agent.agent.init_llm", lambda **kw: model)
         build_agent.cache_clear()
         return build_agent()

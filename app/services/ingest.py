@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterator
@@ -100,9 +101,14 @@ def _load_and_split(
     raw_docs = loader.load()
     chunks = _SPLITTER.split_documents(raw_docs)
     for index, chunk in enumerate(chunks):
+        digest_input = (
+            f"{tenant_id}\0{doc_id}\0{index}\0{chunk.page_content}"
+        ).encode("utf-8")
+        chunk_id = hashlib.sha256(digest_input).hexdigest()
         chunk.metadata.update(
             {
                 "doc_id": doc_id,
+                "chunk_id": chunk_id,
                 "source": source,
                 "chunk_index": index,
                 "tenant_id": tenant_id,
@@ -149,7 +155,10 @@ async def ingest_document(
             return IngestResult(success=False, error_msg="未解析出任何文本内容")
 
         vectorstore = get_vectorstore()
-        await vectorstore.aadd_documents(chunks)
+        await vectorstore.aadd_documents(
+            chunks,
+            ids=[str(chunk.metadata["chunk_id"]) for chunk in chunks],
+        )
 
         logger.info("摄入完成 doc_id={} chunks={}", doc_id, len(chunks))
         return IngestResult(success=True, chunk_count=len(chunks))

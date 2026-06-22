@@ -32,8 +32,8 @@ class Base(DeclarativeBase):
     """所有 ORM 模型的声明基类。"""
 
 
-def _migrate_tenant_columns(connection: Connection) -> None:
-    """为阶段 2 前的 SQLite 表补齐租户字段并保留既有数据。"""
+def _migrate_schema(connection: Connection) -> None:
+    """以幂等方式补齐当前阶段需要的列并保留既有数据。"""
     inspector = inspect(connection)
     tables = set(inspector.get_table_names())
     migrations = {
@@ -44,6 +44,7 @@ def _migrate_tenant_columns(connection: Connection) -> None:
         "chat_records": (
             ("tenant_id", "VARCHAR(128) NOT NULL DEFAULT 'legacy'"),
             ("user_id", "VARCHAR(128) NOT NULL DEFAULT 'legacy'"),
+            ("refused", "BOOLEAN NOT NULL DEFAULT 0"),
         ),
     }
     for table, columns in migrations.items():
@@ -53,6 +54,22 @@ def _migrate_tenant_columns(connection: Connection) -> None:
         for name, ddl in columns:
             if name not in existing:
                 connection.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {ddl}"))
+                if table == "chat_records" and name == "refused":
+                    # 仅用于一次性迁移旧记录；新请求的 refused 只由真实 evidence 决定。
+                    connection.execute(
+                        text(
+                            "UPDATE chat_records SET refused = 1 "
+                            "WHERE has_source = 0 AND ("
+                            "answer LIKE :m1 OR answer LIKE :m2 OR "
+                            "answer LIKE :m3 OR answer LIKE :m4)"
+                        ),
+                        {
+                            "m1": "%没有找到相关%",
+                            "m2": "%未找到相关%",
+                            "m3": "%知识库中没有%",
+                            "m4": "%无法回答%",
+                        },
+                    )
 
 
 def _ensure_tenant_indexes(connection: Connection) -> None:
@@ -77,7 +94,7 @@ async def init_db() -> None:
     from app import models  # noqa: F401
 
     async with engine.begin() as conn:
-        await conn.run_sync(_migrate_tenant_columns)
+        await conn.run_sync(_migrate_schema)
         await conn.run_sync(Base.metadata.create_all)
         await conn.run_sync(_ensure_tenant_indexes)
 

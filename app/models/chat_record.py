@@ -21,8 +21,10 @@ class ChatRecord(Base):
     session_id: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
     question: Mapped[str] = mapped_column(Text, nullable=False)
     answer: Mapped[str] = mapped_column(Text, nullable=False)
-    # 回答是否带检索来源（含 "[来源:"）
+    # 当前轮是否存在真实检索 artifact
     has_source: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    # 是否由服务端因缺少真实检索证据而拒答
+    refused: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     # 是否命中敏感词、需转人工
     need_human: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(

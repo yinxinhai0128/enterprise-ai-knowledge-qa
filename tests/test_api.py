@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from httpx import ASGITransport, AsyncClient
+from langchain_core.messages import AIMessage, ToolMessage
 
 
 async def test_health_is_minimal_and_has_security_headers(client):
@@ -43,8 +44,23 @@ async def test_end_to_end_upload_index_ask(client, vectorstore, agent_factory):
     assert detail.json()["status"] == "indexed"
     assert vectorstore._collection.count() > 0
 
-    # 2) 准备脚本化 Agent（让回答带来源），再提问
-    agent_factory(["差旅报销市内交通每日上限 50 元。[来源:e2e.txt]"])
+    # 2) 假模型先真实调用检索工具，再生成不带可信来源的正文。
+    agent = agent_factory(
+        [
+            AIMessage(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "search_knowledge_base",
+                        "args": {"query": "市内交通报销上限"},
+                        "id": "call-e2e",
+                        "type": "tool_call",
+                    }
+                ],
+            ),
+            AIMessage(content="差旅报销市内交通每日上限 50 元。"),
+        ]
+    )
     ask = await client.post(
         "/qa/ask",
         json={"question": "市内交通报销上限是多少", "user_id": "u1", "session_id": "e2e"},
@@ -52,7 +68,18 @@ async def test_end_to_end_upload_index_ask(client, vectorstore, agent_factory):
     assert ask.status_code == 200
     data = ask.json()
     assert "50" in data["answer"]
-    assert "e2e.txt" in data["sources"]
+    assert len(data["sources"]) == 1
+    assert data["sources"][0]["source"] == "e2e.txt"
+    assert data["sources"][0]["chunk_id"]
+    snapshot = await agent.aget_state(
+        {"configurable": {"thread_id": "tenant-a:user-a:e2e"}}
+    )
+    tool_message = next(
+        message
+        for message in snapshot.values["messages"]
+        if isinstance(message, ToolMessage)
+    )
+    assert data["sources"] == tool_message.artifact
     assert data["refused"] is False
     assert data["need_human"] is False
 
@@ -71,3 +98,49 @@ async def test_ask_empty_question_rejected(client, agent_factory):
         json={"question": "", "user_id": "u1", "session_id": "x"},
     )
     assert resp.status_code == 422  # 入参校验失败
+
+
+async def test_structured_refusal_updates_admin_stats(
+    client,
+    auth_headers,
+    vectorstore,
+    agent_factory,
+):
+    """空 artifact 强制 refused=true，并由数据库布尔字段驱动管理统计。"""
+    agent_factory(
+        [
+            AIMessage(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "search_knowledge_base",
+                        "args": {"query": "不存在的规定"},
+                        "id": "call-empty-api",
+                        "type": "tool_call",
+                    }
+                ],
+            ),
+            AIMessage(content="模型试图继续回答。"),
+        ]
+    )
+    response = await client.post(
+        "/qa/ask",
+        json={"question": "不存在的规定", "session_id": "refused-stats"},
+    )
+    assert response.status_code == 200
+    assert response.json()["refused"] is True
+    assert response.json()["sources"] == []
+
+    from app.main import app
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+        headers=auth_headers(roles=("admin",)),
+    ) as admin:
+        stats = (await admin.get("/admin/stats")).json()
+        refused = (await admin.get("/admin/refused")).json()
+    assert stats["qa"]["total"] == 1
+    assert stats["qa"]["refused_rate"] == 1.0
+    assert len(refused) == 1
+    assert refused[0]["refused"] is True

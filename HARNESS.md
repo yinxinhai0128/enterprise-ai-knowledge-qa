@@ -102,7 +102,7 @@
 | 0 | 安全基线、备份与版本控制 | complete | 基线提交 `678638d`；备份/秘密扫描/测试/连接验收通过；旧 Key 已吊销 |
 | 1 | 紧急暴露面收敛 | complete | Compose 仅绑定本机；生产文档端点 404；16 tests passed |
 | 2 | 身份认证、授权与租户隔离 | complete | JWT/角色/tenant-user 隔离；25 tests passed；正式数据迁移完整 |
-| 3 | 可信检索、结构化来源与拒答 | pending | |
+| 3 | 可信检索、结构化来源与拒答 | complete | artifact 驱动来源/拒答；稳定 chunk ID；29 tests passed |
 | 4 | 输入、上传与解析安全 | pending | |
 | 5 | 持久化摄入任务与数据一致性 | pending | |
 | 6 | 会话、审计与人工介入持久化 | pending | |
@@ -212,34 +212,34 @@
 
 ### 任务
 
-- [ ] 检索工具返回 `content + artifact`，artifact 至少包含：
+- [x] 检索工具返回 `content + artifact`，artifact 至少包含：
   - `doc_id`
   - `chunk_id`
   - `source`
   - `page/sheet_name`
   - `distance/relevance`
-- [ ] 使用稳定的 chunk ID，而非 Chroma 自动随机 ID。
-- [ ] Agent state 增加 `retrieved_evidence`。
-- [ ] API 的 `sources` 从真实 tool artifact 生成，禁止正则解析最终回答。
-- [ ] `has_source` 由真实证据决定。
-- [ ] `refused` 作为结构化状态/数据库字段保存，不再依赖中文话术匹配。
-- [ ] 若模型生成引用不在真实 evidence 中，删除该引用并记录告警。
-- [ ] 对知识库事实型回答，若没有成功检索证据，则强制拒答或进入受控重试。
-- [ ] 在 system prompt 中声明文档内容是不可信数据，禁止执行文档内指令。
-- [ ] 增加文档提示词注入测试。
+- [x] 使用稳定的 chunk ID，而非 Chroma 自动随机 ID。
+- [x] Agent state 增加 `retrieved_evidence`。
+- [x] API 的 `sources` 从真实 tool artifact 生成，禁止正则解析最终回答。
+- [x] `has_source` 由真实证据决定。
+- [x] `refused` 作为结构化状态/数据库字段保存，不再依赖中文话术匹配。
+- [x] 若模型生成引用不在真实 evidence 中，删除该引用并记录告警。
+- [x] 对知识库事实型回答，若没有成功检索证据，则强制拒答或进入受控重试。
+- [x] 在 system prompt 中声明文档内容是不可信数据，禁止执行文档内指令。
+- [x] 增加文档提示词注入测试。
 
 ### 必测场景
 
-- [ ] 假模型直接输出 `[来源:fake.txt]`，API 必须拒绝该来源。
-- [ ] 模型没有调用工具但尝试回答内部制度，必须拒答。
-- [ ] 工具真实命中后，sources 与 artifact 完全一致。
-- [ ] 无结果时 `refused=true`，且数据库统计准确。
-- [ ] 文档中包含“忽略系统提示”时，不改变 Agent 行为。
+- [x] 假模型直接输出 `[来源:fake.txt]`，API 必须拒绝该来源。
+- [x] 模型没有调用工具但尝试回答内部制度，必须拒答。
+- [x] 工具真实命中后，sources 与 artifact 完全一致。
+- [x] 无结果时 `refused=true`，且数据库统计准确。
+- [x] 文档中包含“忽略系统提示”时，不改变 Agent 行为。
 
 ### 验收门
 
-- [ ] 不再存在以 `[来源:` 子串作为真实性依据的代码。
-- [ ] `test_agent` 包含真实 fake tool-calling 回环，而非只脚本化最终回答。
+- [x] 不再存在以 `[来源:` 子串作为真实性依据的代码。
+- [x] `test_agent` 包含真实 fake tool-calling 回环，而非只脚本化最终回答。
 
 ---
 
@@ -639,3 +639,34 @@ docker compose config --quiet
 - 安全影响：身份只取自固定 HS256 算法验签后的 claims；示例/弱密钥失败关闭；无 Token 签发接口；thread ID、关系查询、管理统计与向量检索均带租户边界。
 - 已知遗留：正式运行前需在 `.env`/秘密管理系统配置至少 32 字符随机 `AUTH_JWT_SECRET` 并由可信身份系统签发 Token；持久化会话和可信来源由后续阶段处理；`langchain-community` 弃用警告仍留待依赖阶段。
 - 下一步：停止本次执行；下一次从阶段 3 开始。
+
+### 2026-06-22 - 阶段 3 开始
+
+- 状态：in_progress
+- 范围：工具 artifact、稳定 chunk ID、Agent 证据状态、服务端来源、结构化拒答与文档提示词注入防护。
+- 数据保护：新增 `refused` 字段和补齐向量 metadata 前，新建 `storage`、`chroma_db` 快照。
+- 下一步：验收可信工具回环和拒答统计；未通过不得进入阶段 4。
+
+### 2026-06-22 13:42 - 阶段 3：可信检索、结构化来源与拒答
+
+- 状态：complete
+- 修改文件：
+  - `app/agent/context.py`、`app/agent/agent.py`、`app/agent/middleware.py`
+  - `app/core/evidence.py`、`app/core/retriever_tool.py`、`app/core/vectorstore.py`、`app/core/database.py`
+  - `app/api/qa.py`、`app/api/admin.py`
+  - `app/models/chat_record.py`、`app/schemas/qa.py`、`app/services/ingest.py`
+  - `tests/conftest.py`、`tests/test_agent.py`、`tests/test_api.py`、`tests/test_auth.py`、`tests/test_ingest.py`
+  - `README.md`、`HARNESS.md`
+- 数据迁移：执行前备份至 `backups/stage3_20260622_132948/` 且 SQLite SHA-256 一致；正式库新增 `chat_records.refused`，旧拒答迁移 2 条；1 条旧向量固化 legacy chunk ID；二次迁移更新数为 0。
+- 验证命令：
+  - `.\.venv\Scripts\python.exe -m compileall -q app tests`
+  - `.\.venv\Scripts\python.exe -m pytest -q`
+  - `.\.venv\Scripts\python.exe -m pip check`
+  - SQLite 完整性、`refused` 列、Chroma `chunk_id` 聚合检查
+  - QA 文本真实性依据、管理拒答启发式、fake tool-loop 静态证据检查
+  - Git 提交范围秘密候选扫描
+- 验证结果：29 passed；无损坏依赖；QA 文本真实性标记 0；管理拒答话术启发式 0；fake tool-loop 断言 7；秘密候选 0。
+- 数据证据：迁移前后 chat_records=4、vectors=1；`integrity_check=ok`；正式向量缺少 chunk ID 数=0。
+- 安全影响：API sources、`has_source`、`refused` 和管理统计只认真实 ToolMessage artifact/结构化字段；无证据强制拒答；模型自报引用被清除；文档内容显式标记为不可信数据。
+- 已知遗留：当前 relevance 由 Chroma L2 distance 单调换算，仍需按真实 embedding 校准；持久化 evidence 审计、重排与更强注入检测留待后续阶段；`langchain-community` 弃用警告留待依赖阶段。
+- 下一步：停止本次执行；下一次从阶段 4 开始。

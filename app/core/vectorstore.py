@@ -49,10 +49,17 @@ def migrate_legacy_vector_metadata() -> int:
             strict=True,
         ):
             normalized = dict(metadata or {})
-            if "tenant_id" in normalized:
+            changed = False
+            if "tenant_id" not in normalized:
+                normalized["tenant_id"] = LEGACY_TENANT_ID
+                normalized.setdefault("uploaded_by", LEGACY_TENANT_ID)
+                changed = True
+            if "chunk_id" not in normalized:
+                # 旧 Chroma ID 已持久化且不可原地重命名；将其固化为 legacy chunk ID。
+                normalized["chunk_id"] = item_id
+                changed = True
+            if not changed:
                 continue
-            normalized["tenant_id"] = LEGACY_TENANT_ID
-            normalized.setdefault("uploaded_by", LEGACY_TENANT_ID)
             ids_to_update.append(item_id)
             metadatas_to_update.append(normalized)
         if ids_to_update:

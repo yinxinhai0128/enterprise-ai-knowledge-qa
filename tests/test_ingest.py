@@ -23,6 +23,9 @@ async def test_upload_success_then_indexed(client, vectorstore):
     assert data["chunk_count"] > 0
     # 切片确实进了向量库
     assert vectorstore._collection.count() > 0
+    stored = vectorstore._collection.get(include=["metadatas"])
+    assert stored["ids"][0] == stored["metadatas"][0]["chunk_id"]
+    assert len(stored["ids"][0]) == 64  # SHA-256 稳定 ID，而非 Chroma 自动 UUID
 
 
 @pytest.mark.parametrize("filename", ["bad.zip", "evil.exe", "noext"])

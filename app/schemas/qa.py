@@ -20,11 +20,26 @@ class AskRequest(BaseModel):
     )
 
 
+class EvidenceSource(BaseModel):
+    """由检索工具 artifact 生成的结构化来源。"""
+
+    doc_id: int
+    chunk_id: str
+    source: str
+    page: int | None = None
+    sheet_name: str | None = None
+    distance: float
+    relevance: float
+
+
 class AskResponse(BaseModel):
     """回答出参。"""
 
     answer: str = Field(..., description="模型最终回答")
-    sources: list[str] = Field(default_factory=list, description="回答中引用的来源标注")
+    sources: list[EvidenceSource] = Field(
+        default_factory=list,
+        description="来自真实检索 tool artifact 的结构化证据",
+    )
     refused: bool = Field(..., description="是否因无相关资料而拒答")
     need_human: bool = Field(..., description="是否命中敏感词、需转人工")
 

@@ -5,7 +5,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import case, func, or_, select
+from sqlalchemy import case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import AdminAuth
@@ -14,11 +14,6 @@ from app.models.chat_record import ChatRecord
 from app.models.document import Document
 
 router = APIRouter(prefix="/admin", tags=["admin"])
-
-# 与问答接口的拒答口径保持一致。当前表没有 refused 字段，因此根据最终
-# 回答话术判定；这样无需为已有 SQLite 数据库做破坏性结构迁移。
-REFUSAL_MARKERS = ("没有找到相关", "未找到相关", "知识库中没有", "无法回答")
-
 
 class DocumentStats(BaseModel):
     """文档摄入统计。"""
@@ -55,13 +50,9 @@ class AdminQARecord(BaseModel):
     question: str
     answer: str
     has_source: bool
+    refused: bool
     need_human: bool
     created_at: datetime
-
-
-def _refused_condition():
-    """生成可复用于统计和列表查询的 SQL 拒答条件。"""
-    return or_(*(ChatRecord.answer.contains(marker) for marker in REFUSAL_MARKERS))
 
 
 @router.get("/stats", response_model=AdminStats, summary="管理统计")
@@ -84,13 +75,12 @@ async def get_stats(
         )
     ).one()
 
-    refused_condition = _refused_condition()
     qa_row = (
         await db.execute(
             select(
                 func.count(ChatRecord.id),
                 func.coalesce(
-                    func.sum(case((refused_condition, 1), else_=0)), 0
+                    func.sum(case((ChatRecord.refused.is_(True), 1), else_=0)), 0
                 ),
                 func.coalesce(
                     func.sum(case((ChatRecord.need_human.is_(True), 1), else_=0)),
@@ -131,7 +121,7 @@ async def list_refused(
         select(ChatRecord)
         .where(
             ChatRecord.tenant_id == auth.tenant_id,
-            _refused_condition(),
+            ChatRecord.refused.is_(True),
         )
         .order_by(ChatRecord.created_at.desc(), ChatRecord.id.desc())
         .limit(20)

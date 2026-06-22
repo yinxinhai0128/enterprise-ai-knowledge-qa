@@ -5,8 +5,6 @@
 """
 from __future__ import annotations
 
-import re
-
 from fastapi import APIRouter, HTTPException, status
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 from loguru import logger
@@ -14,6 +12,7 @@ from loguru import logger
 from app.agent.agent import build_agent
 from app.agent.middleware import EnterpriseContext
 from app.core.auth import UserAuth, build_thread_id
+from app.core.evidence import validated_evidence_list
 from app.schemas.qa import (
     AskRequest,
     AskResponse,
@@ -22,11 +21,6 @@ from app.schemas.qa import (
 )
 
 router = APIRouter(prefix="/qa", tags=["qa"])
-
-# 从回答中提取 [来源:xxx] 标注
-_SOURCE_RE = re.compile(r"\[来源:([^\]]+)\]")
-# 拒答话术标记（与 system_prompt 中的拒绝口径对应）
-_REFUSAL_MARKERS = ("没有找到相关", "未找到相关", "知识库中没有", "无法回答")
 
 # 消息类型 -> 角色
 _ROLE_MAP = {
@@ -48,14 +42,6 @@ def _text(msg) -> str:
             for part in content
         )
     return str(content)
-
-
-def _extract_sources(answer: str) -> list[str]:
-    """提取回答里的来源标注，去重并保序。"""
-    seen: dict[str, None] = {}
-    for match in _SOURCE_RE.findall(answer):
-        seen.setdefault(match.strip(), None)
-    return list(seen)
 
 
 def _role_of(msg) -> str:
@@ -96,8 +82,8 @@ async def ask(req: AskRequest, auth: UserAuth) -> AskResponse:
 
     messages = result.get("messages", [])
     answer = _text(messages[-1]) if messages else ""
-    sources = _extract_sources(answer)
-    refused = not sources and any(mark in answer for mark in _REFUSAL_MARKERS)
+    sources = validated_evidence_list(result.get("retrieved_evidence"))
+    refused = bool(result.get("refused", not sources))
     need_human = bool(result.get("need_human", False))
 
     return AskResponse(
