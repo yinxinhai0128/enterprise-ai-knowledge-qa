@@ -1,6 +1,35 @@
 """端到端测试：上传 -> 索引 -> 问答 -> 历史。"""
 from __future__ import annotations
 
+from httpx import ASGITransport, AsyncClient
+
+
+async def test_health_is_minimal_and_has_security_headers(client):
+    """健康检查不泄露组件信息，且所有响应都带基础安全头。"""
+    response = await client.get("/health")
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["x-frame-options"] == "DENY"
+    assert response.headers["referrer-policy"] == "no-referrer"
+    assert response.headers["cache-control"] == "no-store"
+    assert "frame-ancestors 'none'" in response.headers["content-security-policy"]
+
+
+async def test_production_disables_api_documentation(monkeypatch):
+    """生产模式不注册 Swagger、ReDoc 和 OpenAPI JSON 路由。"""
+    from app.config import settings
+    from app.main import create_app
+
+    monkeypatch.setattr(settings, "app_env", "production")
+    production_app = create_app()
+    transport = ASGITransport(app=production_app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        for path in ("/docs", "/redoc", "/openapi.json"):
+            response = await client.get(path)
+            assert response.status_code == 404
+            assert "strict-transport-security" in response.headers
+
 
 async def test_end_to_end_upload_index_ask(client, vectorstore, agent_factory):
     """完整链路：上传文档、确认索引、提问拿到结构化回答、历史可回溯。"""

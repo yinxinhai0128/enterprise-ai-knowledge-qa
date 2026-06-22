@@ -9,6 +9,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from loguru import logger
+from starlette.requests import Request
+from starlette.responses import Response
 
 from app.api.admin import router as admin_router
 from app.api.documents import router as documents_router
@@ -49,24 +51,60 @@ async def lifespan(app: FastAPI):
     logger.info("服务关闭，资源已释放。")
 
 
-app = FastAPI(
-    title="企业级 Agentic RAG 知识库",
-    version="0.1.0",
-    description="LangChain 1.3 + LangGraph 构建的可复用知识问答模板",
-    lifespan=lifespan,
-)
+def create_app() -> FastAPI:
+    """按运行环境创建 FastAPI 应用。"""
+    is_production = settings.app_env == "production"
+    application = FastAPI(
+        title="企业级 Agentic RAG 知识库",
+        version="0.1.0",
+        description="LangChain 1.3 + LangGraph 构建的可复用知识问答模板",
+        lifespan=lifespan,
+        docs_url=None if is_production else "/docs",
+        redoc_url=None if is_production else "/redoc",
+        openapi_url=None if is_production else "/openapi.json",
+    )
+
+    @application.middleware("http")
+    async def add_security_headers(request: Request, call_next) -> Response:
+        """为所有响应添加基础浏览器与缓存安全策略。"""
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "no-referrer"
+        response.headers["Permissions-Policy"] = (
+            "camera=(), microphone=(), geolocation=()"
+        )
+        response.headers["Cache-Control"] = "no-store"
+        if is_production:
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'none'; frame-ancestors 'none'; base-uri 'none'"
+            )
+            response.headers["Strict-Transport-Security"] = (
+                "max-age=31536000; includeSubDomains"
+            )
+        else:
+            # 开发模式保留 Swagger UI 所需的 CDN 资源。
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'self'; "
+                "script-src 'self' https://cdn.jsdelivr.net; "
+                "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+                "img-src 'self' data: https://fastapi.tiangolo.com; "
+                "frame-ancestors 'none'; base-uri 'none'"
+            )
+        return response
+
+    @application.get("/health", tags=["system"], summary="健康检查")
+    async def health() -> dict[str, str]:
+        """最小存活探针，不暴露版本和内部组件。"""
+        return {"status": "ok"}
+
+    application.include_router(documents_router)
+    application.include_router(qa_router)
+    application.include_router(admin_router)
+    return application
 
 
-@app.get("/health", tags=["system"], summary="健康检查")
-async def health() -> dict:
-    """存活探针，供 Docker / 负载均衡使用。"""
-    return {"status": "ok", "service": "enterprise-kb", "version": app.version}
-
-
-# 业务路由
-app.include_router(documents_router)
-app.include_router(qa_router)
-app.include_router(admin_router)
+app = create_app()
 
 
 if __name__ == "__main__":

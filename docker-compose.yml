@@ -14,7 +14,8 @@ services:
     env_file:
       - .env
     ports:
-      - "${APP_PORT:-8000}:8000"
+      # 完整鉴权上线前只允许本机访问，禁止直接暴露到局域网/公网。
+      - "127.0.0.1:${APP_PORT:-8000}:8000"
     volumes:
       # 持久化：业务存储、向量库、日志
       - ./storage:/app/storage

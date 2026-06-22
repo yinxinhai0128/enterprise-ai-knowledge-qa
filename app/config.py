@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from dotenv import load_dotenv
 from pydantic import Field
@@ -40,7 +41,10 @@ class Settings(BaseSettings):
     langchain_project: str = Field(default="enterprise-kb", description="LangSmith 项目名")
 
     # ---------- 应用 ----------
-    app_host: str = Field(default="0.0.0.0", description="服务监听地址")
+    app_env: Literal["development", "production"] = Field(
+        default="development", description="运行环境"
+    )
+    app_host: str = Field(default="127.0.0.1", description="服务监听地址")
     app_port: int = Field(default=8000, description="服务监听端口")
     log_level: str = Field(default="INFO", description="日志级别")
 

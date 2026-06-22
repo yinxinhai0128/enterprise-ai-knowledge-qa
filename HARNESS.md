@@ -100,7 +100,7 @@
 | 阶段 | 内容 | 状态 | 验收证据 |
 |---|---|---|---|
 | 0 | 安全基线、备份与版本控制 | complete | 基线提交 `678638d`；备份/秘密扫描/测试/连接验收通过；旧 Key 已吊销 |
-| 1 | 紧急暴露面收敛 | pending | |
+| 1 | 紧急暴露面收敛 | complete | Compose 仅绑定本机；生产文档端点 404；16 tests passed |
 | 2 | 身份认证、授权与租户隔离 | pending | |
 | 3 | 可信检索、结构化来源与拒答 | pending | |
 | 4 | 输入、上传与解析安全 | pending | |
@@ -149,18 +149,18 @@
 
 ### 任务
 
-- [ ] Compose 默认只绑定 `127.0.0.1:8000:8000`。
-- [ ] 新增 `APP_ENV=development|production`。
-- [ ] 生产环境默认关闭 `/docs`、`/redoc` 和 `/openapi.json`，或纳入管理员认证。
-- [ ] `/health` 仅返回最小存活信息，不暴露版本和内部组件。
-- [ ] 增加安全响应头。
-- [ ] README 明确：鉴权未完成前禁止对外开放。
+- [x] Compose 默认只绑定 `127.0.0.1:8000:8000`。
+- [x] 新增 `APP_ENV=development|production`。
+- [x] 生产环境默认关闭 `/docs`、`/redoc` 和 `/openapi.json`，或纳入管理员认证。
+- [x] `/health` 仅返回最小存活信息，不暴露版本和内部组件。
+- [x] 增加安全响应头。
+- [x] README 明确：鉴权未完成前禁止对外开放。
 
 ### 验收门
 
-- [ ] 未配置鉴权时，Docker 端口不能从非本机访问。
-- [ ] 生产模式下文档端点不可匿名访问。
-- [ ] Compose 配置解析通过。
+- [x] 未配置鉴权时，Docker 端口不能从非本机访问。
+- [x] 生产模式下文档端点不可匿名访问。
+- [x] Compose 配置解析通过。
 
 ---
 
@@ -579,3 +579,32 @@ docker compose config --quiet
 - Git 基线：分支 `hardening/production-readiness`，基线提交 `678638d`。
 - 已知遗留：生产安全问题按阶段 1～12 处理，本阶段未提前修改业务功能。
 - 下一步：下一次执行从阶段 1“紧急暴露面收敛”开始。
+
+### 2026-06-22 - 阶段 1 开始
+
+- 状态：in_progress
+- 范围：本机端口绑定、环境模式、生产文档关闭、最小健康响应、安全响应头和部署警示。
+- 边界：本阶段不提前实现认证、角色或租户隔离。
+- 下一步：修改配置与应用工厂，补充自动化和 Compose 验收。
+
+### 2026-06-22 13:08 - 阶段 1：紧急暴露面收敛
+
+- 状态：complete
+- 修改文件：
+  - `.env.example`
+  - `docker-compose.yml`
+  - `app/config.py`
+  - `app/main.py`
+  - `tests/test_api.py`
+  - `README.md`
+  - `HARNESS.md`
+- 数据迁移：无；未修改 `.env`、SQLite、Chroma 或上传数据。
+- 验证命令：
+  - `.\.venv\Scripts\python.exe -m compileall -q app tests`
+  - `.\.venv\Scripts\python.exe -m pytest -v`
+  - `.\.venv\Scripts\python.exe -m pip check`
+  - `docker compose config --format json`（仅提取端口字段）
+- 验证结果：16 passed；无损坏依赖；Compose 解析成功，端口为 `127.0.0.1:8000:8000/tcp`；生产模式 `/docs`、`/redoc`、`/openapi.json` 均返回 404。
+- 安全影响：未完成鉴权前默认限制为本机访问；生产环境关闭文档端点；健康响应最小化；统一添加基础安全响应头。
+- 已知遗留：身份认证、授权与租户隔离尚未实现，由阶段 2 处理；`langchain-community` 弃用警告按后续依赖阶段处理。
+- 下一步：停止本次执行；下一次从阶段 2 开始。
