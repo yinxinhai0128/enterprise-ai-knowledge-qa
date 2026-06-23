@@ -54,8 +54,8 @@ database_module.AsyncSessionLocal = async_sessionmaker(
     _test_engine, expire_on_commit=False
 )
 
-from app.core.database import Base  # noqa: E402
 import app.models  # noqa: E402, F401  # 注册所有 ORM 表
+from app.core.database import Base  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
@@ -214,8 +214,9 @@ def agent_factory(monkeypatch):
     传入若干回答文本，模型按顺序返回；每次构造都清空 build_agent 缓存以拿到
     全新的 InMemorySaver（隔离多轮记忆）。
     """
-    from app.agent.agent import build_agent
     from langgraph.checkpoint.memory import InMemorySaver
+
+    from app.agent.agent import build_agent
 
     def _make(responses: list[str | AIMessage]):
         messages = [

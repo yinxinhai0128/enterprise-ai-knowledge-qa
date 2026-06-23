@@ -361,9 +361,14 @@ def get_vectorstore():
 ## 测试
 
 ```bash
-pip install -r requirements-dev.txt
+python -m pip install --require-hashes -r requirements.lock
+python -m pip install -r requirements-dev.txt
+python -m ruff check app tests scripts
+python -m mypy
+python scripts/secret_scan.py
 python scripts/dependency_audit.py
-pytest
+python -m pytest -q
+python scripts/check_test_cleanup.py
 ```
 
 全程使用 Mock（假模型 / 确定性假向量 / 内存 Chroma / 临时库），**不消耗任何真实 API**。

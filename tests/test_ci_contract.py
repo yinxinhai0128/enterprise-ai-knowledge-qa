@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_ci_runs_required_gates_without_real_secrets():
     workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     for command in (
+        "python -m pip install --require-hashes -r requirements.lock",
+        "python -m pip install -r requirements-dev.txt",
         "python -m ruff check app tests scripts",
         "python -m mypy",
         "python scripts/secret_scan.py",

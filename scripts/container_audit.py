@@ -11,14 +11,14 @@ from datetime import date
 from pathlib import Path
 from urllib.parse import unquote
 
-
 ROOT = Path(__file__).resolve().parents[1]
 SEVERITY_RE = re.compile(r"Severity\s*:\s*(CRITICAL|HIGH)", re.IGNORECASE)
 PACKAGE_RE = re.compile(r"Package\s*:\s*pkg:[^/]+/(?:[^/]+/)?([^@\s]+)@([^?\s]+)", re.IGNORECASE)
 
 
 def parse_finding(result: dict[str, object]) -> dict[str, str]:
-    message = str(result.get("message", {}).get("text", ""))  # type: ignore[union-attr]
+    message_data = result.get("message")
+    message = str(message_data.get("text", "")) if isinstance(message_data, dict) else ""
     severity_match = SEVERITY_RE.search(message)
     package_match = PACKAGE_RE.search(message)
     if not severity_match or not package_match or not result.get("ruleId"):
@@ -42,7 +42,8 @@ def _acceptance(finding: dict[str, str], policy: list[dict[str, object]]) -> str
     for item in policy:
         if item.get("id") != finding["id"] or item.get("package") != finding["package"]:
             continue
-        if finding["version"] not in item.get("versions", []):
+        versions = item.get("versions")
+        if not isinstance(versions, list) or finding["version"] not in versions:
             return None
         expires = date.fromisoformat(str(item["expires_on"]))
         if expires < date.today():
@@ -75,6 +76,7 @@ def main() -> int:
         capture_output=True,
         text=True,
         encoding="utf-8",
+        errors="replace",
     )
     if completed.returncode != 0:
         print(completed.stderr.strip() or "Docker Scout failed", file=sys.stderr)

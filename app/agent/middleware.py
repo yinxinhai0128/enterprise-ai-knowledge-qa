@@ -113,7 +113,7 @@ def _token_usage(messages: list) -> tuple[int, int, int]:
     return input_tokens, output_tokens, total_tokens or input_tokens + output_tokens
 
 
-class EnterpriseAuditMiddleware(AgentMiddleware):
+class EnterpriseAuditMiddleware(AgentMiddleware[EnterpriseState, EnterpriseContext, Any]):
     state_schema = EnterpriseState
 
     async def abefore_agent(

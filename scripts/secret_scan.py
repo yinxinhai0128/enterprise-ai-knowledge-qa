@@ -6,7 +6,6 @@ import re
 import subprocess
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 PATTERNS = {
     "private-key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
@@ -52,18 +51,18 @@ def main() -> int:
         except (UnicodeDecodeError, OSError):
             continue
         relative = path.relative_to(ROOT).as_posix()
-        for line_number, line in enumerate(text.splitlines(), start=1):
+        for line_number, line_text in enumerate(text.splitlines(), start=1):
             for name, pattern in PATTERNS.items():
-                if pattern.search(line):
+                if pattern.search(line_text):
                     findings.append((relative, line_number, name))
-            assignment = ASSIGNMENT.search(line)
+            assignment = ASSIGNMENT.search(line_text)
             if assignment:
                 value = assignment.group(1).lower()
                 if not any(marker in value for marker in SAFE_MARKERS):
                     findings.append((relative, line_number, "credential-assignment"))
 
-    for filename, line, kind in findings:
-        print(f"SECRET_CANDIDATE: {filename}:{line} ({kind})")
+    for filename, line_number, kind in findings:
+        print(f"SECRET_CANDIDATE: {filename}:{line_number} ({kind})")
     print(f"secret_scan: candidates={len(findings)}")
     return 1 if findings else 0
 

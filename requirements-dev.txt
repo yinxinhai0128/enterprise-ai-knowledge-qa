@@ -1,5 +1,4 @@
-# Development and security tooling. Runtime transitive graph stays hash-locked.
--r requirements.lock
+# Development and security tooling. Install requirements.lock with hashes first.
 pytest==9.1.1
 pytest-asyncio==1.4.0
 httpx==0.28.1

@@ -153,7 +153,8 @@ class Settings(BaseSettings):
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
     """单例：进程内只解析一次 .env。"""
-    return Settings()
+    # 密钥来自运行环境；静态分析无法观察 BaseSettings 的环境变量注入。
+    return Settings()  # type: ignore[call-arg]
 
 
 # 模块级单例，供全项目导入使用

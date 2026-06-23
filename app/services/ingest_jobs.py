@@ -196,7 +196,7 @@ async def _lease_heartbeat(job_id: int, worker_id: str) -> None:
                     )
                 )
                 await db.commit()
-                if result.rowcount == 0:
+                if getattr(result, "rowcount", 0) == 0:
                     return
     except asyncio.CancelledError:
         raise

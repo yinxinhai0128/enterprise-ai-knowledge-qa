@@ -8,7 +8,7 @@ from sqlalchemy import select
 
 import app.core.database as database_module
 from app.agent.agent import SYSTEM_PROMPT
-from app.agent.middleware import EnterpriseContext, REFUSAL_ANSWER
+from app.agent.middleware import REFUSAL_ANSWER, EnterpriseContext
 from app.core.retriever_tool import search_knowledge_base, search_tenant_knowledge_base
 from app.core.vectorstore import migrate_legacy_vector_metadata
 from app.models.chat_record import ChatRecord

@@ -13,10 +13,10 @@ from loguru import logger
 from starlette.requests import Request
 from starlette.responses import Response
 
+from app.agent.agent import build_agent
 from app.api.admin import router as admin_router
 from app.api.documents import router as documents_router
 from app.api.qa import router as qa_router
-from app.agent.agent import build_agent
 from app.config import settings
 from app.core.checkpointer import close_checkpointer, init_checkpointer
 from app.core.database import init_db
@@ -28,8 +28,8 @@ from app.core.tracing import (
     shutdown_langsmith,
 )
 from app.core.vectorstore import migrate_legacy_vector_metadata
-from app.services.ingest_jobs import recover_stale_ingest_state
 from app.services.conversations import cleanup_expired_conversations
+from app.services.ingest_jobs import recover_stale_ingest_state
 
 
 def _configure_logging() -> None:

@@ -35,7 +35,7 @@ class ConsistencyReport:
 
 def _vector_metadata() -> list[dict]:
     result = get_vectorstore()._collection.get(include=["metadatas"])
-    return [dict(item or {}) for item in result.get("metadatas", [])]
+    return [dict(item or {}) for item in (result.get("metadatas") or [])]
 
 
 def _storage_files() -> set[Path]:

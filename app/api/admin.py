@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import case, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -239,7 +239,7 @@ async def claim_human_task(
         )
         .values(status="claimed", assigned_to=auth.user_id, claimed_at=now)
     )
-    if result.rowcount != 1:
+    if getattr(result, "rowcount", 0) != 1:
         task = await db.get(HumanTask, task_id)
         if task is None or task.tenant_id != auth.tenant_id:
             raise HTTPException(status_code=404, detail="人工任务不存在")
@@ -256,6 +256,8 @@ async def claim_human_task(
     )
     await db.commit()
     task = await db.get(HumanTask, task_id)
+    if task is None:  # pragma: no cover - committed row disappearing is an infrastructure fault
+        raise HTTPException(status_code=500, detail="人工任务状态读取失败")
     return task
 
 
@@ -285,7 +287,7 @@ async def complete_human_task(
             resolution=payload.resolution,
         )
     )
-    if result.rowcount != 1:
+    if getattr(result, "rowcount", 0) != 1:
         task = await db.get(HumanTask, task_id)
         if task is None or task.tenant_id != auth.tenant_id:
             raise HTTPException(status_code=404, detail="人工任务不存在")
@@ -303,6 +305,8 @@ async def complete_human_task(
     )
     await db.commit()
     task = await db.get(HumanTask, task_id)
+    if task is None:  # pragma: no cover - committed row disappearing is an infrastructure fault
+        raise HTTPException(status_code=500, detail="人工任务状态读取失败")
     return task
 
 

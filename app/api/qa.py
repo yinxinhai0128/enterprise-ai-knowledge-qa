@@ -9,9 +9,9 @@ from time import perf_counter
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException, status
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 from langchain.agents.middleware.model_call_limit import ModelCallLimitExceededError
 from langchain.agents.middleware.tool_call_limit import ToolCallLimitExceededError
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 from loguru import logger
 
 from app.agent.agent import build_agent
@@ -21,6 +21,13 @@ from app.core.auth import build_thread_id
 from app.core.checkpointer import get_checkpointer
 from app.core.evidence import validated_evidence_list
 from app.core.limits import QAAuth, reserve_daily_model_budget
+from app.schemas.qa import (
+    AskRequest,
+    AskResponse,
+    EvidenceSource,
+    HistoryMessage,
+    HistoryResponse,
+)
 from app.services.audit import AuditWriteError, complete_audit, fail_audit, start_audit
 from app.services.conversations import (
     SessionBusyError,
@@ -30,12 +37,6 @@ from app.services.conversations import (
     release_conversation,
 )
 from app.services.sensitive_policy import classify_question, denied_match
-from app.schemas.qa import (
-    AskRequest,
-    AskResponse,
-    HistoryMessage,
-    HistoryResponse,
-)
 
 router = APIRouter(prefix="/qa", tags=["qa"])
 
@@ -212,7 +213,7 @@ async def ask(req: AskRequest, auth: QAAuth) -> AskResponse:
 
     return AskResponse(
         answer=answer,
-        sources=sources,
+        sources=[EvidenceSource(**item) for item in sources],
         refused=refused,
         need_human=need_human,
         human_task_id=human_task_id,

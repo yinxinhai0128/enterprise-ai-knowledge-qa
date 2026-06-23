@@ -5,12 +5,14 @@
 """
 from __future__ import annotations
 
+from typing import Any
+
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
 from app.config import settings
 
 
-def init_llm(**overrides) -> ChatOpenAI:
+def init_llm(**overrides: Any) -> ChatOpenAI:
     """构造对话大模型（百炼，OpenAI 兼容）。
 
     Args:
@@ -19,7 +21,7 @@ def init_llm(**overrides) -> ChatOpenAI:
     Returns:
         ChatOpenAI: 可直接传入 `create_agent(model=...)` 的模型实例。
     """
-    params = dict(
+    params: dict[str, Any] = dict(
         model=settings.llm_model,
         api_key=settings.dashscope_api_key,
         base_url=settings.dashscope_base_url,
@@ -32,7 +34,7 @@ def init_llm(**overrides) -> ChatOpenAI:
     return ChatOpenAI(**params)
 
 
-def init_embeddings(**overrides) -> OpenAIEmbeddings:
+def init_embeddings(**overrides: Any) -> OpenAIEmbeddings:
     """构造向量模型（百炼 text-embedding-v3，OpenAI 兼容）。
 
     说明：百炼向量接口不兼容 OpenAI 的 tiktoken 分块逻辑，
@@ -44,7 +46,7 @@ def init_embeddings(**overrides) -> OpenAIEmbeddings:
     Returns:
         OpenAIEmbeddings: 可直接传入 Chroma 的向量化器实例。
     """
-    params = dict(
+    params: dict[str, Any] = dict(
         model=settings.embed_model,
         api_key=settings.dashscope_api_key,
         base_url=settings.dashscope_base_url,

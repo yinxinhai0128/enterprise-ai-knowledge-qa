@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from datetime import date
 from pathlib import Path
-
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -28,7 +28,8 @@ def _is_accepted(
     for item in policy:
         if item.get("id") != vuln_id or item.get("package") != package:
             continue
-        if version not in item.get("versions", []):
+        versions = item.get("versions")
+        if not isinstance(versions, list) or version not in versions:
             return False, "accepted version does not match"
         expires = date.fromisoformat(str(item["expires_on"]))
         if expires < today:
@@ -57,7 +58,14 @@ def main() -> int:
         "--format",
         "json",
     ]
-    completed = subprocess.run(command, capture_output=True, text=True, encoding="utf-8")
+    completed = subprocess.run(
+        command,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env={**os.environ, "PYTHONUTF8": "1"},
+    )
     try:
         report = json.loads(completed.stdout)
     except json.JSONDecodeError:

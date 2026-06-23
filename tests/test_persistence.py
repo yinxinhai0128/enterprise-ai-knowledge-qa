@@ -2,15 +2,13 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from pathlib import Path
 
 import aiosqlite
 import pytest
 from httpx import ASGITransport, AsyncClient
-from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
+from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
-from sqlalchemy import select
 
 import app.core.database as database_module
 import app.services.audit as audit_service
@@ -20,7 +18,6 @@ from app.config import settings
 from app.core.checkpointer import close_checkpointer, init_checkpointer
 from app.models.chat_record import ChatRecord
 from app.models.conversation_session import ConversationSession
-from app.models.human_task import HumanTask, HumanTaskEvent
 from app.services.audit import AuditWriteError, complete_audit, start_audit
 from app.services.conversations import (
     SessionBusyError,

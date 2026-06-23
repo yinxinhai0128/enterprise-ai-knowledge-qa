@@ -108,7 +108,7 @@
 | 6 | 会话、审计与人工介入持久化 | complete | 验收通过 |
 | 7 | LangSmith 与数据治理 | complete | 验收通过 |
 | 8 | 依赖、Chroma CVE 与容器加固 | complete | 89 tests passed；依赖/镜像审计无未接受风险；非 root、只读与镜像内容实测通过 |
-| 9 | 测试体系与 CI | blocked | 97 tests passed、无外部连接/新临时目录；系统 DNS/HTTPS 与 1 个旧 TEMP ACL 残留阻塞最终 CI 门 |
+| 9 | 测试体系与 CI | complete | Ruff/Mypy/秘密扫描、97 tests、零临时目录、依赖审计、干净环境 CI 与 Docker build 全部通过 |
 | 10 | 可观测性、运维与恢复 | pending | |
 | 11 | README、威胁模型和部署文档 | pending | |
 | 12 | 最终生产候选验收 | pending | |
@@ -401,7 +401,7 @@
 
 ### 任务
 
-- [ ] 修复测试临时目录未清理问题，显式 dispose 数据库引擎。（本轮目录自动清零；仍有 1 个阶段 9 前的 ACL 异常旧目录待系统恢复后删除）
+- [x] 修复测试临时目录未清理问题，显式 dispose 数据库引擎。
 - [x] 增加 PDF、DOCX、XLSX、UTF-8 TXT 实际解析样本。
 - [x] 增加上传大小、长文件名、伪造 MIME、空文件测试。
 - [x] 增加认证、角色、跨用户、跨租户测试。
@@ -410,15 +410,15 @@
 - [x] 增加任务重启、重试、幂等、删除、一致性测试。
 - [x] 增加管理接口和拒答率准确性测试。
 - [x] 增加并发上传和并发问答测试。
-- [ ] 增加 `ruff`、类型检查、依赖扫描、秘密扫描。
-- [ ] 新增 CI，至少运行 lint、type-check、pytest、dependency audit、Docker build。
+- [x] 增加 `ruff`、类型检查、依赖扫描、秘密扫描。
+- [x] 新增 CI，至少运行 lint、type-check、pytest、dependency audit、Docker build。
 - [x] CI 禁止使用真实 API Key。
 
 ### 验收门
 
 - [x] 所有测试全绿且无真实外部调用。
-- [ ] 测试结束后无 `kb_test_*` 临时目录残留。
-- [ ] CI 在干净环境中通过。
+- [x] 测试结束后无 `kb_test_*` 临时目录残留。
+- [x] CI 在干净环境中通过。
 
 ---
 
@@ -867,3 +867,15 @@ docker compose config --quiet
 - 外部阻塞一（连续复现超过三次）：Windows DNS/HTTPS 调用无响应；PyPI 官方 curl/pip、阿里 PyPI 镜像、uv、官方 Python 容器访问 PyPI、GHCR Ruff 镜像及 DNS/网络诊断均超时。故 `ruff==0.14.10`、`mypy==1.19.1` 尚未安装实跑，依赖审计和干净环境 CI 也不能据实判绿。
 - 外部阻塞二：已安全删除 55 个历史 `kb_test_*`；剩余 `C:\Users\LENOVO\AppData\Local\Temp\kb_test_6kbdl6zr` 创建于阶段 9 之前，目录 ACL 访问拒绝，`Remove-Item`、.NET 删除、提权 `takeown/icacls` 均挂死。本轮新 fixture 已证实不再制造残留，但硬门要求总数为零，因此仍不能 complete。
 - 恢复条件：恢复 Windows DNS/HTTPS（必要时重启系统/网络）并清除上述旧 TEMP 目录；安装 `requirements-dev.txt` 后实际运行 `ruff`、`mypy`、依赖审计和工作流等价干净环境。全部通过后再将本阶段标记 complete；不得跳到阶段 10。
+
+### 2026-06-23 - 阶段 9：测试体系与 CI（完成）
+
+- 状态：complete；阶段 10 未开始。
+- 阻塞解除：Windows 重启后 DNS/HTTPS 恢复；严格校验路径后删除唯一旧 `kb_test_6kbdl6zr`，专用清理检查为 `leftovers=0`。
+- 质量门：`ruff 0.14.10` 检查通过；`mypy 1.19.1` 对 42 个源码文件检查为 0 issues；秘密扫描为 0 candidates；`pip check` 无损坏依赖。
+- 测试门：隔离 basetemp 下 `pytest -q` 为 97 passed；网络守卫禁止非 loopback 外部连接；测试结束后 `kb_test_*` 为 0。
+- 依赖门：审计 120 个哈希锁定运行依赖，1 个 Chroma 已登记风险接受项在有效期内，unaccepted=0；同时修复 Windows 中文路径下 `pip-audit` 子进程编码兼容性。
+- 干净环境门：在全新 Python 3.12 临时虚拟环境中先按哈希安装 `requirements.lock`、再安装精确固定的开发工具，依次通过 Ruff、Mypy、秘密扫描、97 tests、临时目录检查、`pip check` 和依赖审计；环境随后删除。
+- Docker 门：Docker Desktop 29.5.3 上 `docker buildx build --load` 成功，生成 `enterprise-kb-api:ci`（image `sha256:9b258a97690a...`）。
+- CI 修正：运行依赖与开发工具改为两步安装，避免 `--require-hashes` 递归污染开发依赖；GitHub Actions 保持无真实 Key、无 `${{ secrets.* }}`。
+- 下一步：停止本次执行；下一次从阶段 10 开始。

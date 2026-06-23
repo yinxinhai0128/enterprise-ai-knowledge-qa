@@ -6,7 +6,9 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from typing import Any
 
+from chromadb.api.types import Metadata
 from langchain_chroma import Chroma
 
 from app.config import settings
@@ -42,13 +44,14 @@ def migrate_legacy_vector_metadata() -> int:
             include=["metadatas"],
         )
         ids_to_update: list[str] = []
-        metadatas_to_update: list[dict] = []
+        metadatas_to_update: list[Metadata] = []
+        metadata_batch = batch.get("metadatas") or []
         for item_id, metadata in zip(
             batch.get("ids", []),
-            batch.get("metadatas", []),
+            metadata_batch,
             strict=True,
         ):
-            normalized = dict(metadata or {})
+            normalized: dict[str, Any] = dict(metadata or {})
             changed = False
             if "tenant_id" not in normalized:
                 normalized["tenant_id"] = LEGACY_TENANT_ID
