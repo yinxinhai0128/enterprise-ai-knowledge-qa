@@ -12,7 +12,7 @@ from langchain_core.tools import tool
 
 from app.agent.context import EnterpriseContext
 from app.core.evidence import Evidence
-from app.core.vectorstore import get_vectorstore
+from app.core.vectorstore import close_vectorstore, get_vectorstore, vectorstore_lock
 
 # 检索召回数
 TOP_K = 5
@@ -27,12 +27,16 @@ def search_tenant_knowledge_base(
     tenant_id: str,
 ) -> tuple[str, list[Evidence]]:
     """只在指定租户向量分区检索，返回模型内容与服务端 artifact。"""
-    vectorstore = get_vectorstore()
-    results = vectorstore.similarity_search_with_score(
-        query,
-        k=TOP_K,
-        filter={"tenant_id": tenant_id},
-    )
+    with vectorstore_lock():
+        try:
+            vectorstore = get_vectorstore()
+            results = vectorstore.similarity_search_with_score(
+                query,
+                k=TOP_K,
+                filter={"tenant_id": tenant_id},
+            )
+        finally:
+            close_vectorstore()
 
     kept = [(doc, score) for doc, score in results if score <= MAX_DISTANCE]
     if not kept:

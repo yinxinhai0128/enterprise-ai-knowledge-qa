@@ -25,7 +25,7 @@ from openpyxl import load_workbook
 
 from app.config import settings
 from app.core.process_pool import run_in_parser_process
-from app.core.vectorstore import get_vectorstore
+from app.core.vectorstore import close_vectorstore, get_vectorstore, vectorstore_lock
 
 
 @dataclass
@@ -189,11 +189,15 @@ async def ingest_document(
         return IngestResult(success=False, error_msg="文件归档失败")
 
     try:
-        vectorstore = get_vectorstore()
-        await vectorstore.aadd_documents(
-            chunks,
-            ids=[str(chunk.metadata["chunk_id"]) for chunk in chunks],
-        )
+        with vectorstore_lock():
+            try:
+                vectorstore = get_vectorstore()
+                await vectorstore.aadd_documents(
+                    chunks,
+                    ids=[str(chunk.metadata["chunk_id"]) for chunk in chunks],
+                )
+            finally:
+                close_vectorstore()
 
         logger.info("摄入完成 doc_id={} chunks={}", doc_id, len(chunks))
         return IngestResult(

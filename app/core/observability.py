@@ -60,6 +60,7 @@ def sanitize_log_record(record: Any) -> None:
     }
     if record["exception"] is not None:
         record["extra"]["exception_type"] = record["exception"].type.__name__
+        record["extra"]["exception_module"] = record["exception"].type.__module__
         # 异常消息可能包含供应商请求内容、文件片段或凭据，只记录类型。
         record["exception"] = None
 

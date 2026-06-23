@@ -10,7 +10,7 @@ from sqlalchemy import func, or_, select, text
 
 from app.config import settings
 from app.core.database import AsyncSessionLocal
-from app.core.vectorstore import get_vectorstore
+from app.core.vectorstore import close_vectorstore, get_vectorstore, vectorstore_lock
 from app.models.ingest_job import IngestJob
 
 Probe = Callable[[], Awaitable[None]]
@@ -22,7 +22,14 @@ async def probe_database() -> None:
 
 
 async def probe_vectorstore() -> None:
-    await asyncio.to_thread(get_vectorstore()._collection.count)
+    def _count() -> None:
+        with vectorstore_lock():
+            try:
+                get_vectorstore()._collection.count()
+            finally:
+                close_vectorstore()
+
+    await asyncio.to_thread(_count)
 
 
 async def probe_worker_leases() -> None:

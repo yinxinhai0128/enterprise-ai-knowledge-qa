@@ -21,7 +21,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: enterprise-kb-api:stage8
+    image: enterprise-kb-api:rc
     container_name: enterprise-kb-api
     restart: unless-stopped
     env_file:
@@ -44,7 +44,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: enterprise-kb-api:stage8
+    image: enterprise-kb-api:rc
     container_name: enterprise-kb-worker
     restart: unless-stopped
     command: ["python", "-m", "app.worker"]

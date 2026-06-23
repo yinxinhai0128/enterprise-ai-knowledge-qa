@@ -87,6 +87,37 @@ def _migrate_schema(connection: Connection) -> None:
 
 def _ensure_tenant_indexes(connection: Connection) -> None:
     """建立高频租户过滤索引；语句可安全重复执行。"""
+    # create_all 不会为已有表补建 ORM 的 index=True 索引，显式收敛旧库 schema。
+    connection.execute(
+        text(
+            "CREATE INDEX IF NOT EXISTS ix_documents_tenant_id "
+            "ON documents (tenant_id)"
+        )
+    )
+    connection.execute(
+        text(
+            "CREATE INDEX IF NOT EXISTS ix_documents_uploaded_by "
+            "ON documents (uploaded_by)"
+        )
+    )
+    connection.execute(
+        text(
+            "CREATE INDEX IF NOT EXISTS ix_chat_records_tenant_id "
+            "ON chat_records (tenant_id)"
+        )
+    )
+    connection.execute(
+        text(
+            "CREATE INDEX IF NOT EXISTS ix_chat_records_user_id "
+            "ON chat_records (user_id)"
+        )
+    )
+    connection.execute(
+        text(
+            "CREATE INDEX IF NOT EXISTS ix_chat_records_audit_status "
+            "ON chat_records (audit_status)"
+        )
+    )
     connection.execute(
         text(
             "CREATE INDEX IF NOT EXISTS ix_documents_tenant_created "

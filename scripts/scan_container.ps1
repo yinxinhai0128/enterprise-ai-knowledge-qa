@@ -9,11 +9,11 @@ function Assert-NativeSuccess([string]$Step) {
 docker compose build --pull api
 Assert-NativeSuccess "docker compose build"
 
-$uid = docker run --rm --entrypoint id enterprise-kb-api:stage8 -u
+$uid = docker run --rm --entrypoint id enterprise-kb-api:rc -u
 Assert-NativeSuccess "container UID verification"
 if ($uid.Trim() -ne "10001") { throw "unexpected container UID: $uid" }
 
-$gid = docker run --rm --entrypoint id enterprise-kb-api:stage8 -g
+$gid = docker run --rm --entrypoint id enterprise-kb-api:rc -g
 Assert-NativeSuccess "container GID verification"
 if ($gid.Trim() -ne "10001") { throw "unexpected container GID: $gid" }
 
@@ -29,7 +29,7 @@ $checks = @(
     @{ Arguments = @("!", "-e", "/app/.git"); Name = "Git metadata is absent" }
 )
 foreach ($check in $checks) {
-    docker run --rm --entrypoint test enterprise-kb-api:stage8 @($check.Arguments)
+    docker run --rm --entrypoint test enterprise-kb-api:rc @($check.Arguments)
     Assert-NativeSuccess $check.Name
 }
 
@@ -38,5 +38,5 @@ $python = if (Test-Path ".venv/Scripts/python.exe") {
 } else {
     "python"
 }
-& $python scripts/container_audit.py --image "local://enterprise-kb-api:stage8"
+& $python scripts/container_audit.py --image "local://enterprise-kb-api:rc"
 Assert-NativeSuccess "container vulnerability policy audit"

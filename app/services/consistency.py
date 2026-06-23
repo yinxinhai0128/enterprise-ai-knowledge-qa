@@ -9,7 +9,7 @@ from sqlalchemy import select
 
 from app.config import settings
 from app.core.database import AsyncSessionLocal
-from app.core.vectorstore import get_vectorstore
+from app.core.vectorstore import close_vectorstore, get_vectorstore, vectorstore_lock
 from app.models.document import Document
 from app.models.ingest_job import IngestJob
 
@@ -34,8 +34,12 @@ class ConsistencyReport:
 
 
 def _vector_metadata() -> list[dict]:
-    result = get_vectorstore()._collection.get(include=["metadatas"])
-    return [dict(item or {}) for item in (result.get("metadatas") or [])]
+    with vectorstore_lock():
+        try:
+            result = get_vectorstore()._collection.get(include=["metadatas"])
+            return [dict(item or {}) for item in (result.get("metadatas") or [])]
+        finally:
+            close_vectorstore()
 
 
 def _storage_files() -> set[Path]:

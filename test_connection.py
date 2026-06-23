@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import sys
+
 from app.config import settings
 from app.core.llm import init_embeddings, init_llm
 
