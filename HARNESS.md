@@ -111,7 +111,7 @@
 | 9 | 测试体系与 CI | complete | Ruff/Mypy/秘密扫描、97 tests、零临时目录、依赖审计、干净环境 CI 与 Docker build 全部通过 |
 | 10 | 可观测性、运维与恢复 | complete | live/ready、结构化安全日志/错误码/指标、故障告警模拟、备份恢复与零异常一致性演练、112 tests 全部通过 |
 | 11 | README、威胁模型和部署文档 | complete | README 全新 Python 3.12 安全启动实跑；部署/Token/迁移/轮换/治理/容量与威胁模型齐全；OpenAPI/配置文档契约及 119 tests 通过 |
-| 12 | 最终生产候选验收 | pending | |
+| 12 | 最终生产候选验收 | complete | 119 tests；真实百炼非敏感 E2E；迁移/恢复/一致性、Ruff/Mypy、依赖/镜像扫描和最终容器健康全部通过；报告 `docs/audit/stage12-acceptance-2026-06-23.md` |
 
 ---
 
@@ -483,37 +483,37 @@
 docker compose config --quiet
 ```
 
-- [ ] lint/type-check 全绿。
-- [ ] 依赖与镜像漏洞扫描无未接受的 Critical/High。
-- [ ] 秘密扫描结果为零。
-- [ ] 数据库迁移可在空库和已有库执行。
-- [ ] SQLite、文件、向量一致性为零异常。
-- [ ] Docker 镜像构建和健康检查通过。
+- [x] lint/type-check 全绿。
+- [x] 依赖与镜像漏洞扫描无未接受的 Critical/High。
+- [x] 秘密扫描结果为零。
+- [x] 数据库迁移可在空库和已有库执行。
+- [x] SQLite、文件、向量一致性为零异常。
+- [x] Docker 镜像构建和健康检查通过。
 
 ### 安全验收
 
-- [ ] 匿名访问所有业务路由均为 401。
-- [ ] 普通用户访问管理路由为 403。
-- [ ] 跨用户、跨租户访问不可行。
-- [ ] 模型伪造来源不会被 API 接受。
-- [ ] 文档提示词注入不能改变系统策略。
-- [ ] 超长输入、恶意文件和高频请求被限制。
-- [ ] Chroma HTTP Server 不可访问。
-- [ ] LangSmith 关闭时零上报；开启时敏感数据已脱敏。
+- [x] 匿名访问所有业务路由均为 401。
+- [x] 普通用户访问管理路由为 403。
+- [x] 跨用户、跨租户访问不可行。
+- [x] 模型伪造来源不会被 API 接受。
+- [x] 文档提示词注入不能改变系统策略。
+- [x] 超长输入、恶意文件和高频请求被限制。
+- [x] Chroma HTTP Server 不可访问。
+- [x] LangSmith 关闭时零上报；开启时敏感数据已脱敏。
 
 ### 可靠性验收
 
-- [ ] API/Worker 在摄入各阶段崩溃后任务可恢复。
-- [ ] 多次重试不产生重复向量。
-- [ ] 删除文档后文件、数据库、向量均清理。
-- [ ] 重启后会话可恢复。
-- [ ] 备份恢复演练通过。
+- [x] API/Worker 在摄入各阶段崩溃后任务可恢复。
+- [x] 多次重试不产生重复向量。
+- [x] 删除文档后文件、数据库、向量均清理。
+- [x] 重启后会话可恢复。
+- [x] 备份恢复演练通过。
 
 ### 真实环境验收
 
-- [ ] 使用专用测试账号和非敏感样本文档完成端到端流程。
-- [ ] LangSmith 验收只在明确授权时执行。
-- [ ] 记录版本、提交号、镜像摘要、迁移版本和验收日期。
+- [x] 使用专用测试账号和非敏感样本文档完成端到端流程。
+- [x] LangSmith 验收只在明确授权时执行。
+- [x] 记录版本、提交号、镜像摘要、迁移版本和验收日期。
 
 只有上述项目全部完成，阶段 12 才可标记 `complete`。
 
@@ -904,3 +904,18 @@ docker compose config --quiet
 - 回归证据：119 tests passed；Ruff 通过；Mypy 对 46 个源码文件 0 issues；compileall、`pip check`、秘密扫描 0 candidates、`kb_test_*` 0 leftovers 全部通过。
 - 数据保护：未覆盖或展示 `.env`/密钥，未使用真实企业文档，未调用真实模型，未修改或删除正式数据。
 - 下一步：停止本次执行；下一次从阶段 12 开始。
+
+### 2026-06-23 16:46 - 阶段 12：最终生产候选验收（完成）
+
+- 状态：complete；HARNESS 全部阶段完成。
+- 修改与记录：实现提交 `622b7fc`；新增隔离迁移验证命令、专用身份真实 E2E 脚本与非敏感合成样本；最终报告为 `docs/audit/stage12-acceptance-2026-06-23.md`。
+- 迁移证据：空库与阶段 10 备份恢复副本均连续迁移两次，`integrity_check=ok`；已有库原有 6 行不变；首次发现并修复旧表缺少 5 个 ORM 索引，最终两库均为 38 个同名 schema 对象。迁移版本记录为 `schema@622b7fc`，恢复清单 `schema_version=1`。
+- 自动化证据：`compileall` 通过；119 tests passed；Ruff 全绿；Mypy 对 42 个源码文件 0 issues；`pip check` 无损坏依赖；秘密候选和测试临时目录均为 0；正式与恢复副本三存储 `total_issues=0`。
+- 供应链与镜像：120 个哈希锁定依赖的审计为 findings=1、accepted=1、unaccepted=0；最终镜像审计为 findings=4、accepted=4、unaccepted=0，例外均于 2026-07-22 到期。`enterprise-kb-api:rc` 摘要为 `sha256:c62ebe18115338b6510db250d161e7100d9518e13d12bf69c6f855155d5eff85`。
+- 容器证据：最终镜像以 UID/GID 10001、只读根文件系统、drop ALL capabilities、无外网和临时卷启动，health=`healthy`、readiness=200；镜像不含 `.env`/tests/backups/Git；Compose 仅含 API/Worker，无 Chroma HTTP Server。
+- 安全与可靠性：认证/角色/tenant-user 隔离、可信 artifact、提示词注入、输入/文件/频率限制、摄入崩溃恢复/幂等/补偿删除、会话重启和备份恢复均由完整测试覆盖。LangSmith 关闭路径零调用，测试开启路径最终载荷脱敏；因未获明确授权，未执行真实 LangSmith，上线 E2E 强制关闭追踪。
+- 真实 E2E：使用专用临时身份和合成 TXT，在独立临时 SQLite/Chroma/文件/日志目录完成真实百炼上传、Embedding、Agent 工具检索、1 个可信来源、历史持久化及三层删除，最终一致性 0 异常；未触碰正式数据或真实企业文档。
+- 真实问题修复：本地验收客户端禁用环境代理以避免 loopback 502；API/Worker 嵌入式 Chroma 跨进程冲突通过文件锁和每操作关闭客户端解决，修复后真实 E2E 通过；验收孤儿解析进程与临时目录已精确清理为 0。
+- 已知遗留：风险例外须在 2026-07-22 前复审；继续迁移 `langchain-community`；多主机扩展前迁移 PostgreSQL 与服务型向量库；生产上线仍需企业 IdP、恶意软件扫描、容量压测、TLS 反向代理、防火墙及变更审批。
+- 数据保护：未覆盖或显示 `.env`/Key/Token，未删除或覆盖正式 `storage/`、`chroma_db/`，未执行未经授权的真实 LangSmith 追踪。
+- 下一步：停止执行；生产候选交付完成。

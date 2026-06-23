@@ -1,4 +1,4 @@
-"""阶段 11：文档必须与实际路由、默认配置和安全边界一致。"""
+"""文档必须与实际路由、默认配置、验收状态和安全边界一致。"""
 from __future__ import annotations
 
 import os
@@ -34,12 +34,13 @@ def test_documented_model_defaults_match_settings_and_env_example():
     assert set(example) <= known_fields
 
 
-def test_readme_avoids_unverified_production_claims_and_links_required_docs():
+def test_readme_avoids_unverified_claims_and_links_acceptance_evidence():
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     for forbidden in ("开箱即用", "零运维", "可平滑切换", "已生产可用", "企业级生产可用"):
         assert forbidden not in readme
     for required in (
-        "生产候选整改中",
+        "生产候选验收已通过",
+        "docs/audit/stage12-acceptance-2026-06-23.md",
         "docs/DEPLOYMENT.md",
         "docs/THREAT_MODEL.md",
         "docs/OPERATIONS_RUNBOOK.md",
