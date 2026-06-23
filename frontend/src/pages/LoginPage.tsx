@@ -24,6 +24,12 @@ export default function LoginPage() {
     if (auth.token) navigate('/chat', { replace: true })
   }, [auth.token, navigate])
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const t = params.get('token')
+    if (t) { setToken(t); window.history.replaceState({}, '', '/login') }
+  }, [])
+
   function validate(t: string): string {
     const trimmed = t.trim()
     if (!trimmed) return '请输入访问令牌'
