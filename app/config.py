@@ -38,6 +38,8 @@ class Settings(BaseSettings):
     agent_max_steps: int = Field(default=30, ge=3, le=50)
     max_model_calls_per_request: int = Field(default=4, ge=1, le=20)
     max_retrieval_calls_per_request: int = Field(default=3, ge=1, le=20)
+    llm_input_cost_per_million: float = Field(default=0.0, ge=0.0)
+    llm_output_cost_per_million: float = Field(default=0.0, ge=0.0)
 
     # ---------- LangSmith 可观测 ----------
     langsmith_api_key: str = Field(default="", description="LangSmith API Key，可空")
@@ -62,6 +64,7 @@ class Settings(BaseSettings):
     app_host: str = Field(default="127.0.0.1", description="服务监听地址")
     app_port: int = Field(default=8000, description="服务监听端口")
     log_level: str = Field(default="INFO", description="日志级别")
+    readiness_timeout_seconds: float = Field(default=3.0, gt=0.0, le=30.0)
 
     # ---------- 请求、并发与每日费用边界 ----------
     max_question_chars: int = Field(default=4000, ge=1, le=100_000)

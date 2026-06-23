@@ -109,7 +109,7 @@
 | 7 | LangSmith 与数据治理 | complete | 验收通过 |
 | 8 | 依赖、Chroma CVE 与容器加固 | complete | 89 tests passed；依赖/镜像审计无未接受风险；非 root、只读与镜像内容实测通过 |
 | 9 | 测试体系与 CI | complete | Ruff/Mypy/秘密扫描、97 tests、零临时目录、依赖审计、干净环境 CI 与 Docker build 全部通过 |
-| 10 | 可观测性、运维与恢复 | pending | |
+| 10 | 可观测性、运维与恢复 | complete | live/ready、结构化安全日志/错误码/指标、故障告警模拟、备份恢复与零异常一致性演练、112 tests 全部通过 |
 | 11 | README、威胁模型和部署文档 | pending | |
 | 12 | 最终生产候选验收 | pending | |
 
@@ -430,20 +430,20 @@
 
 ### 任务
 
-- [ ] 区分 `/health/live` 与 `/health/ready`。
-- [ ] readiness 检查 SQLite、向量库、Worker 租约，不直接消耗模型费用。
-- [ ] 增加 request_id、结构化日志和错误码。
-- [ ] 日志禁止出现 Key、Token、完整敏感问题和完整文档片段。
-- [ ] 增加请求量、延迟、拒答率、人工率、摄入失败率、队列积压指标。
-- [ ] 增加模型 Token、费用、重试次数和超时指标。
-- [ ] 编写 SQLite、Chroma、文件备份与恢复脚本。
-- [ ] 验证从备份恢复后的一致性。
-- [ ] 建立告警阈值和故障处理 Runbook。
+- [x] 区分 `/health/live` 与 `/health/ready`。
+- [x] readiness 检查 SQLite、向量库、Worker 租约，不直接消耗模型费用。
+- [x] 增加 request_id、结构化日志和错误码。
+- [x] 日志禁止出现 Key、Token、完整敏感问题和完整文档片段。
+- [x] 增加请求量、延迟、拒答率、人工率、摄入失败率、队列积压指标。
+- [x] 增加模型 Token、费用、重试次数和超时指标。
+- [x] 编写 SQLite、Chroma、文件备份与恢复脚本。
+- [x] 验证从备份恢复后的一致性。
+- [x] 建立告警阈值和故障处理 Runbook。
 
 ### 验收门
 
-- [ ] 模拟数据库不可用、向量库不可用、模型超时均能产生清晰告警。
-- [ ] 恢复演练通过，数据一致性巡检为零异常。
+- [x] 模拟数据库不可用、向量库不可用、模型超时均能产生清晰告警。
+- [x] 恢复演练通过，数据一致性巡检为零异常。
 
 ---
 
@@ -879,3 +879,16 @@ docker compose config --quiet
 - Docker 门：Docker Desktop 29.5.3 上 `docker buildx build --load` 成功，生成 `enterprise-kb-api:ci`（image `sha256:9b258a97690a...`）。
 - CI 修正：运行依赖与开发工具改为两步安装，避免 `--require-hashes` 递归污染开发依赖；GitHub Actions 保持无真实 Key、无 `${{ secrets.* }}`。
 - 下一步：停止本次执行；下一次从阶段 10 开始。
+
+### 2026-06-23 - 阶段 10：可观测性、运维与恢复（完成）
+
+- 状态：complete；阶段 11 未开始。
+- 健康与错误契约：新增公开 `/health/live`、不调用模型的 `/health/ready`（SQLite、Chroma、Worker 租约）和聚合 `/metrics`；保留 deprecated `/health` 兼容路径。所有错误响应带稳定 `error_code`、`request_id`，响应头回传校验后的 `X-Request-ID`。
+- 安全可观测性：Loguru 控制台/文件改为 JSON，patcher 移除已知 Key、Bearer/credential 形态和异常原文；请求日志只含方法、模板路由、状态、延迟与关联 ID。Prometheus 指标覆盖请求量/延迟、拒答/人工率、摄入失败/积压、Token/估算费用、真实模型重试/超时，且无租户、用户、问题和文件标签。
+- 告警模拟：自动化测试分别注入 SQLite 不可用、Chroma 不可用和模型超时，确认产生 `READINESS_DATABASE_UNAVAILABLE`、`READINESS_VECTORSTORE_UNAVAILABLE`、`MODEL_TIMEOUT` 清晰事件；过期 Worker 租约也会阻止 readiness。
+- 运维契约：新增 `config/alerts.yml` 的 readiness、P95、拒答/人工、摄入失败/积压、模型超时/重试、指标数据库与费用阈值；`docs/OPERATIONS_RUNBOOK.md` 覆盖对应排障、备份、空目标恢复、验证和回滚。README 与 `.env.example` 已同步。
+- 恢复演练：正式数据演练前只读一致性为 `total_issues=0`，确认 Compose 无运行写入者且 8000 未监听；创建 `backups/stage10_20260623_142601`，恢复到独立 TEMP 空目录，清单 SHA-256、所有 SQLite `integrity_check`、SQLite/Chroma/文件一致性最终均为 0 异常，随后仅清理演练副本并保留备份。
+- 回归证据：112 tests passed；Ruff 通过；Mypy 对 45 个源码文件 0 issues；compileall、`pip check`、秘密扫描 0 candidates、`kb_test_*` 0 leftovers、Compose 静默解析和正式 readiness 三组件均通过。
+- 镜像证据：Dockerfile/Compose healthcheck 均指向 readiness；移除未使用且会额外依赖 Docker Hub frontend 的 syntax 指令后，`enterprise-kb-api:stage10` 构建成功（image `sha256:bcccf17e2e70...`）。
+- 数据保护：未覆盖 `.env`，未显示密钥，未修改数据库结构，未删除或覆盖正式 `storage/`、`chroma_db/`。
+- 下一步：停止本次执行；下一次从阶段 11 开始。

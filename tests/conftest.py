@@ -238,13 +238,16 @@ def agent_factory(monkeypatch):
 async def _setup_db():
     """每个用例前建表、后清表，保证用例间互不污染。"""
     from app.core.limits import request_limiter
+    from app.core.observability import runtime_metrics
 
     await request_limiter.reset()
+    runtime_metrics.reset()
     for directory in ("quarantine", "documents"):
         shutil.rmtree(Path(_TMP) / directory, ignore_errors=True)
     async with database_module.engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
+    runtime_metrics.reset()
     async with database_module.engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
     for directory in ("quarantine", "documents"):

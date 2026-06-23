@@ -1,0 +1,53 @@
+schema_version: 1
+alerts:
+  - name: APIReadinessFailed
+    source: http_probe
+    target: /health/ready
+    condition: status != 200 for 2 minutes
+    severity: critical
+    runbook: readiness
+  - name: HTTPP95LatencyHigh
+    source: prometheus
+    query: histogram_quantile(0.95, sum by (le) (rate(enterprise_kb_http_request_duration_seconds_bucket[5m]))) > 10
+    severity: warning
+    runbook: latency
+  - name: RefusalRateHigh
+    source: prometheus
+    query: enterprise_kb_qa_refused_rate > 0.50 and enterprise_kb_qa_total >= 20
+    severity: warning
+    runbook: refusal-rate
+  - name: HumanReviewRateHigh
+    source: prometheus
+    query: enterprise_kb_qa_human_rate > 0.20 and enterprise_kb_qa_total >= 20
+    severity: warning
+    runbook: human-rate
+  - name: IngestFailureRateHigh
+    source: prometheus
+    query: enterprise_kb_ingest_failure_rate > 0.10 and enterprise_kb_ingest_jobs_total >= 10
+    severity: critical
+    runbook: ingest-failure
+  - name: IngestQueueBacklogHigh
+    source: prometheus
+    query: enterprise_kb_ingest_queue_backlog > 100
+    severity: warning
+    runbook: queue-backlog
+  - name: ModelTimeoutBurst
+    source: prometheus
+    query: increase(enterprise_kb_model_timeouts_total[5m]) >= 5
+    severity: critical
+    runbook: model-timeout
+  - name: ModelRetryBurst
+    source: prometheus
+    query: increase(enterprise_kb_model_retries_total[5m]) >= 10
+    severity: warning
+    runbook: model-timeout
+  - name: MetricsDatabaseUnavailable
+    source: prometheus
+    query: enterprise_kb_database_up == 0
+    severity: critical
+    runbook: sqlite
+  - name: DailyModelCostHigh
+    source: prometheus
+    query: enterprise_kb_model_estimated_cost > 100
+    severity: warning
+    runbook: model-cost

@@ -56,7 +56,7 @@ async def test_openapi_declares_bearer_security(anonymous_client):
     assert schemes["BearerAuth"]["scheme"] == "bearer"
 
     for path, operations in schema["paths"].items():
-        if path == "/health":
+        if path in {"/health", "/health/live", "/health/ready", "/metrics"}:
             continue
         for operation in operations.values():
             assert {"BearerAuth": []} in operation.get("security", []), path

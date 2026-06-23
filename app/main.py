@@ -1,4 +1,4 @@
-"""FastAPI 入口：注册 lifespan 与 /health。
+"""FastAPI 入口：生命周期、健康探针、可观测性与业务路由。
 
 业务路由后续在 app/api/ 下拆分，再在此处 include_router。
 """
@@ -7,11 +7,17 @@ from __future__ import annotations
 import asyncio
 import sys
 from contextlib import asynccontextmanager
+from time import perf_counter
+from uuid import uuid4
 
 from fastapi import FastAPI
+from fastapi import Request as FastAPIRequest
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from loguru import logger
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import JSONResponse, PlainTextResponse, Response
 
 from app.agent.agent import build_agent
 from app.api.admin import router as admin_router
@@ -20,6 +26,13 @@ from app.api.qa import router as qa_router
 from app.config import settings
 from app.core.checkpointer import close_checkpointer, init_checkpointer
 from app.core.database import init_db
+from app.core.observability import (
+    normalize_request_id,
+    render_metrics,
+    request_id_var,
+    runtime_metrics,
+    sanitize_log_record,
+)
 from app.core.process_pool import shutdown_parser_pool
 from app.core.tracing import (
     TracePolicyError,
@@ -29,13 +42,34 @@ from app.core.tracing import (
 )
 from app.core.vectorstore import migrate_legacy_vector_metadata
 from app.services.conversations import cleanup_expired_conversations
+from app.services.health import evaluate_readiness
 from app.services.ingest_jobs import recover_stale_ingest_state
+
+_ERROR_CODES = {
+    400: "BAD_REQUEST",
+    401: "AUTHENTICATION_REQUIRED",
+    403: "ACCESS_DENIED",
+    404: "NOT_FOUND",
+    405: "METHOD_NOT_ALLOWED",
+    409: "CONFLICT",
+    413: "UPLOAD_TOO_LARGE",
+    422: "VALIDATION_ERROR",
+    429: "RATE_LIMITED",
+    503: "SERVICE_UNAVAILABLE",
+}
 
 
 def _configure_logging() -> None:
-    """配置 loguru：控制台 + 文件滚动。"""
+    """配置 JSON 日志；patcher 会移除凭据与异常原文。"""
     logger.remove()
-    logger.add(sys.stderr, level=settings.log_level)
+    logger.configure(patcher=sanitize_log_record)
+    logger.add(
+        sys.stderr,
+        level=settings.log_level,
+        serialize=True,
+        diagnose=False,
+        backtrace=False,
+    )
     logger.add(
         settings.log_dir / "app_{time:YYYY-MM-DD}.log",
         level=settings.log_level,
@@ -43,6 +77,9 @@ def _configure_logging() -> None:
         retention="14 days",
         encoding="utf-8",
         enqueue=True,
+        serialize=True,
+        diagnose=False,
+        backtrace=False,
     )
 
 
@@ -98,10 +135,95 @@ def create_app() -> FastAPI:
         openapi_url=None if is_production else "/openapi.json",
     )
 
+    @application.exception_handler(StarletteHTTPException)
+    async def http_error_handler(
+        request: FastAPIRequest, exc: StarletteHTTPException
+    ) -> JSONResponse:
+        error_code = _ERROR_CODES.get(exc.status_code, "HTTP_ERROR")
+        request_id = request_id_var.get()
+        logger.bind(
+            event="http_error",
+            error_code=error_code,
+            status_code=exc.status_code,
+            method=request.method,
+            path=request.url.path,
+        ).warning("http_request_rejected")
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={
+                "detail": jsonable_encoder(exc.detail),
+                "error_code": error_code,
+                "request_id": request_id,
+            },
+            headers=exc.headers,
+        )
+
+    @application.exception_handler(RequestValidationError)
+    async def validation_error_handler(
+        request: FastAPIRequest, exc: RequestValidationError
+    ) -> JSONResponse:
+        logger.bind(
+            event="http_error",
+            error_code="VALIDATION_ERROR",
+            status_code=422,
+            method=request.method,
+            path=request.url.path,
+        ).warning("http_request_validation_failed")
+        return JSONResponse(
+            status_code=422,
+            content={
+                "detail": jsonable_encoder(exc.errors()),
+                "error_code": "VALIDATION_ERROR",
+                "request_id": request_id_var.get(),
+            },
+        )
+
+    @application.exception_handler(Exception)
+    async def internal_error_handler(request: FastAPIRequest, exc: Exception) -> JSONResponse:
+        logger.bind(
+            event="http_error",
+            error_code="INTERNAL_ERROR",
+            status_code=500,
+            method=request.method,
+            path=request.url.path,
+            failure_type=type(exc).__name__,
+        ).error("unhandled_http_error")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "detail": "服务内部错误",
+                "error_code": "INTERNAL_ERROR",
+                "request_id": request_id_var.get(),
+            },
+        )
+
     @application.middleware("http")
-    async def add_security_headers(request: Request, call_next) -> Response:
-        """为所有响应添加基础浏览器与缓存安全策略。"""
-        response = await call_next(request)
+    async def observe_and_secure(request: Request, call_next) -> Response:
+        """关联请求、记录低基数指标，并添加安全响应头。"""
+        request_id = normalize_request_id(
+            request.headers.get("X-Request-ID"), uuid4().hex
+        )
+        token = request_id_var.set(request_id)
+        started = perf_counter()
+        try:
+            with logger.contextualize(request_id=request_id):
+                response = await call_next(request)
+        finally:
+            request_id_var.reset(token)
+
+        route = request.scope.get("route")
+        route_path = getattr(route, "path", "unmatched")
+        elapsed = max(0.0, perf_counter() - started)
+        runtime_metrics.record_request(request.method, route_path, response.status_code, elapsed)
+        logger.bind(
+            event="http_request",
+            request_id=request_id,
+            method=request.method,
+            route=route_path,
+            status_code=response.status_code,
+            latency_ms=round(elapsed * 1000, 3),
+        ).info("http_request_complete")
+        response.headers["X-Request-ID"] = request_id
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "no-referrer"
@@ -127,10 +249,29 @@ def create_app() -> FastAPI:
             )
         return response
 
-    @application.get("/health", tags=["system"], summary="健康检查")
-    async def health() -> dict[str, str]:
-        """最小存活探针，不暴露版本和内部组件。"""
+    @application.get("/health/live", tags=["system"], summary="存活检查")
+    async def health_live() -> dict[str, str]:
+        """仅证明 HTTP 进程仍可响应。"""
         return {"status": "ok"}
+
+    @application.get("/health", tags=["system"], summary="兼容存活检查", deprecated=True)
+    async def health_legacy() -> dict[str, str]:
+        return {"status": "ok"}
+
+    @application.get("/health/ready", tags=["system"], summary="就绪检查")
+    async def health_ready() -> JSONResponse:
+        ready, components = await evaluate_readiness()
+        return JSONResponse(
+            status_code=200 if ready else 503,
+            content={"status": "ready" if ready else "not_ready", "components": components},
+        )
+
+    @application.get("/metrics", tags=["system"], summary="Prometheus 指标")
+    async def metrics() -> PlainTextResponse:
+        return PlainTextResponse(
+            await render_metrics(),
+            media_type="text/plain; version=0.0.4; charset=utf-8",
+        )
 
     application.include_router(documents_router)
     application.include_router(qa_router)
