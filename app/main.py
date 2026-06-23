@@ -12,6 +12,7 @@ from uuid import uuid4
 
 from fastapi import FastAPI
 from fastapi import Request as FastAPIRequest
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from loguru import logger
@@ -242,7 +243,7 @@ def create_app() -> FastAPI:
             # 开发模式保留 Swagger UI 所需的 CDN 资源。
             response.headers["Content-Security-Policy"] = (
                 "default-src 'self'; "
-                "script-src 'self' https://cdn.jsdelivr.net; "
+                "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
                 "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
                 "img-src 'self' data: https://fastapi.tiangolo.com; "
                 "frame-ancestors 'none'; base-uri 'none'"
@@ -276,6 +277,21 @@ def create_app() -> FastAPI:
     application.include_router(documents_router)
     application.include_router(qa_router)
     application.include_router(admin_router)
+
+    if not is_production:
+        application.add_middleware(
+            CORSMiddleware,
+            allow_origins=[
+                "http://localhost:5173",
+                "http://127.0.0.1:5173",
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
+            ],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
+
     return application
 
 
