@@ -5,10 +5,12 @@ import asyncio
 import io
 import zipfile
 from pathlib import Path
+from xml.sax.saxutils import escape
 
 import pytest
 from openpyxl import Workbook
 from pypdf import PdfWriter
+from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
 from sqlalchemy import select
 
 import app.core.database as database_module
@@ -32,13 +34,41 @@ def _pdf_bytes(pages: int) -> bytes:
     return output.getvalue()
 
 
-def _xlsx_bytes(*, cells: int = 1, sheets: int = 1) -> bytes:
+def _text_pdf_bytes(text: str) -> bytes:
+    """生成带真实可提取文本流的最小 PDF，不依赖外部样本文件。"""
+    output = io.BytesIO()
+    writer = PdfWriter()
+    page = writer.add_blank_page(width=300, height=100)
+    font = DictionaryObject(
+        {
+            NameObject("/Type"): NameObject("/Font"),
+            NameObject("/Subtype"): NameObject("/Type1"),
+            NameObject("/BaseFont"): NameObject("/Helvetica"),
+        }
+    )
+    resources = DictionaryObject(
+        {
+            NameObject("/Font"): DictionaryObject(
+                {NameObject("/F1"): writer._add_object(font)}
+            )
+        }
+    )
+    stream = DecodedStreamObject()
+    escaped = text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+    stream.set_data(f"BT /F1 12 Tf 20 50 Td ({escaped}) Tj ET".encode("ascii"))
+    page[NameObject("/Resources")] = resources
+    page[NameObject("/Contents")] = writer._add_object(stream)
+    writer.write(output)
+    return output.getvalue()
+
+
+def _xlsx_bytes(*, cells: int = 1, sheets: int = 1, value: str = "x") -> bytes:
     output = io.BytesIO()
     workbook = Workbook()
     first = workbook.active
     first.title = "sheet-1"
     for index in range(cells):
-        first.cell(row=1, column=index + 1, value="x")
+        first.cell(row=1, column=index + 1, value=value)
     for index in range(1, sheets):
         workbook.create_sheet(f"sheet-{index + 1}")
     workbook.save(output)
@@ -52,6 +82,77 @@ def _oversized_docx_zip() -> bytes:
         archive.writestr("[Content_Types].xml", "<Types/>")
         archive.writestr("word/document.xml", "x" * 2048)
     return output.getvalue()
+
+
+def _docx_bytes(text: str) -> bytes:
+    """生成 docx2txt 可解析的最小 OOXML 文档。"""
+    output = io.BytesIO()
+    document = (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+        f"<w:body><w:p><w:r><w:t>{escape(text)}</w:t></w:r></w:p></w:body>"
+        "</w:document>"
+    )
+    content_types = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+        '<Default Extension="xml" ContentType="application/xml"/>'
+        '<Override PartName="/word/document.xml" '
+        'ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>'
+        "</Types>"
+    )
+    relationships = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+        '<Relationship Id="rId1" '
+        'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" '
+        'Target="word/document.xml"/>'
+        "</Relationships>"
+    )
+    with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("[Content_Types].xml", content_types)
+        archive.writestr("_rels/.rels", relationships)
+        archive.writestr("word/document.xml", document)
+    return output.getvalue()
+
+
+async def test_real_pdf_docx_xlsx_and_utf8_txt_are_parsed_and_indexed(
+    client, vectorstore, worker_once
+):
+    cases = (
+        ("real.pdf", _text_pdf_bytes("PDF annual leave policy"), "application/pdf", "annual leave"),
+        (
+            "real.docx",
+            _docx_bytes("DOCX expense policy"),
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "expense policy",
+        ),
+        (
+            "real.xlsx",
+            _xlsx_bytes(value="XLSX travel policy"),
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "travel policy",
+        ),
+        ("real.txt", "UTF-8 年假制度".encode("utf-8"), "text/plain", "年假制度"),
+    )
+
+    for filename, payload, mime, expected_text in cases:
+        uploaded = await client.post(
+            "/documents/upload",
+            files={"file": (filename, payload, mime)},
+        )
+        assert uploaded.status_code == 201, uploaded.text
+        assert await worker_once() is True
+        doc_id = uploaded.json()["id"]
+        detail = await client.get(f"/documents/{doc_id}")
+        assert detail.json()["status"] == "indexed"
+        stored = vectorstore._collection.get(
+            where={"doc_id": doc_id}, include=["documents", "metadatas"]
+        )
+        assert stored["ids"]
+        assert any(expected_text in text for text in stored["documents"])
+        assert all(meta["source"] == filename for meta in stored["metadatas"])
 
 
 async def test_upload_success_then_indexed(client, vectorstore, worker_once):

@@ -10,8 +10,10 @@
 """
 from __future__ import annotations
 
+import gc
 import os
 import shutil
+import socket
 import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -57,6 +59,32 @@ import app.models  # noqa: E402, F401  # 注册所有 ORM 表
 
 
 @pytest.fixture(autouse=True)
+def _block_external_network(monkeypatch):
+    """测试进程禁止建立真实 socket 连接；ASGITransport 不受影响。"""
+
+    original_connect = socket.socket.connect
+    original_create_connection = socket.create_connection
+
+    def _is_loopback(address) -> bool:  # noqa: ANN001
+        if not isinstance(address, tuple) or not address:
+            return True
+        return address[0] in {"127.0.0.1", "::1", "localhost"}
+
+    def _guarded_connect(sock, address):  # noqa: ANN001
+        if _is_loopback(address):
+            return original_connect(sock, address)
+        raise AssertionError("automated tests must not open network connections")
+
+    def _guarded_create_connection(address, *args, **kwargs):  # noqa: ANN001, ANN002, ANN003
+        if _is_loopback(address):
+            return original_create_connection(address, *args, **kwargs)
+        raise AssertionError("automated tests must not open network connections")
+
+    monkeypatch.setattr(socket, "create_connection", _guarded_create_connection)
+    monkeypatch.setattr(socket.socket, "connect", _guarded_connect)
+
+
+@pytest.fixture(autouse=True)
 def _force_external_tracing_off():
     """任何自动化测试都先在 SDK 全局上下文强制关闭外部追踪。"""
     import langsmith as ls
@@ -64,6 +92,27 @@ def _force_external_tracing_off():
     ls.configure(client=None, enabled=False, project_name=None, tags=None, metadata=None)
     yield
     ls.configure(client=None, enabled=False, project_name=None, tags=None, metadata=None)
+
+
+@pytest.fixture(scope="session", autouse=True)
+async def _cleanup_test_runtime():
+    """释放全局资源并删除本次 pytest 创建的唯一临时根目录。"""
+    yield
+
+    from app.agent.agent import build_agent
+    from app.core.checkpointer import close_checkpointer
+    from app.core.process_pool import shutdown_parser_pool
+    from app.core.vectorstore import get_vectorstore
+
+    build_agent.cache_clear()
+    if get_vectorstore.cache_info().currsize:
+        get_vectorstore()._client.close()
+    get_vectorstore.cache_clear()
+    await close_checkpointer()
+    await database_module.engine.dispose()
+    shutdown_parser_pool()
+    gc.collect()
+    shutil.rmtree(_TMP, ignore_errors=False)
 
 
 @pytest.fixture
@@ -154,8 +203,8 @@ def vectorstore(monkeypatch, fake_embeddings):
 
     try:
         store.delete_collection()
-    except Exception:  # noqa: BLE001
-        pass
+    finally:
+        store._client.close()
 
 
 @pytest.fixture

@@ -3,6 +3,10 @@ from __future__ import annotations
 
 from httpx import ASGITransport, AsyncClient
 from langchain_core.messages import AIMessage, ToolMessage
+from sqlalchemy import select
+
+import app.core.database as database_module
+from app.models.chat_record import ChatRecord
 
 
 async def test_health_is_minimal_and_has_security_headers(client):
@@ -147,3 +151,47 @@ async def test_structured_refusal_updates_admin_stats(
     assert stats["qa"]["refused_rate"] == 1.0
     assert len(refused) == 1
     assert refused[0]["refused"] is True
+
+
+async def test_admin_rates_and_recent_lists_are_exact(auth_headers):
+    records = [
+        ChatRecord(
+            tenant_id="tenant-a",
+            user_id="user-a",
+            session_id=f"admin-rate-{index}",
+            question=f"question-{index}",
+            answer=f"answer-{index}",
+            has_source=not refused,
+            refused=refused,
+            need_human=need_human,
+            tool_used=False,
+            sources=[],
+            audit_status="completed",
+        )
+        for index, (refused, need_human) in enumerate(
+            ((False, False), (True, False), (False, True), (True, False)),
+            start=1,
+        )
+    ]
+    async with database_module.AsyncSessionLocal() as db:
+        db.add_all(records)
+        await db.commit()
+
+    from app.main import app
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+        headers=auth_headers(roles=("admin",)),
+    ) as admin:
+        stats = (await admin.get("/admin/stats")).json()["qa"]
+        refused = (await admin.get("/admin/refused")).json()
+        human = (await admin.get("/admin/human")).json()
+
+    assert stats == {"total": 4, "refused_rate": 0.5, "human_rate": 0.25}
+    assert [row["session_id"] for row in refused] == ["admin-rate-4", "admin-rate-2"]
+    assert [row["session_id"] for row in human] == ["admin-rate-3"]
+
+    async with database_module.AsyncSessionLocal() as db:
+        rows = (await db.execute(select(ChatRecord))).scalars().all()
+    assert len(rows) == 4

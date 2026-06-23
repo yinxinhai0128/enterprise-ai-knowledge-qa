@@ -108,7 +108,7 @@
 | 6 | 会话、审计与人工介入持久化 | complete | 验收通过 |
 | 7 | LangSmith 与数据治理 | complete | 验收通过 |
 | 8 | 依赖、Chroma CVE 与容器加固 | complete | 89 tests passed；依赖/镜像审计无未接受风险；非 root、只读与镜像内容实测通过 |
-| 9 | 测试体系与 CI | pending | |
+| 9 | 测试体系与 CI | blocked | 97 tests passed、无外部连接/新临时目录；系统 DNS/HTTPS 与 1 个旧 TEMP ACL 残留阻塞最终 CI 门 |
 | 10 | 可观测性、运维与恢复 | pending | |
 | 11 | README、威胁模型和部署文档 | pending | |
 | 12 | 最终生产候选验收 | pending | |
@@ -401,22 +401,22 @@
 
 ### 任务
 
-- [ ] 修复测试临时目录未清理问题，显式 dispose 数据库引擎。
-- [ ] 增加 PDF、DOCX、XLSX、UTF-8 TXT 实际解析样本。
-- [ ] 增加上传大小、长文件名、伪造 MIME、空文件测试。
-- [ ] 增加认证、角色、跨用户、跨租户测试。
-- [ ] 增加真实 fake tool-call 回环和伪造来源测试。
-- [ ] 增加 prompt injection、PII、人工介入测试。
-- [ ] 增加任务重启、重试、幂等、删除、一致性测试。
-- [ ] 增加管理接口和拒答率准确性测试。
-- [ ] 增加并发上传和并发问答测试。
+- [ ] 修复测试临时目录未清理问题，显式 dispose 数据库引擎。（本轮目录自动清零；仍有 1 个阶段 9 前的 ACL 异常旧目录待系统恢复后删除）
+- [x] 增加 PDF、DOCX、XLSX、UTF-8 TXT 实际解析样本。
+- [x] 增加上传大小、长文件名、伪造 MIME、空文件测试。
+- [x] 增加认证、角色、跨用户、跨租户测试。
+- [x] 增加真实 fake tool-call 回环和伪造来源测试。
+- [x] 增加 prompt injection、PII、人工介入测试。
+- [x] 增加任务重启、重试、幂等、删除、一致性测试。
+- [x] 增加管理接口和拒答率准确性测试。
+- [x] 增加并发上传和并发问答测试。
 - [ ] 增加 `ruff`、类型检查、依赖扫描、秘密扫描。
 - [ ] 新增 CI，至少运行 lint、type-check、pytest、dependency audit、Docker build。
-- [ ] CI 禁止使用真实 API Key。
+- [x] CI 禁止使用真实 API Key。
 
 ### 验收门
 
-- [ ] 所有测试全绿且无真实外部调用。
+- [x] 所有测试全绿且无真实外部调用。
 - [ ] 测试结束后无 `kb_test_*` 临时目录残留。
 - [ ] CI 在干净环境中通过。
 
@@ -846,3 +846,24 @@ docker compose config --quiet
 - 完整回归：`compileall` 通过；`pytest -q` 为 89 passed；`pip check` 无损坏依赖；三存储一致性 `total_issues=0`；正式 SQLite 与阶段 8 备份 SHA-256 仍一致；`git diff --check` 通过。
 - 已知遗留：4 项风险例外必须最晚于 2026-07-22 复审；Chroma 或 Debian/Python 官方镜像出现修复时立即升级并删除对应例外；`langchain-community` 独立集成迁移按供应链文档持续跟踪。
 - 下一步：停止本次执行；下一次从阶段 9 开始。
+
+### 2026-06-23 - 阶段 9 开始
+
+- 状态：in_progress
+- 范围：真实解析样本与安全/并发/持久化覆盖、测试资源清理、ruff/类型/依赖/秘密扫描，以及无真实 Key 的干净 CI。
+- 阶段边界：只处理测试与 CI；可观测性、恢复和运维 Runbook 留待阶段 10。
+- 数据保护：本阶段不修改正式数据库结构；测试继续只使用 `kb_test_*` 临时目录、假模型/假向量并强制关闭所有外部追踪。
+- 下一步：对照阶段清单建立覆盖矩阵，先修复全局测试目录和数据库引擎生命周期，再补缺口与 CI；未通过不得进入阶段 10。
+
+### 2026-06-23 - 阶段 9：测试体系与 CI（阻塞）
+
+- 状态：blocked；阶段 10 未开始。
+- 已完成实现：
+  - 测试会话结束显式关闭 Chroma client、Checkpointer、SQLAlchemy engine 和解析进程池，再删除唯一 `kb_test_*` 根目录；修复了 Windows 下 Chroma HNSW 文件句柄泄漏。
+  - 新增真实可解析的 PDF 文本流、最小 DOCX OOXML、XLSX 和 UTF-8 中文 TXT 端到端上传/索引测试；补充输出 PII 脱敏、管理拒答/人工率精确计算、并发上传及不同会话并发问答。
+  - 自动化测试只允许 loopback/本机 IPC，任意外部 socket 连接硬失败；已有认证、角色、跨用户/租户、真实 tool-call/伪造来源、prompt injection、人工介入、任务重启/重试/幂等/删除/一致性覆盖继续保留。
+  - 新增不输出候选值的版本库秘密扫描、临时目录残留检查、Ruff/Mypy 配置和 GitHub Actions 质量/Docker 构建工作流；工作流只设置明确的测试假值并强制关闭 LangSmith，不读取任何 GitHub secret。
+- 已通过证据：`compileall` 通过；`pytest -q` 为 97 passed；本轮运行后新增 `kb_test_*`=0；秘密候选=0；`pip check` 无损坏依赖。CI 合同测试确认包含 lint、type-check、pytest、cleanup、dependency audit、Docker build 且不引用 `${{ secrets.* }}`。
+- 外部阻塞一（连续复现超过三次）：Windows DNS/HTTPS 调用无响应；PyPI 官方 curl/pip、阿里 PyPI 镜像、uv、官方 Python 容器访问 PyPI、GHCR Ruff 镜像及 DNS/网络诊断均超时。故 `ruff==0.14.10`、`mypy==1.19.1` 尚未安装实跑，依赖审计和干净环境 CI 也不能据实判绿。
+- 外部阻塞二：已安全删除 55 个历史 `kb_test_*`；剩余 `C:\Users\LENOVO\AppData\Local\Temp\kb_test_6kbdl6zr` 创建于阶段 9 之前，目录 ACL 访问拒绝，`Remove-Item`、.NET 删除、提权 `takeown/icacls` 均挂死。本轮新 fixture 已证实不再制造残留，但硬门要求总数为零，因此仍不能 complete。
+- 恢复条件：恢复 Windows DNS/HTTPS（必要时重启系统/网络）并清除上述旧 TEMP 目录；安装 `requirements-dev.txt` 后实际运行 `ruff`、`mypy`、依赖审计和工作流等价干净环境。全部通过后再将本阶段标记 complete；不得跳到阶段 10。

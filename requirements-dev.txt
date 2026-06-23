@@ -1,7 +1,9 @@
-# Development and security tooling. Runtime constraints are inherited exactly.
--r requirements.txt
+# Development and security tooling. Runtime transitive graph stays hash-locked.
+-r requirements.lock
 pytest==9.1.1
 pytest-asyncio==1.4.0
 httpx==0.28.1
 pip-audit==2.10.1
 pip-tools==7.5.3
+ruff==0.14.10
+mypy==1.19.1

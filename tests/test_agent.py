@@ -214,6 +214,29 @@ async def test_document_prompt_injection_remains_untrusted(vectorstore, agent_fa
     assert result["refused"] is False
 
 
+async def test_pii_is_redacted_from_model_output(vectorstore, agent_factory):
+    vectorstore.add_texts(
+        ["如需帮助请联系财务支持。"],
+        metadatas=[_metadata("support.txt", chunk_id="chunk-support-1")],
+        ids=["chunk-support-1"],
+    )
+    raw_email = "alice@example.com"
+    raw_card = "4111111111111111"
+    agent = agent_factory(
+        [
+            _tool_call("财务支持", "call-pii"),
+            AIMessage(content=f"请联系 {raw_email}，测试卡号 {raw_card}。"),
+        ]
+    )
+    result = await agent.ainvoke(
+        _ask_input("财务支持方式"), config=_cfg("pii"), context=_ctx("pii")
+    )
+    answer = result["messages"][-1].content
+    assert raw_email not in answer
+    assert raw_card not in answer
+    assert result["refused"] is False
+
+
 async def test_agent_sensitive_word_needs_human(agent_factory):
     agent = agent_factory(["这个问题涉及薪资，建议联系 HR。"])
     result = await agent.ainvoke(
