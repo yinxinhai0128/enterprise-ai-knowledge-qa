@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Send, Plus, ChevronDown, ChevronUp, FileText, AlertTriangle, UserCheck, Bot, RefreshCw } from 'lucide-react'
+import { Send, Plus, ChevronDown, ChevronUp, FileText, AlertTriangle, UserCheck, Bot, RefreshCw, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Progress } from '@/components/ui/progress'
@@ -13,6 +13,18 @@ import 'dayjs/locale/zh-cn'
 
 dayjs.extend(relativeTime)
 dayjs.locale('zh-cn')
+
+function SimpleMarkdown({ text }: { text: string }) {
+  return (
+    <span style={{ whiteSpace: 'pre-wrap' }}>
+      {text.split(/(\*\*[^*]+\*\*)/).map((part, i) =>
+        part.startsWith('**') && part.endsWith('**')
+          ? <strong key={i}>{part.slice(2, -2)}</strong>
+          : part
+      )}
+    </span>
+  )
+}
 
 // Session storage
 interface Session {
@@ -129,7 +141,7 @@ function AssistantBubble({ msg, onRetry }: { msg: Message; onRetry?: () => void 
               )}
             </div>
           ) : (
-            <span style={{ whiteSpace: 'pre-wrap' }}>{displayed}</span>
+            <SimpleMarkdown text={displayed} />
           )}
         </div>
         {done && msg.response && !msg.error && (
@@ -182,6 +194,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const queryClient = useQueryClient()
@@ -269,50 +282,79 @@ export default function ChatPage() {
     if (id === currentSessionId) return
     setCurrentSessionId(id)
     setMessages([])
+    setDrawerOpen(false)
   }
 
   const currentSession = sessions.find(s => s.id === currentSessionId)
+
+  const SessionList = () => (
+    <>
+      <div className="p-3">
+        <Button className="w-full text-sm" style={{ backgroundColor: '#3B4FCC' }} onClick={() => { handleNewSession(); setDrawerOpen(false) }}>
+          <Plus className="w-4 h-4" /> 新对话
+        </Button>
+      </div>
+      <div className="flex-1 overflow-y-auto px-2 pb-2 scrollbar-thin">
+        {sessions.length === 0 && (
+          <p className="text-xs text-gray-400 text-center py-8">暂无会话记录</p>
+        )}
+        {sessions.map(s => (
+          <button
+            key={s.id}
+            onClick={() => handleSelectSession(s.id)}
+            className={`w-full text-left px-3 py-2.5 rounded-lg mb-1 transition-colors ${
+              s.id === currentSessionId
+                ? 'bg-white border-l-[3px] shadow-sm'
+                : 'hover:bg-white/60'
+            }`}
+            style={s.id === currentSessionId ? { borderLeftColor: '#3B4FCC' } : undefined}
+          >
+            <p className="text-sm text-gray-700 font-medium truncate">{s.firstQuestion || '新对话'}</p>
+            <p className="text-xs text-gray-400 mt-0.5">{dayjs(s.createdAt).fromNow()}</p>
+          </button>
+        ))}
+      </div>
+      <div className="px-4 py-2 border-t border-gray-200">
+        <p className="text-xs text-gray-400">{sessions.length} 个会话</p>
+      </div>
+    </>
+  )
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
       <NavBar />
 
-      {/* Sidebar */}
-      <div className="w-60 flex flex-col bg-[#F0F4F8] border-r border-gray-200">
-        <div className="p-3">
-          <Button className="w-full text-sm" style={{ backgroundColor: '#3B4FCC' }} onClick={handleNewSession}>
-            <Plus className="w-4 h-4" /> 新对话
-          </Button>
+      {/* Mobile drawer overlay */}
+      {drawerOpen && (
+        <div className="md:hidden fixed inset-0 z-40 flex">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setDrawerOpen(false)} />
+          <div className="relative z-10 w-72 flex flex-col bg-[#F0F4F8] shadow-xl">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+              <span className="text-sm font-medium text-gray-700">会话记录</span>
+              <button onClick={() => setDrawerOpen(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <SessionList />
+          </div>
         </div>
-        <div className="flex-1 overflow-y-auto px-2 pb-2 scrollbar-thin">
-          {sessions.length === 0 && (
-            <p className="text-xs text-gray-400 text-center py-8">暂无会话记录</p>
-          )}
-          {sessions.map(s => (
-            <button
-              key={s.id}
-              onClick={() => handleSelectSession(s.id)}
-              className={`w-full text-left px-3 py-2.5 rounded-lg mb-1 transition-colors ${
-                s.id === currentSessionId
-                  ? 'bg-white border-l-[3px] shadow-sm'
-                  : 'hover:bg-white/60'
-              }`}
-              style={s.id === currentSessionId ? { borderLeftColor: '#3B4FCC' } : undefined}
-            >
-              <p className="text-sm text-gray-700 font-medium truncate">{s.firstQuestion || '新对话'}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{dayjs(s.createdAt).fromNow()}</p>
-            </button>
-          ))}
-        </div>
-        <div className="px-4 py-2 border-t border-gray-200">
-          <p className="text-xs text-gray-400">{sessions.length} 个会话</p>
-        </div>
+      )}
+
+      {/* Desktop sidebar */}
+      <div className="hidden md:flex w-60 flex-col bg-[#F0F4F8] border-r border-gray-200">
+        <SessionList />
       </div>
 
       {/* Main chat area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <div className="h-14 flex items-center px-6 border-b border-gray-200 bg-white">
+        <div className="h-14 flex items-center px-4 md:px-6 border-b border-gray-200 bg-white gap-3">
+          <button
+            className="md:hidden p-1 rounded-lg text-gray-500 hover:bg-gray-100"
+            onClick={() => setDrawerOpen(true)}
+          >
+            <Menu className="w-5 h-5" />
+          </button>
           <span className="font-medium text-gray-800 truncate">
             {currentSession?.firstQuestion ? `${currentSession.firstQuestion}…` : '新对话'}
           </span>
@@ -373,7 +415,7 @@ export default function ChatPage() {
         </div>
 
         {/* Input area */}
-        <div className="border-t border-gray-200 bg-white px-6 py-4">
+        <div className="border-t border-gray-200 bg-white px-4 md:px-6 py-4 md:pb-4 pb-20">
           <div className="flex gap-3 items-end">
             <div className="flex-1 relative">
               <textarea

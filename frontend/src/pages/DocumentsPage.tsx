@@ -213,77 +213,104 @@ export default function DocumentsPage() {
               </Button>
             </div>
           ) : (
-            <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-gray-100 bg-gray-50">
-                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">文件名</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">状态</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">分块数</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">上传时间</th>
-                    <th className="text-right px-4 py-3 text-xs font-medium text-gray-500">操作</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {docs.map(doc => (
-                    <tr
-                      key={doc.id}
-                      className={`transition-colors ${
-                        doc.status === 'uploading' || doc.status === 'parsing'
-                          ? 'bg-blue-50/50'
-                          : doc.status === 'failed'
-                          ? 'bg-red-50/50'
-                          : 'hover:bg-gray-50'
-                      }`}
-                    >
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          {fileIcon(doc.filename)}
-                          <span className="font-medium text-gray-800 max-w-xs truncate" title={doc.filename}>
-                            {doc.filename}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <StatusBadge status={doc.status} errorMsg={doc.error_msg} />
-                      </td>
-                      <td className="px-4 py-3 text-gray-500">
-                        {doc.status === 'failed' ? '—' : doc.chunk_count || '—'}
-                      </td>
-                      <td className="px-4 py-3 text-gray-400 text-xs">
-                        {dayjs(doc.created_at).fromNow()}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-2">
-                          {doc.status === 'indexed' && (
-                            <Button variant="outline" size="sm" className="h-8 px-2"
-                              onClick={() => reindexMutation.mutate(doc.id)}>
-                              <RotateCcw className="w-3.5 h-3.5" />
-                            </Button>
-                          )}
-                          {doc.status === 'failed' && (
-                            <Button size="sm" className="h-8 px-3" style={{ backgroundColor: '#3B4FCC' }}
-                              onClick={() => retryMutation.mutate(doc.id)}>
-                              <RefreshCw className="w-3.5 h-3.5" /> 重试
-                            </Button>
-                          )}
-                          {(doc.status === 'uploading' || doc.status === 'parsing') && (
-                            <Button variant="outline" size="sm" className="h-8 px-2"
-                              onClick={() => cancelMutation.mutate(doc.id)}>
-                              <X className="w-3.5 h-3.5" />
-                            </Button>
-                          )}
-                          <Button variant="ghost" size="sm" className="h-8 px-2 text-red-400 hover:text-red-600 hover:bg-red-50"
-                            onClick={() => setDeleteId(doc.id)}>
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </Button>
-                        </div>
-                      </td>
+            <>
+              {/* Desktop table */}
+              <div className="hidden md:block bg-white rounded-xl border border-gray-100 overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-100 bg-gray-50">
+                      <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">文件名</th>
+                      <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">状态</th>
+                      <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">分块数</th>
+                      <th className="text-left px-4 py-3 text-xs font-medium text-gray-500">上传时间</th>
+                      <th className="text-right px-4 py-3 text-xs font-medium text-gray-500">操作</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {docs.map(doc => (
+                      <tr key={doc.id} className={`transition-colors ${
+                        doc.status === 'uploading' || doc.status === 'parsing' ? 'bg-blue-50/50'
+                        : doc.status === 'failed' ? 'bg-red-50/50' : 'hover:bg-gray-50'
+                      }`}>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            {fileIcon(doc.filename)}
+                            <span className="font-medium text-gray-800 max-w-xs truncate" title={doc.filename}>{doc.filename}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3"><StatusBadge status={doc.status} errorMsg={doc.error_msg} /></td>
+                        <td className="px-4 py-3 text-gray-500">{doc.status === 'failed' ? '—' : doc.chunk_count || '—'}</td>
+                        <td className="px-4 py-3 text-gray-400 text-xs">{dayjs(doc.created_at).fromNow()}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center justify-end gap-2">
+                            {doc.status === 'indexed' && (
+                              <Button variant="outline" size="sm" className="h-8 px-2" onClick={() => reindexMutation.mutate(doc.id)}>
+                                <RotateCcw className="w-3.5 h-3.5" />
+                              </Button>
+                            )}
+                            {doc.status === 'failed' && (
+                              <Button size="sm" className="h-8 px-3" style={{ backgroundColor: '#3B4FCC' }} onClick={() => retryMutation.mutate(doc.id)}>
+                                <RefreshCw className="w-3.5 h-3.5" /> 重试
+                              </Button>
+                            )}
+                            {(doc.status === 'uploading' || doc.status === 'parsing') && (
+                              <Button variant="outline" size="sm" className="h-8 px-2" onClick={() => cancelMutation.mutate(doc.id)}>
+                                <X className="w-3.5 h-3.5" />
+                              </Button>
+                            )}
+                            <Button variant="ghost" size="sm" className="h-8 px-2 text-red-400 hover:text-red-600 hover:bg-red-50" onClick={() => setDeleteId(doc.id)}>
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile card list */}
+              <div className="md:hidden space-y-3 pb-20">
+                {docs.map(doc => (
+                  <div key={doc.id} className={`bg-white rounded-xl border p-4 ${
+                    doc.status === 'uploading' || doc.status === 'parsing' ? 'border-blue-200 bg-blue-50/30'
+                    : doc.status === 'failed' ? 'border-red-200 bg-red-50/30' : 'border-gray-100'
+                  }`}>
+                    <div className="flex items-start justify-between gap-2 mb-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        {fileIcon(doc.filename)}
+                        <span className="text-sm font-medium text-gray-800 truncate">{doc.filename}</span>
+                      </div>
+                      <StatusBadge status={doc.status} errorMsg={doc.error_msg} />
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-gray-400">
+                      <span>{doc.status === 'failed' ? '处理失败' : `${doc.chunk_count || 0} 个分块`}</span>
+                      <span>{dayjs(doc.created_at).fromNow()}</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+                      {doc.status === 'indexed' && (
+                        <Button variant="outline" size="sm" className="h-8 px-3 flex-1" onClick={() => reindexMutation.mutate(doc.id)}>
+                          <RotateCcw className="w-3.5 h-3.5 mr-1" /> 重新索引
+                        </Button>
+                      )}
+                      {doc.status === 'failed' && (
+                        <Button size="sm" className="h-8 px-3 flex-1" style={{ backgroundColor: '#3B4FCC' }} onClick={() => retryMutation.mutate(doc.id)}>
+                          <RefreshCw className="w-3.5 h-3.5 mr-1" /> 重试
+                        </Button>
+                      )}
+                      {(doc.status === 'uploading' || doc.status === 'parsing') && (
+                        <Button variant="outline" size="sm" className="h-8 px-3 flex-1" onClick={() => cancelMutation.mutate(doc.id)}>
+                          <X className="w-3.5 h-3.5 mr-1" /> 取消
+                        </Button>
+                      )}
+                      <Button variant="ghost" size="sm" className="h-8 px-3 text-red-400 hover:text-red-600 hover:bg-red-50" onClick={() => setDeleteId(doc.id)}>
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>
