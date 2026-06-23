@@ -110,7 +110,7 @@
 | 8 | 依赖、Chroma CVE 与容器加固 | complete | 89 tests passed；依赖/镜像审计无未接受风险；非 root、只读与镜像内容实测通过 |
 | 9 | 测试体系与 CI | complete | Ruff/Mypy/秘密扫描、97 tests、零临时目录、依赖审计、干净环境 CI 与 Docker build 全部通过 |
 | 10 | 可观测性、运维与恢复 | complete | live/ready、结构化安全日志/错误码/指标、故障告警模拟、备份恢复与零异常一致性演练、112 tests 全部通过 |
-| 11 | README、威胁模型和部署文档 | pending | |
+| 11 | README、威胁模型和部署文档 | complete | README 全新 Python 3.12 安全启动实跑；部署/Token/迁移/轮换/治理/容量与威胁模型齐全；OpenAPI/配置文档契约及 119 tests 通过 |
 | 12 | 最终生产候选验收 | pending | |
 
 ---
@@ -455,20 +455,20 @@
 
 ### 任务
 
-- [ ] README 快速开始在干净 Python 3.12 环境实跑。
-- [ ] 明确开发、测试、生产三套配置。
-- [ ] 增加认证和 Token 获取说明。
-- [ ] 增加租户模型、数据流和信任边界图。
-- [ ] 增加威胁模型：匿名访问、越权、提示词注入、恶意文件、数据外传、费用攻击。
-- [ ] 增加数据库迁移、备份恢复、Key 轮换说明。
-- [ ] 增加 LangSmith 数据治理说明。
-- [ ] 增加已知限制和容量边界。
-- [ ] 删除“企业级生产可用”等未经验收的表述，直到第 12 阶段通过。
+- [x] README 快速开始在干净 Python 3.12 环境实跑。
+- [x] 明确开发、测试、生产三套配置。
+- [x] 增加认证和 Token 获取说明。
+- [x] 增加租户模型、数据流和信任边界图。
+- [x] 增加威胁模型：匿名访问、越权、提示词注入、恶意文件、数据外传、费用攻击。
+- [x] 增加数据库迁移、备份恢复、Key 轮换说明。
+- [x] 增加 LangSmith 数据治理说明。
+- [x] 增加已知限制和容量边界。
+- [x] 删除“企业级生产可用”等未经验收的表述，直到第 12 阶段通过。
 
 ### 验收门
 
-- [ ] 新用户只按 README 即可安全启动。
-- [ ] 不存在与实际代码不一致的 API、模型名和配置。
+- [x] 新用户只按 README 即可安全启动。
+- [x] 不存在与实际代码不一致的 API、模型名和配置。
 
 ---
 
@@ -892,3 +892,15 @@ docker compose config --quiet
 - 镜像证据：Dockerfile/Compose healthcheck 均指向 readiness；移除未使用且会额外依赖 Docker Hub frontend 的 syntax 指令后，`enterprise-kb-api:stage10` 构建成功（image `sha256:bcccf17e2e70...`）。
 - 数据保护：未覆盖 `.env`，未显示密钥，未修改数据库结构，未删除或覆盖正式 `storage/`、`chroma_db/`。
 - 下一步：停止本次执行；下一次从阶段 11 开始。
+
+### 2026-06-23 - 阶段 11：README、威胁模型和部署文档（完成）
+
+- 状态：complete；阶段 12 未开始。
+- 文档交付：新增 `docs/DEPLOYMENT.md`，明确 development/test/production 三套配置、源码与 Compose 启动、企业 IdP Token、本地 development Token、完整 API/角色矩阵、迁移、联合备份恢复、Key 轮换、LangSmith 治理和容量边界；新增 `docs/THREAT_MODEL.md` 的资产、数据流/信任边界 Mermaid 图、核心安全不变量、八类威胁、剩余风险和测试映射。
+- README 修正：显式标记“生产候选整改中、阶段 12 未验收”，删除“开箱即用、零运维、平滑切换”等无证据措辞；公开系统端点、默认模型、配置、Token 获取、手册链接和已知限制均与代码对齐；真实模型连通性脚本标为可选且会产生费用。
+- 配置校准：无 `.env` 时的 `LLM_MODEL` 默认值由旧 `deepseek-v3` 统一为 `.env.example`/README 的 `qwen3.6-plus`；新增仅在 `APP_ENV=development` 生效、最长 1 小时且不输出签名 Secret 的 `scripts/create_dev_token.py`，production 硬失败。
+- 机器契约：新增文档测试从实际 OpenAPI 验证每个运行 API 路径都在部署手册，从 `Settings.model_fields` 验证 `.env.example` 模型/环境/监听默认值和无未知配置，并检查三套配置、迁移/轮换/治理/容量章节、威胁类型及未验收宣传措辞。
+- README 实跑：在全新 CPython 3.12.6 临时 venv 中按哈希安装锁定运行依赖，使用临时 SQLite/Chroma/日志目录、测试 Key、关闭 LangSmith，隐藏启动 API 与 Worker；`/health/live=200`、`/health/ready=200`、development Token 签发和鉴权 `/documents=200`，Worker 保持运行；未调用真实 LLM/Embedding，结束后临时环境全部删除。
+- 回归证据：119 tests passed；Ruff 通过；Mypy 对 46 个源码文件 0 issues；compileall、`pip check`、秘密扫描 0 candidates、`kb_test_*` 0 leftovers 全部通过。
+- 数据保护：未覆盖或展示 `.env`/密钥，未使用真实企业文档，未调用真实模型，未修改或删除正式数据。
+- 下一步：停止本次执行；下一次从阶段 12 开始。

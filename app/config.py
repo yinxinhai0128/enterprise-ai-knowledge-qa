@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     )
 
     # ---------- 模型 ----------
-    llm_model: str = Field(default="deepseek-v3", description="对话大模型")
+    llm_model: str = Field(default="qwen3.6-plus", description="对话大模型")
     embed_model: str = Field(default="text-embedding-v3", description="向量模型")
     llm_max_output_tokens: int = Field(default=2048, ge=1, le=8192)
     agent_max_steps: int = Field(default=30, ge=3, le=50)
