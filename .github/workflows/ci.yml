@@ -9,7 +9,7 @@ permissions:
 
 env:
   PYTHONUTF8: "1"
-  APP_ENV: test
+  APP_ENV: development
   DASHSCOPE_API_KEY: test-key-not-used
   AUTH_JWT_SECRET: test-only-jwt-secret-at-least-32-characters-long
   LANGCHAIN_TRACING_V2: "false"

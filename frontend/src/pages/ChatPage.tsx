@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Send, Plus, ChevronDown, ChevronUp, FileText, AlertTriangle, UserCheck, Bot, RefreshCw, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -43,6 +43,13 @@ function saveSessions(sessions: Session[]) {
 
 function newSessionId(): string {
   return `sess_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
+}
+
+// 后端会在答案正文末尾追加"参考来源："文字块（供 API/审计消费）。
+// 前端有独立的来源卡片，故在有结构化来源时剥离正文里的重复块。
+function stripCitationBlock(answer: string): string {
+  const idx = answer.indexOf('\n\n参考来源：')
+  return idx >= 0 ? answer.slice(0, idx).trimEnd() : answer
 }
 
 // Typewriter hook
@@ -197,7 +204,8 @@ export default function ChatPage() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const queryClient = useQueryClient()
+  // 记录已用历史填充过的会话，避免发送后历史刷新覆盖本地富消息（含结构化来源）
+  const hydratedSessionRef = useRef<string | null>(null)
 
   // Load history when session changes
   const { data: history, isLoading: historyLoading } = useQuery({
@@ -209,6 +217,9 @@ export default function ChatPage() {
 
   useEffect(() => {
     if (!history) return
+    // 每个会话只在首次进入时用历史填充一次；之后本地消息（带来源卡片）为准
+    if (hydratedSessionRef.current === currentSessionId) return
+    hydratedSessionRef.current = currentSessionId
     const mapped: Message[] = history.messages
       .filter(m => m.role === 'user' || m.role === 'assistant')
       .map((m, i) => ({
@@ -217,7 +228,7 @@ export default function ChatPage() {
         content: m.content,
       }))
     setMessages(mapped)
-  }, [history])
+  }, [history, currentSessionId])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -251,12 +262,12 @@ export default function ChatPage() {
       const aiMsg: Message = {
         id: `a_${Date.now()}`,
         role: 'assistant',
-        content: resp.answer,
+        // 有结构化来源时剥离正文引用块，交给来源卡片展示，避免重复
+        content: resp.sources.length > 0 ? stripCitationBlock(resp.answer) : resp.answer,
         response: resp,
         isNew: true,
       }
       setMessages(prev => [...prev, aiMsg])
-      queryClient.invalidateQueries({ queryKey: ['history', currentSessionId] })
     } catch {
       const errMsg: Message = {
         id: `e_${Date.now()}`,
@@ -269,7 +280,7 @@ export default function ChatPage() {
       setIsLoading(false)
       textareaRef.current?.focus()
     }
-  }, [input, isLoading, currentSessionId, sessions, mutation, queryClient])
+  }, [input, isLoading, currentSessionId, sessions, mutation])
 
   function handleNewSession() {
     const id = newSessionId()
