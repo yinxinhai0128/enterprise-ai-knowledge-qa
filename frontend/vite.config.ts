@@ -16,5 +16,7 @@ export default defineConfig({
     css: false,
     clearMocks: true,
     restoreMocks: true,
+    // 排除 Playwright E2E 测试和配置文件（由 playwright test 单独运行）
+    exclude: ['**/node_modules/**', '**/e2e/**', '**/playwright.config.*'],
   },
 })

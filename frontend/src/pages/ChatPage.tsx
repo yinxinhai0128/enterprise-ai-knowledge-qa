@@ -90,6 +90,11 @@ function SourceCard({ sources }: { sources: SourceItem[] }) {
                 <Progress value={Math.round(s.relevance * 100)} className="h-1 flex-1" />
                 <span className="text-xs text-gray-400 shrink-0">{Math.round(s.relevance * 100)}%</span>
               </div>
+              {s.snippet && (
+                <p className="mt-1.5 text-xs text-gray-500 italic line-clamp-2 leading-relaxed">
+                  「{s.snippet}」
+                </p>
+              )}
             </div>
           ))}
         </div>

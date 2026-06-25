@@ -91,6 +91,7 @@ Compose 同时运行 API 和 Worker，挂载 `storage/`、`chroma_db/`、`logs/`
 | POST | `/documents/{doc_id}/retry`, `/documents/{doc_id}/cancel`, `/documents/{doc_id}/reindex` | `user` |
 | DELETE | `/documents/{doc_id}` | `user` |
 | POST | `/qa/ask` | `user` |
+| POST | `/qa/stream` | `user` |
 | GET | `/qa/history/{session_id}` | `user` |
 | GET | `/admin/stats`, `/admin/refused`, `/admin/human`, `/admin/human-tasks`, `/admin/audits/pending` | `admin` |
 | POST | `/admin/human-tasks/{task_id}/claim`, `/admin/human-tasks/{task_id}/complete` | `admin` |

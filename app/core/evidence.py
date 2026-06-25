@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import math
-from typing import Any, TypedDict
+from typing import Any, NotRequired, TypedDict
 
 
 class Evidence(TypedDict):
@@ -15,9 +15,10 @@ class Evidence(TypedDict):
     sheet_name: str | None
     distance: float
     relevance: float
+    snippet: NotRequired[str]  # 原文片段前 200 字符；可选，旧 artifact 缺失时补空串
 
 
-_REQUIRED_FIELDS = frozenset(Evidence.__required_keys__)
+_REQUIRED_FIELDS = frozenset(Evidence.__required_keys__)  # snippet 是 NotRequired，不进此集合
 
 
 def validated_evidence_list(artifact: Any) -> list[Evidence]:
@@ -40,6 +41,7 @@ def validated_evidence_list(artifact: Any) -> list[Evidence]:
                 ),
                 "distance": float(item["distance"]),
                 "relevance": float(item["relevance"]),
+                "snippet": str(item.get("snippet", "")),
             }
         except (TypeError, ValueError):
             continue

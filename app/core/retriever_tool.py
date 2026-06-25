@@ -70,6 +70,7 @@ def search_tenant_knowledge_base(
             ),
             "distance": distance,
             "relevance": 1.0 / (1.0 + max(distance, 0.0)),
+            "snippet": doc.page_content.strip()[:200],
         }
         artifact.append(item)
         blocks.append(

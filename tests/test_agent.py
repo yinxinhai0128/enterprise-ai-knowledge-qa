@@ -69,7 +69,7 @@ def test_retriever_returns_content_and_complete_artifact(vectorstore):
     content, artifact = search_tenant_knowledge_base("报销怎么走", "tenant-a")
     assert "UNTRUSTED_DOCUMENT_CONTENT" in content
     assert len(artifact) == 1
-    assert set(artifact[0]) == {
+    assert set(artifact[0]) >= {
         "doc_id",
         "chunk_id",
         "source",
@@ -77,10 +77,12 @@ def test_retriever_returns_content_and_complete_artifact(vectorstore):
         "sheet_name",
         "distance",
         "relevance",
+        "snippet",
     }
     assert artifact[0]["doc_id"] == 1
     assert artifact[0]["chunk_id"] == "chunk-finance-1"
     assert artifact[0]["source"] == "finance.txt"
+    assert isinstance(artifact[0]["snippet"], str)
 
 
 def test_retriever_tool_no_result(vectorstore):

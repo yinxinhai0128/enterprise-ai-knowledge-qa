@@ -110,6 +110,28 @@ Invoke-RestMethod http://127.0.0.1:8000/health/ready
 
 macOS/Linux 请用 `python3.12 -m venv .venv`、`source .venv/bin/activate`，并将 `Copy-Item` 换成 `cp`。
 
+### 导入演示数据（可选）
+
+服务启动后，可将 `docs/demo_data/` 中的 6 篇演示文档批量上传到知识库，快速体验问答效果：
+
+```powershell
+# 先获取一个有上传权限的 Token（uploader 或 admin 角色）
+$env:TOKEN = python scripts\create_dev_token.py --roles user,uploader --ttl-seconds 900
+
+# 批量上传演示文档（使用标准库，无需额外安装依赖）
+python scripts\import_demo_data.py --token $env:TOKEN
+
+# 如果后端不在默认端口，通过 --base-url 指定
+python scripts\import_demo_data.py --token $env:TOKEN --base-url http://127.0.0.1:8765
+```
+
+上传成功后，Worker 会在数秒内完成向量索引。之后可以在问答界面提问，例如：
+- "Claude Code 有哪些核心功能？"
+- "系统的 JWT 认证要验证哪些 claims？"
+- "向量检索的距离阈值是多少？"
+
+演示文档位于 `docs/demo_data/`，涵盖 Claude Code 使用指南、Agentic RAG 架构、安全指南、向量数据库、API 参考和部署指南六个主题。
+
 ### 启动前端（可选，可视化界面）
 
 ```powershell

@@ -37,6 +37,7 @@ class EvidenceSource(BaseModel):
     sheet_name: str | None = None
     distance: float
     relevance: float
+    snippet: str = Field(default="", description="被引用的原文片段（前 200 字符），用于前端引用高亮")
 
 
 class AskResponse(BaseModel):

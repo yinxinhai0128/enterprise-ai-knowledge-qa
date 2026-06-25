@@ -40,6 +40,7 @@ export interface SourceItem {
   sheet_name: string | null
   distance: number
   relevance: number
+  snippet?: string
 }
 
 export interface AskResponse {
