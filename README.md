@@ -374,7 +374,7 @@ curl -H "Authorization: Bearer $ADMIN_TOKEN" http://127.0.0.1:8000/admin/audits/
 - [LangSmith 数据治理](docs/LANGSMITH_DATA_GOVERNANCE.md)：外部追踪审批、脱敏、驻留、保留和删除。
 - [供应链与 Chroma 风险](docs/SUPPLY_CHAIN_AND_CHROMA_SECURITY.md)：依赖/镜像审计与风险接受期限。
 
-已知限制包括单机 SQLite/嵌入式 Chroma、进程内分钟限流、无 OCR/JWKS/Alembic/流式输出、默认扫描器不可用于生产、备份需短暂停写。完整边界以部署手册为准。
+已知限制包括单机 SQLite/嵌入式 Chroma、进程内分钟限流、无 OCR/JWKS/Alembic、默认扫描器不可用于生产、备份需短暂停写。完整边界以部署手册为准。
 
 ## 扩展指南
 
@@ -419,7 +419,7 @@ def get_vectorstore():
 - [x] 全 Mock 自动化测试
 - [x] 持久化 Checkpointer、会话 TTL/消息边界与跨 Worker 租约
 - [x] 可靠审计、分类访问策略与人工任务状态流
-- [ ] 流式输出（SSE / WebSocket）
+- [x] 流式输出（SSE `/qa/stream` 真流式逐字 + 末尾结构化来源；`/qa/ask` 完整 JSON 兜底，审计 fail-closed 语义不变）
 - [x] 持久化摄入任务、崩溃恢复与三存储一致性
 - [x] 文档删除与向量库同步清理
 - [x] JWT 鉴权、角色授权与租户隔离

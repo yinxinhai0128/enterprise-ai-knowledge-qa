@@ -50,6 +50,15 @@ export interface AskResponse {
   human_task_id: number | null
 }
 
+// 流式 SSE done 帧载荷（与后端 /qa/stream 的 done 事件一致）
+export interface StreamDonePayload {
+  answer: string
+  sources: SourceItem[]
+  refused: boolean
+  need_human: boolean
+  human_task_id: number | null
+}
+
 export interface HistoryMessage {
   role: 'user' | 'assistant' | 'tool' | 'system'
   content: string

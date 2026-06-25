@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Send, Plus, ChevronDown, ChevronUp, FileText, AlertTriangle, UserCheck, Bot, RefreshCw, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Progress } from '@/components/ui/progress'
 import { NavBar } from '@/components/NavBar'
-import { askQuestion, getHistory } from '@/api/qa'
+import { askQuestionStream, getHistory } from '@/api/qa'
 import type { AskResponse, SourceItem } from '@/types/api'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -123,10 +123,16 @@ interface Message {
   response?: AskResponse
   error?: boolean
   isNew?: boolean
+  // 流式消息：内容逐字到达，不走打字机；streaming=true 表示尚未收到 done。
+  streaming?: boolean
 }
 
 function AssistantBubble({ msg, onRetry }: { msg: Message; onRetry?: () => void }) {
-  const { displayed, done } = useTypewriter(msg.content, msg.isNew === true)
+  // 流式消息内容本身就是逐字到达的，禁用打字机；done 取决于是否已收到 response。
+  const isStream = msg.isNew === true && (msg.streaming === true || msg.response !== undefined)
+  const typewriter = useTypewriter(msg.content, msg.isNew === true && !isStream)
+  const displayed = isStream ? msg.content : typewriter.displayed
+  const done = isStream ? msg.streaming !== true : typewriter.done
 
   return (
     <div className="flex gap-3 max-w-[85%]">
@@ -234,11 +240,6 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isLoading])
 
-  const mutation = useMutation({
-    mutationFn: ({ question, sessionId }: { question: string; sessionId: string }) =>
-      askQuestion(question, sessionId),
-  })
-
   const handleSend = useCallback(async () => {
     const q = input.trim()
     if (!q || isLoading) return
@@ -246,7 +247,13 @@ export default function ChatPage() {
     setIsLoading(true)
 
     const userMsg: Message = { id: `u_${Date.now()}`, role: 'user', content: q }
-    setMessages(prev => [...prev, userMsg])
+    // 流式占位 assistant 消息：稳定 id，token 增量按 id 累加，done 时挂 response。
+    const aiId = `a_${Date.now()}`
+    setMessages(prev => [
+      ...prev,
+      userMsg,
+      { id: aiId, role: 'assistant', content: '', isNew: true, streaming: true },
+    ])
 
     // Update session list
     const existing = sessions.find(s => s.id === currentSessionId)
@@ -257,30 +264,56 @@ export default function ChatPage() {
       saveSessions(updated)
     }
 
-    try {
-      const resp = await mutation.mutateAsync({ question: q, sessionId: currentSessionId })
-      const aiMsg: Message = {
-        id: `a_${Date.now()}`,
-        role: 'assistant',
-        // 有结构化来源时剥离正文引用块，交给来源卡片展示，避免重复
-        content: resp.sources.length > 0 ? stripCitationBlock(resp.answer) : resp.answer,
-        response: resp,
-        isNew: true,
-      }
-      setMessages(prev => [...prev, aiMsg])
-    } catch {
-      const errMsg: Message = {
-        id: `e_${Date.now()}`,
-        role: 'assistant',
-        content: '请求失败，请检查网络连接后重试',
-        error: true,
-      }
-      setMessages(prev => [...prev, errMsg])
-    } finally {
-      setIsLoading(false)
-      textareaRef.current?.focus()
-    }
-  }, [input, isLoading, currentSessionId, sessions, mutation])
+    await askQuestionStream(q, currentSessionId, {
+      onToken: (text: string) => {
+        setMessages(prev =>
+          prev.map(m => (m.id === aiId ? { ...m, content: m.content + text } : m)),
+        )
+      },
+      onDone: payload => {
+        const resp: AskResponse = {
+          answer: payload.answer,
+          sources: payload.sources,
+          refused: payload.refused,
+          need_human: payload.need_human,
+          human_task_id: payload.human_task_id,
+        }
+        setMessages(prev =>
+          prev.map(m =>
+            m.id === aiId
+              ? {
+                  ...m,
+                  // 有结构化来源时剥离正文引用块，交给来源卡片展示，避免重复
+                  content:
+                    payload.sources.length > 0
+                      ? stripCitationBlock(payload.answer)
+                      : payload.answer,
+                  response: resp,
+                  streaming: false,
+                }
+              : m,
+          ),
+        )
+      },
+      onError: () => {
+        setMessages(prev =>
+          prev.map(m =>
+            m.id === aiId
+              ? {
+                  id: m.id,
+                  role: 'assistant',
+                  content: '请求失败，请检查网络连接后重试',
+                  error: true,
+                }
+              : m,
+          ),
+        )
+      },
+    })
+
+    setIsLoading(false)
+    textareaRef.current?.focus()
+  }, [input, isLoading, currentSessionId, sessions])
 
   function handleNewSession() {
     const id = newSessionId()
