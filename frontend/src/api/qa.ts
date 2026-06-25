@@ -23,7 +23,8 @@ export interface StreamHandlers {
 }
 
 // 解析单个 SSE 帧（多行 event:/data: ）；data 多行时按换行拼接。
-function parseFrame(raw: string): { event: string; data: string } | null {
+// 导出以便单测覆盖帧解析边界。
+export function parseFrame(raw: string): { event: string; data: string } | null {
   let event = 'message'
   const dataLines: string[] = []
   for (const line of raw.split('\n')) {

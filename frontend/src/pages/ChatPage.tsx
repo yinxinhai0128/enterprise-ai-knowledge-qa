@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Progress } from '@/components/ui/progress'
 import { NavBar } from '@/components/NavBar'
+import { SimpleMarkdown } from '@/components/SimpleMarkdown'
+import { stripCitationBlock } from '@/lib/answer'
 import { askQuestionStream, getHistory } from '@/api/qa'
 import type { AskResponse, SourceItem } from '@/types/api'
 import dayjs from 'dayjs'
@@ -13,18 +15,6 @@ import 'dayjs/locale/zh-cn'
 
 dayjs.extend(relativeTime)
 dayjs.locale('zh-cn')
-
-function SimpleMarkdown({ text }: { text: string }) {
-  return (
-    <span style={{ whiteSpace: 'pre-wrap' }}>
-      {text.split(/(\*\*[^*]+\*\*)/).map((part, i) =>
-        part.startsWith('**') && part.endsWith('**')
-          ? <strong key={i}>{part.slice(2, -2)}</strong>
-          : part
-      )}
-    </span>
-  )
-}
 
 // Session storage
 interface Session {
@@ -43,13 +33,6 @@ function saveSessions(sessions: Session[]) {
 
 function newSessionId(): string {
   return `sess_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
-}
-
-// 后端会在答案正文末尾追加"参考来源："文字块（供 API/审计消费）。
-// 前端有独立的来源卡片，故在有结构化来源时剥离正文里的重复块。
-function stripCitationBlock(answer: string): string {
-  const idx = answer.indexOf('\n\n参考来源：')
-  return idx >= 0 ? answer.slice(0, idx).trimEnd() : answer
 }
 
 // Typewriter hook

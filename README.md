@@ -427,6 +427,7 @@ def get_vectorstore():
 - [x] 输入、上传、解析、并发与每日费用安全边界
 - [ ] 检索增强：重排（Rerank）、混合检索、引用高亮
 - [x] 前端管理台（React + TS + Tailwind，问答 / 文档 / 管理三大模块，移动端适配）
+- [x] 前端单元测试（Vitest + React Testing Library：SSE 帧解析、流式消费、JWT 解析/过期、鉴权 store、答案处理）
 
 ## 测试
 
@@ -442,6 +443,15 @@ python scripts/check_test_cleanup.py
 ```
 
 全程使用 Mock（假模型 / 确定性假向量 / 内存 Chroma / 临时库），**不消耗任何真实 API**。
+
+前端测试（`frontend/` 目录）：
+
+```bash
+npm test            # Vitest 一次性运行
+npm run test:watch  # 监听模式
+```
+
+覆盖 SSE 帧解析与流式消费（含跨 chunk 切帧、error/401 分支）、JWT 解析与过期判定、鉴权 store（登录/登出/水合/过期定时器）、答案引用块剥离与 Markdown 渲染。CI 在 push/PR 时并行运行后端质量门禁、前端 `tsc + vitest + build` 与生产镜像构建。
 
 ---
 
