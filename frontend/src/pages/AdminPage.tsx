@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { RefreshCw, HelpCircle, AlertTriangle, CheckCircle2, Clock, User, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -45,27 +45,31 @@ export default function AdminPage() {
   const [completeTaskId, setCompleteTaskId] = useState<number | null>(null)
   const [resolution, setResolution] = useState('')
 
-  if (!auth.isAdmin) {
-    navigate('/chat')
-    toast({ variant: 'destructive', title: '无管理员权限' })
-    return null
-  }
+  useEffect(() => {
+    if (!auth.isAdmin) {
+      toast({ variant: 'destructive', title: '无管理员权限' })
+      navigate('/chat')
+    }
+  }, [auth.isAdmin, navigate])
 
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: getStats,
     refetchInterval: 30000,
+    enabled: auth.isAdmin,
   })
 
   const { data: refused = [], isLoading: refusedLoading } = useQuery({
     queryKey: ['admin-refused'],
     queryFn: getRefused,
     refetchInterval: 30000,
+    enabled: auth.isAdmin,
   })
 
   const { data: tasks = [], isLoading: tasksLoading, refetch: refetchTasks } = useQuery({
     queryKey: ['admin-tasks', taskFilter],
     queryFn: () => getHumanTasks(taskFilter === 'all' ? undefined : taskFilter),
+    enabled: auth.isAdmin,
   })
 
   const claimMutation = useMutation({
@@ -85,6 +89,9 @@ export default function AdminPage() {
       toast({ variant: 'success', title: '任务已完成' })
     },
   })
+
+  // 非管理员：副作用已在 useEffect 中触发跳转，这里直接不渲染内容
+  if (!auth.isAdmin) return null
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">

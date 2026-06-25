@@ -1,6 +1,8 @@
 import axios from 'axios'
-import { getToken, clearToken } from './auth'
+import { getToken } from './auth'
 import { toast } from '@/hooks/use-toast'
+import { navigateTo } from '@/lib/navigation'
+import { useAuthStore } from '@/stores/auth'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8765'
 
@@ -28,8 +30,9 @@ apiClient.interceptors.response.use(
     const { status, data, headers } = error.response
 
     if (status === 401) {
-      clearToken()
-      window.location.href = '/login'
+      // 同时重置 Zustand 状态（clearToken 只清 localStorage，不会触发 UI 更新）
+      useAuthStore.getState().logout()
+      navigateTo('/login')
       return Promise.reject(error)
     }
 

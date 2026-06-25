@@ -1,8 +1,9 @@
 import { useEffect, Component, type ReactNode } from 'react'
-import { BrowserRouter, Routes, Route, Navigate, useLocation, Outlet } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from '@/components/ui/toaster'
 import { useAuth } from '@/stores/auth'
+import { setNavigator } from '@/lib/navigation'
 import LoginPage from '@/pages/LoginPage'
 import ChatPage from '@/pages/ChatPage'
 import DocumentsPage from '@/pages/DocumentsPage'
@@ -48,6 +49,11 @@ function ProtectedRoute() {
 
 function AppRoutes() {
   const auth = useAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    setNavigator(navigate)
+  }, [navigate])
 
   useEffect(() => {
     auth.hydrate()
