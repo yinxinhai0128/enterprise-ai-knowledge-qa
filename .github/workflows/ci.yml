@@ -46,6 +46,26 @@ jobs:
       - name: Dependency audit
         run: python scripts/dependency_audit.py
 
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Type check
+        run: npx tsc --noEmit
+      - name: Production build
+        run: npm run build
+
   docker-build:
     runs-on: ubuntu-latest
     timeout-minutes: 20

@@ -45,12 +45,31 @@ function scheduleExpiry(payload: TokenPayload, onExpire: () => void) {
   }, msUntilExp)
 }
 
+type AuthFields = Pick<AuthState, 'token' | 'userId' | 'tenantId' | 'roles' | 'isAdmin'>
+
+const EMPTY_AUTH: AuthFields = { token: null, userId: null, tenantId: null, roles: [], isAdmin: false }
+
+/** 从 token 同步推导出鉴权状态；无效或过期则清除并返回空状态 */
+function buildAuthFields(token: string | null): AuthFields {
+  if (!token) return EMPTY_AUTH
+  const payload = parseTokenPayload(token)
+  if (!payload || isTokenExpired(payload)) {
+    clearToken()
+    return EMPTY_AUTH
+  }
+  return {
+    token,
+    userId: payload.sub,
+    tenantId: payload.tenant_id,
+    roles: payload.roles,
+    isAdmin: payload.roles.includes('admin'),
+  }
+}
+
 export const useAuthStore = create<AuthState>((set, get) => ({
-  token: null,
-  userId: null,
-  tenantId: null,
-  roles: [],
-  isAdmin: false,
+  // 创建时同步从 localStorage 恢复，避免硬刷新受保护路由时 ProtectedRoute
+  // 在 hydrate(useEffect) 之前读到空 token 而误跳登录页
+  ...buildAuthFields(getToken()),
 
   login: (token: string) => {
     const payload = parseTokenPayload(token)
@@ -76,20 +95,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   hydrate: () => {
     const token = getToken()
-    if (!token) return
-    const payload = parseTokenPayload(token)
-    if (!payload || isTokenExpired(payload)) {
-      clearToken()
-      return
+    const fields = buildAuthFields(token)
+    set(fields)
+    if (fields.token) {
+      const payload = parseTokenPayload(fields.token)
+      if (payload) scheduleExpiry(payload, () => get().logout())
     }
-    set({
-      token,
-      userId: payload.sub,
-      tenantId: payload.tenant_id,
-      roles: payload.roles,
-      isAdmin: payload.roles.includes('admin'),
-    })
-    scheduleExpiry(payload, () => get().logout())
   },
 }))
 

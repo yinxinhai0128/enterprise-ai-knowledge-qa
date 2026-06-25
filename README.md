@@ -5,7 +5,9 @@
 
 > **状态说明：生产候选验收已通过。** HARNESS 阶段 0–12 已于 2026-06-23 完成，证据见[阶段 12 验收报告](docs/audit/stage12-acceptance-2026-06-23.md)。这不替代企业 IdP、恶意软件扫描、容量压测、TLS 反向代理和防火墙，未经这些部署控制仍不得直接暴露到局域网或公网。
 
-`LangChain 1.3` · `LangGraph` · `FastAPI` · `Chroma` · `阿里云百炼` · `Python 3.12`
+[![CI](https://github.com/yinxinhai0128/enterprise-ai-knowledge-qa/actions/workflows/ci.yml/badge.svg)](https://github.com/yinxinhai0128/enterprise-ai-knowledge-qa/actions/workflows/ci.yml)
+
+`LangChain 1.3` · `LangGraph` · `FastAPI` · `Chroma` · `React 18` · `阿里云百炼` · `Python 3.12`
 
 ---
 
@@ -58,6 +60,18 @@
                   └──────────────────────────────────────────────────┘
 ```
 
+## 前端界面预览
+
+配套 **React 18 + TypeScript + Tailwind CSS + shadcn/ui** 单页应用，已对接全部后端接口，支持移动端响应式布局。
+
+| 登录（Bearer JWT） | 智能问答（来源可溯 + 打字机动效） |
+|:---:|:---:|
+| ![登录页](docs/screenshots/01-login.png) | ![聊天页](docs/screenshots/02-chat.png) |
+| **知识库文档（拖拽上传 + 状态轮询）** | **管理员面板（统计 / 人工任务 / 审计）** |
+| ![文档页](docs/screenshots/03-documents.png) | ![管理页](docs/screenshots/04-admin.png) |
+
+> 技术要点：Agentic RAG 无流式接口，打字机为前端 `setInterval` 模拟；来源引用、拒答、转人工状态均由服务端真实 artifact 驱动，前端不臆造。
+
 ## 快速开始
 
 > ⚠️ **务必使用独立虚拟环境**。若本机默认 `python` 指向 Anaconda base，那里通常是旧版 LangChain 0.3.x，缺少 `create_agent`，本项目无法运行。
@@ -95,6 +109,20 @@ Invoke-RestMethod http://127.0.0.1:8000/health/ready
 ```
 
 macOS/Linux 请用 `python3.12 -m venv .venv`、`source .venv/bin/activate`，并将 `Copy-Item` 换成 `cp`。
+
+### 启动前端（可选，可视化界面）
+
+```powershell
+# 另开终端，进入 frontend 目录
+cd frontend
+npm install
+npm run dev          # 默认 http://localhost:5173
+
+# 生成带 admin 角色的 Token 用于登录（user,admin）
+python scripts\create_dev_token.py --roles user,admin --ttl-seconds 3600
+```
+
+打开 `http://localhost:5173`，粘贴上面生成的 Token 登录即可。前端默认请求 `http://127.0.0.1:8765`（见 `frontend/.env.development`，需与后端端口一致）。Windows 用户也可直接运行根目录 `start.ps1` 一键拉起后端 + Worker + 前端三个窗口。
 
 容器化部署：`docker compose up -d --build`（已挂载 `storage` / `chroma_db` / `logs` 卷）。镜像以 UID/GID 10001 非 root 身份和只读根文件系统运行，源码由 root 拥有且不可修改。
 
@@ -398,7 +426,7 @@ def get_vectorstore():
 - [x] 结构化检索证据、稳定 chunk ID 与服务端强制拒答
 - [x] 输入、上传、解析、并发与每日费用安全边界
 - [ ] 检索增强：重排（Rerank）、混合检索、引用高亮
-- [ ] 前端管理台
+- [x] 前端管理台（React + TS + Tailwind，问答 / 文档 / 管理三大模块，移动端适配）
 
 ## 测试
 
