@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Send, Square, Plus, ChevronDown, ChevronUp, FileText, AlertTriangle, UserCheck, Bot, RefreshCw, Menu, X, MessageSquare } from 'lucide-react'
+import { Send, Square, Plus, ChevronDown, ChevronUp, FileText, AlertTriangle, UserCheck, Bot, RefreshCw, Menu, X, MessageSquare, Copy, Check, ChevronsDown } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { NavBar } from '@/components/NavBar'
 import { SimpleMarkdown } from '@/components/SimpleMarkdown'
@@ -119,10 +119,19 @@ interface Message {
 }
 
 function AssistantBubble({ msg, onRetry }: { msg: Message; onRetry?: () => void }) {
+  const [copied, setCopied] = useState(false)
   const isStream = msg.isNew === true && (msg.streaming === true || msg.response !== undefined)
   const typewriter = useTypewriter(msg.content, msg.isNew === true && !isStream)
   const displayed = isStream ? msg.content : typewriter.displayed
   const done = isStream ? msg.streaming !== true : typewriter.done
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(msg.content)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {}
+  }
 
   return (
     <div className="flex gap-3 max-w-[86%]">
@@ -131,7 +140,7 @@ function AssistantBubble({ msg, onRetry }: { msg: Message; onRetry?: () => void 
         <Bot className="w-4 h-4 text-white" />
       </div>
       <div className="flex-1 min-w-0">
-        <div className={`rounded-2xl rounded-tl-sm px-4 py-3 text-sm leading-relaxed shadow-sm ${
+        <div className={`group/bubble relative rounded-2xl rounded-tl-sm px-4 py-3 text-sm leading-relaxed shadow-sm ${
           msg.error
             ? 'bg-red-50 border border-red-200 text-red-700'
             : 'bg-white text-gray-800'
@@ -152,6 +161,17 @@ function AssistantBubble({ msg, onRetry }: { msg: Message; onRetry?: () => void 
                 <span className="inline-block w-0.5 h-4 bg-blue-400 animate-pulse ml-0.5 align-middle rounded-sm" />
               )}
             </span>
+          )}
+          {done && !msg.error && msg.content && (
+            <button
+              onClick={handleCopy}
+              title="复制回答"
+              className="absolute top-2 right-2 p-1.5 rounded-lg text-gray-300 hover:text-gray-500 hover:bg-gray-100 opacity-0 group-hover/bubble:opacity-100 transition-all"
+            >
+              {copied
+                ? <Check className="w-3.5 h-3.5 text-green-500" />
+                : <Copy className="w-3.5 h-3.5" />}
+            </button>
           )}
         </div>
         {done && msg.response && !msg.error && (
@@ -207,10 +227,22 @@ export default function ChatPage() {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [showScrollBtn, setShowScrollBtn] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const abortRef = useRef<AbortController | null>(null)
   const hydratedSessionRef = useRef<string | null>(null)
+
+  function handleMessagesScroll() {
+    const el = messagesContainerRef.current
+    if (!el) return
+    setShowScrollBtn(el.scrollHeight - el.scrollTop - el.clientHeight > 160)
+  }
+
+  function scrollToBottom() {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   const mountedRef = useRef(true)
   useEffect(() => {
@@ -414,7 +446,17 @@ export default function ChatPage() {
       </div>
 
       {/* Main chat area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 relative">
+        {/* Scroll-to-bottom button */}
+        {showScrollBtn && (
+          <button
+            onClick={scrollToBottom}
+            className="absolute bottom-24 right-5 z-10 w-9 h-9 rounded-full bg-white shadow-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:shadow-lg transition-all animate-fade-in"
+          >
+            <ChevronsDown className="w-4 h-4" />
+          </button>
+        )}
+
         {/* Header */}
         <div className="h-14 flex items-center px-4 md:px-6 border-b border-gray-100 bg-white gap-3 shadow-sm">
           <button
@@ -429,7 +471,11 @@ export default function ChatPage() {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-4 md:px-8 py-6 space-y-5 scrollbar-thin">
+        <div
+          ref={messagesContainerRef}
+          onScroll={handleMessagesScroll}
+          className="flex-1 overflow-y-auto px-4 md:px-8 py-6 space-y-5 scrollbar-thin"
+        >
           {historyLoading && (
             <div className="space-y-5">
               {[0, 1].map(i => (
