@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { RefreshCw, HelpCircle, AlertTriangle, CheckCircle2, Clock, User, Loader2 } from 'lucide-react'
+import { RefreshCw, HelpCircle, AlertTriangle, CheckCircle2, Clock, User, Loader2, FileText, MessageSquare, BarChart2, Shield } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Progress } from '@/components/ui/progress'
@@ -35,6 +34,30 @@ function TaskStatusBadge({ status }: { status: HumanTaskOut['status'] }) {
   if (status === 'pending') return <Badge variant="warning">待处理</Badge>
   if (status === 'claimed') return <Badge variant="info">已领取</Badge>
   return <Badge variant="success">已完成</Badge>
+}
+
+function StatCard({
+  title, value, sub, icon: Icon, iconColor, iconBg,
+}: {
+  title: string
+  value: string | number
+  sub?: React.ReactNode
+  icon: React.ElementType
+  iconColor: string
+  iconBg: string
+}) {
+  return (
+    <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+      <div className="flex items-start justify-between mb-4">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: iconBg }}>
+          <Icon className="w-5 h-5" style={{ color: iconColor }} />
+        </div>
+        <span className="text-xs text-gray-400 mt-1">{title}</span>
+      </div>
+      <p className="text-3xl font-bold text-gray-900 tabular-nums">{value}</p>
+      {sub && <div className="mt-2">{sub}</div>}
+    </div>
+  )
 }
 
 export default function AdminPage() {
@@ -90,7 +113,6 @@ export default function AdminPage() {
     },
   })
 
-  // 非管理员：副作用已在 useEffect 中触发跳转，这里直接不渲染内容
   if (!auth.isAdmin) return null
 
   return (
@@ -98,241 +120,276 @@ export default function AdminPage() {
       <NavBar />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
-        <div className="h-14 flex items-center px-6 border-b border-gray-200 bg-white">
-          <span className="font-medium text-gray-800">管理员面板</span>
+        <div className="h-14 flex items-center gap-3 px-6 border-b border-gray-100 bg-white shadow-sm">
+          <Shield className="w-4 h-4 text-gray-400" />
+          <span className="font-medium text-gray-700 text-sm">管理员面板</span>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 scrollbar-thin">
           <Tabs defaultValue="stats">
-            <TabsList className="mb-6">
-              <TabsTrigger value="stats">统计概览</TabsTrigger>
-              <TabsTrigger value="tasks">人工任务</TabsTrigger>
-              <TabsTrigger value="audit">审计记录</TabsTrigger>
+            <TabsList className="mb-6 bg-gray-100 p-1 rounded-xl">
+              <TabsTrigger value="stats" className="rounded-lg text-sm">统计概览</TabsTrigger>
+              <TabsTrigger value="tasks" className="rounded-lg text-sm">人工任务</TabsTrigger>
+              <TabsTrigger value="audit" className="rounded-lg text-sm">审计记录</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Stats */}
-            <TabsContent value="stats">
+            <TabsContent value="stats" className="animate-fade-in">
               {statsLoading ? (
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  {[0, 1, 2].map(i => <Skeleton key={i} className="h-28 rounded-xl" />)}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  {[0, 1, 2].map(i => <Skeleton key={i} className="h-32 rounded-2xl" />)}
                 </div>
               ) : stats ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-sm text-gray-500">文档总数</CardTitle></CardHeader>
-                    <CardContent>
-                      <p className="text-3xl font-bold text-gray-900">{stats.documents.total}</p>
-                      <div className="flex gap-2 mt-2">
+                  <StatCard
+                    title="文档总数"
+                    value={stats.documents.total}
+                    icon={FileText}
+                    iconColor="#3B4FCC"
+                    iconBg="linear-gradient(135deg, #EEF2FF 0%, #C7D2FE 100%)"
+                    sub={
+                      <div className="flex gap-2">
                         <Badge variant="success">已索引 {stats.documents.indexed}</Badge>
                         {stats.documents.failed > 0 && <Badge variant="destructive">失败 {stats.documents.failed}</Badge>}
                       </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-sm text-gray-500">问答总数</CardTitle></CardHeader>
-                    <CardContent>
-                      <p className="text-3xl font-bold text-gray-900">{stats.qa.total}</p>
-                      <p className="text-xs text-gray-400 mt-2">累计问答记录</p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-sm text-gray-500">质量指标</CardTitle></CardHeader>
-                    <CardContent className="space-y-3">
+                    }
+                  />
+                  <StatCard
+                    title="问答总数"
+                    value={stats.qa.total}
+                    icon={MessageSquare}
+                    iconColor="#059669"
+                    iconBg="linear-gradient(135deg, #ECFDF5 0%, #A7F3D0 100%)"
+                    sub={<p className="text-xs text-gray-400">累计问答记录</p>}
+                  />
+                  <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                        style={{ background: 'linear-gradient(135deg, #FFF7ED 0%, #FED7AA 100%)' }}>
+                        <BarChart2 className="w-5 h-5 text-orange-500" />
+                      </div>
+                      <span className="text-xs text-gray-400 mt-1">质量指标</span>
+                    </div>
+                    <div className="space-y-3">
                       <div>
-                        <div className="flex justify-between text-xs text-gray-500 mb-1">
+                        <div className="flex justify-between text-xs text-gray-500 mb-1.5">
                           <span>拒答率</span>
-                          <span>{(stats.qa.refused_rate * 100).toFixed(1)}%</span>
+                          <span className="font-medium">{(stats.qa.refused_rate * 100).toFixed(1)}%</span>
                         </div>
                         <Progress value={stats.qa.refused_rate * 100} className="h-1.5 [&>div]:bg-orange-400" />
                       </div>
                       <div>
-                        <div className="flex justify-between text-xs text-gray-500 mb-1">
+                        <div className="flex justify-between text-xs text-gray-500 mb-1.5">
                           <span>转人工率</span>
-                          <span>{(stats.qa.human_rate * 100).toFixed(1)}%</span>
+                          <span className="font-medium">{(stats.qa.human_rate * 100).toFixed(1)}%</span>
                         </div>
                         <Progress value={stats.qa.human_rate * 100} className="h-1.5 [&>div]:bg-yellow-400" />
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 </div>
               ) : null}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm flex items-center gap-2">
-                      <HelpCircle className="w-4 h-4 text-gray-400" />
-                      最近拒答记录
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {refusedLoading ? <Skeleton className="h-32" /> : refused.length === 0 ? (
-                      <p className="text-sm text-gray-400 text-center py-6">暂无拒答记录 🎉</p>
-                    ) : (
-                      <div className="space-y-2">
-                        {refused.slice(0, 8).map(r => (
-                          <div key={r.id} className="flex items-start gap-2 py-2 border-b border-gray-50 last:border-0">
-                            <HelpCircle className="w-3.5 h-3.5 text-gray-300 mt-0.5 shrink-0" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm text-gray-700 truncate">{r.question}</p>
-                              <p className="text-xs text-gray-400">{dayjs(r.created_at).fromNow()}</p>
-                            </div>
+                {/* Recent refused */}
+                <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-7 h-7 rounded-lg bg-red-50 flex items-center justify-center">
+                      <HelpCircle className="w-4 h-4 text-red-400" />
+                    </div>
+                    <h3 className="text-sm font-medium text-gray-700">最近拒答记录</h3>
+                  </div>
+                  {refusedLoading ? <Skeleton className="h-32" /> : refused.length === 0 ? (
+                    <div className="text-center py-8">
+                      <CheckCircle2 className="w-8 h-8 mx-auto mb-2 text-green-300" />
+                      <p className="text-sm text-gray-400">暂无拒答记录</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      {refused.slice(0, 8).map(r => (
+                        <div key={r.id} className="flex items-start gap-2.5 py-2.5 border-b border-gray-50 last:border-0">
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-300 mt-1.5 shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-gray-700 truncate">{r.question}</p>
+                            <p className="text-xs text-gray-400 mt-0.5">{dayjs(r.created_at).fromNow()}</p>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm flex items-center gap-2">
+                {/* Recent human tasks */}
+                <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-7 h-7 rounded-lg bg-yellow-50 flex items-center justify-center">
                       <AlertTriangle className="w-4 h-4 text-yellow-500" />
-                      最近转人工记录
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {tasksLoading ? <Skeleton className="h-32" /> : tasks.length === 0 ? (
-                      <p className="text-sm text-gray-400 text-center py-6">暂无待处理任务</p>
-                    ) : (
-                      <div className="space-y-2">
-                        {tasks.filter(t => t.status === 'pending').slice(0, 8).map(t => (
-                          <div key={t.id} className="flex items-start gap-2 py-2 border-b border-gray-50 last:border-0">
-                            <AlertTriangle className="w-3.5 h-3.5 text-yellow-400 mt-0.5 shrink-0" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm text-gray-700 truncate">{t.reason}</p>
-                              <div className="flex items-center gap-2 mt-0.5">
-                                <Badge variant="destructive" className="text-xs">{t.category}</Badge>
-                                <span className="text-xs text-gray-400">{dayjs(t.created_at).fromNow()}</span>
-                              </div>
+                    </div>
+                    <h3 className="text-sm font-medium text-gray-700">最近转人工记录</h3>
+                  </div>
+                  {tasksLoading ? <Skeleton className="h-32" /> : tasks.filter(t => t.status === 'pending').length === 0 ? (
+                    <div className="text-center py-8">
+                      <CheckCircle2 className="w-8 h-8 mx-auto mb-2 text-green-300" />
+                      <p className="text-sm text-gray-400">暂无待处理任务</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      {tasks.filter(t => t.status === 'pending').slice(0, 8).map(t => (
+                        <div key={t.id} className="flex items-start gap-2.5 py-2.5 border-b border-gray-50 last:border-0">
+                          <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-1.5 shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-gray-700 truncate">{t.reason}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <Badge variant="destructive" className="text-[10px]">{t.category}</Badge>
+                              <span className="text-xs text-gray-400">{dayjs(t.created_at).fromNow()}</span>
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </TabsContent>
 
             {/* Tab 2: Human tasks */}
-            <TabsContent value="tasks">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex gap-2">
+            <TabsContent value="tasks" className="animate-fade-in">
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex gap-1.5">
                   {(Object.keys(FILTER_LABELS) as TaskFilter[]).map(f => (
-                    <Button
+                    <button
                       key={f}
-                      variant={taskFilter === f ? 'default' : 'outline'}
-                      size="sm"
-                      style={taskFilter === f ? { backgroundColor: '#3B4FCC' } : undefined}
                       onClick={() => setTaskFilter(f)}
+                      className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                        taskFilter === f
+                          ? 'text-white shadow-sm'
+                          : 'text-gray-500 bg-gray-100 hover:bg-gray-200'
+                      }`}
+                      style={taskFilter === f
+                        ? { background: 'linear-gradient(135deg, #5B72F5 0%, #3B4FCC 100%)' }
+                        : undefined}
                     >
                       {FILTER_LABELS[f]}
-                    </Button>
+                    </button>
                   ))}
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => refetchTasks()}>
+                <button
+                  onClick={() => refetchTasks()}
+                  className="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                >
                   <RefreshCw className="w-4 h-4" />
-                </Button>
+                </button>
               </div>
 
               {tasksLoading ? (
                 <div className="space-y-3">
-                  {[0, 1, 2].map(i => <Skeleton key={i} className="h-32 rounded-xl" />)}
+                  {[0, 1, 2].map(i => <Skeleton key={i} className="h-32 rounded-2xl" />)}
                 </div>
               ) : tasks.length === 0 ? (
-                <div className="text-center py-16 text-gray-400">
-                  <CheckCircle2 className="w-10 h-10 mx-auto mb-3 text-gray-200" />
-                  <p>暂无{taskFilter !== 'all' ? FILTER_LABELS[taskFilter] : ''}任务</p>
+                <div className="text-center py-20">
+                  <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle2 className="w-7 h-7 text-gray-300" />
+                  </div>
+                  <p className="text-sm text-gray-400">
+                    暂无{taskFilter !== 'all' ? FILTER_LABELS[taskFilter] : ''}任务
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {tasks.map(t => (
-                    <Card key={t.id}>
-                      <CardContent className="pt-4">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-2 flex-wrap">
-                              <Badge variant="destructive">{t.category}</Badge>
-                              <TaskStatusBadge status={t.status} />
-                              <span className="text-xs text-gray-400">#{t.id}</span>
-                              <span className="text-xs text-gray-400 flex items-center gap-1">
-                                <Clock className="w-3 h-3" />{dayjs(t.created_at).fromNow()}
-                              </span>
-                            </div>
-                            <div className="bg-gray-50 rounded-lg p-3 mb-2">
-                              <p className="text-sm text-gray-700">{t.reason}</p>
-                            </div>
-                            {t.status === 'completed' && t.resolution && (
-                              <div className="flex items-start gap-1.5 text-xs text-green-700 bg-green-50 rounded-lg p-2">
-                                <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                                {t.resolution}
-                              </div>
-                            )}
-                            {t.assigned_to && (
-                              <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                                <User className="w-3 h-3" /> {t.assigned_to}
-                              </p>
-                            )}
+                    <div key={t.id} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-3 flex-wrap">
+                            <Badge variant="destructive">{t.category}</Badge>
+                            <TaskStatusBadge status={t.status} />
+                            <span className="text-xs text-gray-400">#{t.id}</span>
+                            <span className="text-xs text-gray-400 flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {dayjs(t.created_at).fromNow()}
+                            </span>
                           </div>
-                          <div className="flex flex-col gap-2 shrink-0">
-                            {t.status === 'pending' && (
-                              <Button size="sm" style={{ backgroundColor: '#3B4FCC' }}
-                                disabled={claimMutation.isPending}
-                                onClick={() => claimMutation.mutate(t.id)}>
-                                {claimMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : '领取任务'}
-                              </Button>
-                            )}
-                            {t.status === 'claimed' && (
-                              <Button size="sm" variant="outline" className="text-green-700 border-green-200 hover:bg-green-50"
-                                onClick={() => { setCompleteTaskId(t.id); setResolution('') }}>
-                                标记完成
-                              </Button>
-                            )}
+                          <div className="bg-gray-50 rounded-xl px-4 py-3 mb-3 border border-gray-100">
+                            <p className="text-sm text-gray-700 leading-relaxed">{t.reason}</p>
                           </div>
+                          {t.status === 'completed' && t.resolution && (
+                            <div className="flex items-start gap-2 text-xs text-green-700 bg-green-50 rounded-xl px-3 py-2.5 border border-green-100">
+                              <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                              <span>{t.resolution}</span>
+                            </div>
+                          )}
+                          {t.assigned_to && (
+                            <p className="text-xs text-gray-400 mt-2 flex items-center gap-1">
+                              <User className="w-3 h-3" /> {t.assigned_to}
+                            </p>
+                          )}
                         </div>
-                      </CardContent>
-                    </Card>
+                        <div className="flex flex-col gap-2 shrink-0">
+                          {t.status === 'pending' && (
+                            <button
+                              className="px-4 py-2 rounded-xl text-sm text-white font-medium transition-all hover:opacity-90 disabled:opacity-50"
+                              style={{ background: 'linear-gradient(135deg, #5B72F5 0%, #3B4FCC 100%)' }}
+                              disabled={claimMutation.isPending}
+                              onClick={() => claimMutation.mutate(t.id)}
+                            >
+                              {claimMutation.isPending
+                                ? <Loader2 className="w-4 h-4 animate-spin" />
+                                : '领取任务'}
+                            </button>
+                          )}
+                          {t.status === 'claimed' && (
+                            <button
+                              className="px-4 py-2 rounded-xl text-sm text-green-700 font-medium border border-green-200 hover:bg-green-50 transition-colors"
+                              onClick={() => { setCompleteTaskId(t.id); setResolution('') }}
+                            >
+                              标记完成
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
             </TabsContent>
 
             {/* Tab 3: Audit */}
-            <TabsContent value="audit">
-              {refusedLoading ? <Skeleton className="h-64" /> : (
-                <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+            <TabsContent value="audit" className="animate-fade-in">
+              {refusedLoading ? <Skeleton className="h-64 rounded-2xl" /> : (
+                <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
                   <table className="w-full text-xs">
                     <thead>
-                      <tr className="border-b border-gray-100 bg-gray-50">
-                        <th className="text-left px-4 py-2.5 text-gray-500 font-medium">时间</th>
-                        <th className="text-left px-4 py-2.5 text-gray-500 font-medium">用户</th>
-                        <th className="text-left px-4 py-2.5 text-gray-500 font-medium">问题</th>
-                        <th className="text-left px-4 py-2.5 text-gray-500 font-medium">来源</th>
-                        <th className="text-left px-4 py-2.5 text-gray-500 font-medium">拒答</th>
-                        <th className="text-left px-4 py-2.5 text-gray-500 font-medium">Token</th>
-                        <th className="text-left px-4 py-2.5 text-gray-500 font-medium">延迟(ms)</th>
+                      <tr className="border-b border-gray-100 bg-gray-50/80">
+                        <th className="text-left px-4 py-3 text-gray-500 font-medium">时间</th>
+                        <th className="text-left px-4 py-3 text-gray-500 font-medium">用户</th>
+                        <th className="text-left px-4 py-3 text-gray-500 font-medium">问题</th>
+                        <th className="text-left px-4 py-3 text-gray-500 font-medium">来源</th>
+                        <th className="text-left px-4 py-3 text-gray-500 font-medium">拒答</th>
+                        <th className="text-left px-4 py-3 text-gray-500 font-medium">Token</th>
+                        <th className="text-left px-4 py-3 text-gray-500 font-medium">延迟(ms)</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
                       {refused.map(r => (
-                        <tr key={r.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-2.5 text-gray-400">{dayjs(r.created_at).fromNow()}</td>
-                          <td className="px-4 py-2.5 text-gray-600 max-w-[80px] truncate">{r.user_id}</td>
+                        <tr key={r.id} className="hover:bg-gray-50/60 transition-colors">
+                          <td className="px-4 py-2.5 text-gray-400 whitespace-nowrap">{dayjs(r.created_at).fromNow()}</td>
+                          <td className="px-4 py-2.5 text-gray-600 max-w-[80px] truncate font-mono">{r.user_id}</td>
                           <td className="px-4 py-2.5 text-gray-700 max-w-[200px] truncate">{r.question}</td>
                           <td className="px-4 py-2.5">
-                            {r.has_source ? <span className="text-green-600">✓</span> : <span className="text-gray-300">—</span>}
+                            {r.has_source
+                              ? <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
+                              : <span className="text-gray-200">—</span>}
                           </td>
                           <td className="px-4 py-2.5">
                             {r.refused ? <Badge variant="warning" className="text-[10px] px-1.5">拒答</Badge> : null}
                           </td>
-                          <td className="px-4 py-2.5 text-gray-500">{r.total_tokens}</td>
-                          <td className="px-4 py-2.5 text-gray-500">{Math.round(r.latency_ms)}</td>
+                          <td className="px-4 py-2.5 text-gray-500 tabular-nums">{r.total_tokens}</td>
+                          <td className="px-4 py-2.5 text-gray-500 tabular-nums">{Math.round(r.latency_ms)}</td>
                         </tr>
                       ))}
                       {refused.length === 0 && (
                         <tr>
-                          <td colSpan={7} className="px-4 py-8 text-center text-gray-400">暂无审计记录</td>
+                          <td colSpan={7} className="px-4 py-12 text-center text-gray-400">暂无审计记录</td>
                         </tr>
                       )}
                     </tbody>
@@ -356,6 +413,7 @@ export default function AdminPage() {
             onChange={e => setResolution(e.target.value)}
             placeholder="请描述处理结果、判断依据或采取的行动…"
             rows={4}
+            className="rounded-xl"
           />
           <p className="text-xs text-gray-400">{resolution.length} / 4000</p>
           <DialogFooter>
@@ -367,7 +425,8 @@ export default function AdminPage() {
                   completeMutation.mutate({ id: completeTaskId, res: resolution.trim() })
                 }
               }}
-              style={{ backgroundColor: '#3B4FCC' }}
+              style={{ background: 'linear-gradient(135deg, #5B72F5 0%, #3B4FCC 100%)' }}
+              className="text-white"
             >
               {completeMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : '提交'}
             </Button>

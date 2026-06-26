@@ -63,3 +63,19 @@
     border-radius: 2px;
   }
 }
+
+/* Global micro-polish */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Textarea: remove default browser resize grip on Windows */
+textarea {
+  resize: none;
+}
+
+/* Selection color */
+::selection {
+  background-color: #C7D2FE;
+  color: #1e3a8a;
+}

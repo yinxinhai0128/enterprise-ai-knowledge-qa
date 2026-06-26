@@ -72,13 +72,14 @@ export default function LoginPage() {
   const isDev = import.meta.env.DEV
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen animate-fade-in">
       {/* Left — brand panel */}
       <div className="hidden md:flex w-1/2 flex-col justify-between p-10"
-        style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #3B4FCC 100%)' }}>
+        style={{ background: 'linear-gradient(135deg, #1a3558 0%, #3B4FCC 100%)' }}>
         <div className="text-white">
           <div className="flex items-center gap-3 mb-16">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+              style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)' }}>
               <Bot className="w-6 h-6 text-white" />
             </div>
             <span className="text-xl font-bold tracking-wide">企知问答 EKQA</span>
