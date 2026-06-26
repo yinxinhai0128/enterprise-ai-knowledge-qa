@@ -29,16 +29,19 @@ export function NavBar() {
 
   return (
     <TooltipProvider delayDuration={200}>
-      {/* Desktop: left sidebar */}
+      {/* Desktop: left icon rail */}
       <nav
         className="hidden md:flex flex-col items-center py-4 h-full shrink-0"
-        style={{ width: 60, background: '#1e3a5f' }}
+        style={{ width: 60, background: 'linear-gradient(180deg, #1a3558 0%, #1e3a5f 100%)' }}
       >
-        <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center mb-6">
-          <span className="text-white text-xs font-bold">EK</span>
+        {/* Logo */}
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-7 shadow-sm"
+          style={{ background: 'linear-gradient(135deg, #4F6EF7 0%, #3B4FCC 100%)' }}>
+          <span className="text-white text-xs font-bold tracking-wide">EK</span>
         </div>
 
-        <div className="flex-1 flex flex-col items-center gap-2 w-full px-2">
+        {/* Nav items */}
+        <div className="flex-1 flex flex-col items-center gap-1.5 w-full px-2">
           {allItems.map(({ icon: Icon, label, path }) => {
             const active = pathname.startsWith(path)
             return (
@@ -46,24 +49,29 @@ export function NavBar() {
                 <TooltipTrigger asChild>
                   <button
                     onClick={() => navigate(path)}
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                      active ? 'bg-white/25 text-white' : 'text-white/60 hover:bg-white/10 hover:text-white'
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                      active
+                        ? 'bg-white/20 text-white shadow-inner ring-1 ring-white/10'
+                        : 'text-white/50 hover:bg-white/10 hover:text-white'
                     }`}
                   >
                     <Icon className="w-5 h-5" />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="right">{label}</TooltipContent>
+                <TooltipContent side="right" className="font-medium">{label}</TooltipContent>
               </Tooltip>
             )
           })}
         </div>
 
-        <div className="flex flex-col items-center gap-2">
+        {/* Bottom: avatar + logout */}
+        <div className="flex flex-col items-center gap-2 pb-1">
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="w-8 h-8 rounded-full flex items-center justify-center cursor-default"
-                style={{ backgroundColor: '#3B4FCC' }}>
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center cursor-default ring-2 ring-white/10"
+                style={{ background: 'linear-gradient(135deg, #5B72F5 0%, #3B4FCC 100%)' }}
+              >
                 <span className="text-white text-xs font-semibold">{initials}</span>
               </div>
             </TooltipTrigger>
@@ -73,7 +81,7 @@ export function NavBar() {
             <TooltipTrigger asChild>
               <button
                 onClick={handleLogout}
-                className="w-8 h-8 rounded-xl flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-colors"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -84,28 +92,28 @@ export function NavBar() {
       </nav>
 
       {/* Mobile: bottom navigation bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around h-14 bg-white border-t border-gray-200">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around h-14 bg-white border-t border-gray-100 shadow-lg">
         {allItems.map(({ icon: Icon, label, path }) => {
           const active = pathname.startsWith(path)
           return (
             <button
               key={path}
               onClick={() => navigate(path)}
-              className={`flex flex-col items-center gap-0.5 px-4 py-1 rounded-lg transition-colors ${
-                active ? 'text-[#3B4FCC]' : 'text-gray-400'
+              className={`flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl transition-colors ${
+                active ? 'text-[#3B4FCC]' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
-              <Icon className="w-5 h-5" />
-              <span className="text-[10px]">{label}</span>
+              <Icon className={`w-5 h-5 ${active ? 'stroke-[2.2px]' : ''}`} />
+              <span className="text-[10px] font-medium">{label}</span>
             </button>
           )
         })}
         <button
           onClick={handleLogout}
-          className="flex flex-col items-center gap-0.5 px-4 py-1 rounded-lg text-gray-400"
+          className="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-gray-400 hover:text-gray-600 transition-colors"
         >
           <LogOut className="w-5 h-5" />
-          <span className="text-[10px]">退出</span>
+          <span className="text-[10px] font-medium">退出</span>
         </button>
       </nav>
     </TooltipProvider>

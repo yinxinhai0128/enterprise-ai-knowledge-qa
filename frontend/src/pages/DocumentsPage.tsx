@@ -85,16 +85,18 @@ function UploadZone({ onFiles }: { onFiles: (files: File[]) => void }) {
       onDragLeave={() => setDragging(false)}
       onDrop={handleDrop}
       onClick={() => inputRef.current?.click()}
-      className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-colors ${
-        dragging ? 'border-brand bg-blue-50' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+      className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all ${
+        dragging
+          ? 'border-blue-400 bg-[#EEF2FF]'
+          : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50/80'
       }`}
-      style={dragging ? { borderColor: '#3B4FCC' } : undefined}
     >
       <input ref={inputRef} type="file" multiple accept={ALLOWED_TYPES.join(',')} onChange={handleChange} className="hidden" />
-      <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-        <Upload className="w-6 h-6 text-gray-400" />
+      <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm"
+        style={{ background: dragging ? 'linear-gradient(135deg, #5B72F5 0%, #3B4FCC 100%)' : 'linear-gradient(135deg, #EEF2FF 0%, #C7D2FE 100%)' }}>
+        <Upload className={`w-6 h-6 ${dragging ? 'text-white' : 'text-[#3B4FCC]'}`} />
       </div>
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-gray-600 font-medium">
         拖拽文件到此处，或{' '}
         <span className="underline" style={{ color: '#3B4FCC' }}>点击选择文件</span>
       </p>
@@ -177,12 +179,16 @@ export default function DocumentsPage() {
       <NavBar />
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <div className="h-14 flex items-center justify-between px-6 border-b border-gray-200 bg-white">
+        <div className="h-14 flex items-center justify-between px-6 border-b border-gray-100 bg-white shadow-sm">
           <div className="flex items-center gap-3">
-            <span className="font-medium text-gray-800">知识库文档</span>
+            <span className="font-medium text-gray-700 text-sm">知识库文档</span>
             <Badge variant="secondary">{docs.length} 个</Badge>
           </div>
-          <Button style={{ backgroundColor: '#3B4FCC' }} onClick={() => setUploadOpen(true)}>
+          <Button
+            onClick={() => setUploadOpen(true)}
+            className="text-white text-sm"
+            style={{ background: 'linear-gradient(135deg, #5B72F5 0%, #3B4FCC 100%)' }}
+          >
             <Upload className="w-4 h-4" /> 上传文档
           </Button>
         </div>
@@ -203,12 +209,17 @@ export default function DocumentsPage() {
             </div>
           ) : docs.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-20">
-              <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
-                <FolderOpen className="w-8 h-8 text-gray-400" />
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 shadow-sm"
+                style={{ background: 'linear-gradient(135deg, #EEF2FF 0%, #C7D2FE 100%)' }}>
+                <FolderOpen className="w-8 h-8" style={{ color: '#3B4FCC' }} />
               </div>
-              <h3 className="text-base font-medium text-gray-700 mb-2">知识库暂无文档</h3>
+              <h3 className="text-base font-semibold text-gray-700 mb-2">知识库暂无文档</h3>
               <p className="text-sm text-gray-400 mb-6">上传您的第一份文档，开启智能问答之旅</p>
-              <Button style={{ backgroundColor: '#3B4FCC' }} onClick={() => setUploadOpen(true)}>
+              <Button
+                onClick={() => setUploadOpen(true)}
+                className="text-white"
+                style={{ background: 'linear-gradient(135deg, #5B72F5 0%, #3B4FCC 100%)' }}
+              >
                 <Upload className="w-4 h-4" /> 上传文档
               </Button>
             </div>

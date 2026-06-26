@@ -8,6 +8,7 @@ from typing import Awaitable, Callable
 from loguru import logger
 from sqlalchemy import func, or_, select, text
 
+from app.config import settings
 from app.core.database import AsyncSessionLocal
 from app.models.ingest_job import IngestJob
 
