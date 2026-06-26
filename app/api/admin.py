@@ -13,6 +13,7 @@ from app.core.limits import LimitedAdminAuth
 from app.models.chat_record import ChatRecord
 from app.models.document import Document
 from app.models.human_task import HUMAN_TASK_STATUS, HumanTask, HumanTaskEvent
+from app.services.consistency import ConsistencyReport, inspect_consistency
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -353,3 +354,14 @@ async def list_pending_audits(
         .limit(100)
     )
     return list(result.scalars())
+
+
+@router.get(
+    "/consistency",
+    response_model=dict,
+    summary="SQLite / 文件系统 / Chroma 一致性巡检",
+)
+async def consistency_check(auth: LimitedAdminAuth) -> dict:
+    """只读一致性检查：对比 SQLite 文档记录、磁盘文件、向量库是否一致。"""
+    report: ConsistencyReport = await inspect_consistency()
+    return report.to_dict()

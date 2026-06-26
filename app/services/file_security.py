@@ -13,7 +13,7 @@ from pypdf import PdfReader
 
 from app.config import settings
 
-ALLOWED_EXTENSIONS = frozenset({".pdf", ".docx", ".xlsx", ".txt"})
+ALLOWED_EXTENSIONS = frozenset({".pdf", ".docx", ".xlsx", ".txt", ".md"})
 _ALLOWED_MIME_TYPES = {
     ".pdf": frozenset({"application/pdf", "application/octet-stream"}),
     ".docx": frozenset(
@@ -31,6 +31,7 @@ _ALLOWED_MIME_TYPES = {
         }
     ),
     ".txt": frozenset({"text/plain", "application/octet-stream"}),
+    ".md": frozenset({"text/plain", "text/markdown", "application/octet-stream"}),
 }
 _WINDOWS_RESERVED = {
     "CON",
@@ -95,7 +96,7 @@ def normalize_filename(raw_name: str | None) -> tuple[str, str]:
     ext = Path(name).suffix.lower()
     if ext not in ALLOWED_EXTENSIONS:
         raise FileValidationError(
-            f"不支持的文件类型：{ext or '未知'}，仅支持 pdf/docx/xlsx/txt"
+            f"不支持的文件类型：{ext or '未知'}，仅支持 pdf/docx/xlsx/txt/md"
         )
     return name, ext
 
@@ -159,19 +160,25 @@ def _validate_pdf(path: Path, limits: FileValidationLimits) -> None:
 
 
 def _validate_txt(path: Path, limits: FileValidationLimits) -> None:
-    decoder = codecs.getincrementaldecoder("utf-8")("strict")
-    total_chars = 0
-    try:
-        with path.open("rb") as stream:
-            while chunk := stream.read(limits.read_chunk_bytes):
-                if b"\x00" in chunk:
-                    raise FileValidationError("TXT 文件包含二进制内容")
-                total_chars += len(decoder.decode(chunk))
-                if total_chars > limits.max_parsed_chars:
-                    raise FileValidationError("文本内容超过字符数上限", 413)
-            total_chars += len(decoder.decode(b"", final=True))
-    except UnicodeDecodeError as exc:
-        raise FileValidationError("TXT 文件必须使用 UTF-8 编码") from exc
+    # 先尝试 UTF-8（含 BOM），回退到 GBK（Windows 简体中文默认编码）
+    for encoding in ("utf-8-sig", "gbk"):
+        decoder = codecs.getincrementaldecoder(encoding)("strict")
+        total_chars = 0
+        try:
+            with path.open("rb") as stream:
+                while chunk := stream.read(limits.read_chunk_bytes):
+                    if b"\x00" in chunk:
+                        raise FileValidationError("TXT 文件包含二进制内容")
+                    total_chars += len(decoder.decode(chunk))
+                    if total_chars > limits.max_parsed_chars:
+                        raise FileValidationError("文本内容超过字符数上限", 413)
+                total_chars += len(decoder.decode(b"", final=True))
+            return  # 成功解码即通过验证
+        except FileValidationError:
+            raise
+        except UnicodeDecodeError:
+            continue
+    raise FileValidationError("TXT 文件编码无法识别，请转换为 UTF-8 或 GBK")
 
 
 def _validate_xlsx_shape(path: Path, limits: FileValidationLimits) -> None:

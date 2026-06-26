@@ -93,9 +93,15 @@ def _select_loader(path: Path):
         return Docx2txtLoader(str(path))
     if ext == ".xlsx":
         return OpenpyxlExcelLoader(str(path))
-    if ext == ".txt":
-        # 项目文本编码统一为 UTF-8，避免依赖 chardet 的不确定探测。
-        return TextLoader(str(path), encoding="utf-8")
+    if ext in {".txt", ".md"}:
+        # 先尝试 UTF-8 BOM，再回退 GBK（Windows 简体中文默认编码）
+        for enc in ("utf-8-sig", "gbk"):
+            try:
+                path.read_text(encoding=enc)
+                return TextLoader(str(path), encoding=enc)
+            except UnicodeDecodeError:
+                continue
+        return TextLoader(str(path), encoding="utf-8-sig")
     raise ValueError(f"不支持的文件类型：{ext}")
 
 

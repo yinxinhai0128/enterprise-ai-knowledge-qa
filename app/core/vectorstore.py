@@ -7,8 +7,10 @@ from __future__ import annotations
 
 import importlib
 import os
+import pickle
 from contextlib import contextmanager
 from functools import lru_cache
+from pathlib import Path
 from typing import Any, Iterator
 
 from chromadb.api.types import Metadata
@@ -49,16 +51,40 @@ def vectorstore_lock() -> Iterator[None]:
 
 @lru_cache(maxsize=1)
 def get_vectorstore() -> Chroma:
-    """返回当前操作使用的向量库；操作结束必须调用 close_vectorstore。"""
-    return Chroma(
+    """返回当前操作使用的向量库；操作结束必须调用 close_vectorstore。
+
+    Chroma() 构造函数自身会写出 dimensionality=None 的 index_metadata.pickle，
+    因此必须在构造之后立即清理，让后续 count()/search() 走纯 SQLite 路径。
+    """
+    store = Chroma(
         collection_name="enterprise_kb",
         embedding_function=init_embeddings(),
         persist_directory=str(settings.chroma_dir),
     )
+    _purge_uninit_hnsw_pickles()
+    return store
 
 
 # 测试会替换公开工厂；生命周期清理始终只处理真实持久化客户端缓存。
 _cached_get_vectorstore = get_vectorstore
+
+
+def _purge_uninit_hnsw_pickles() -> None:
+    """删除 dimensionality=None 的 index_metadata.pickle。
+
+    ChromaDB 1.5.x 在 get_or_create_collection() 时立即写出 pickle
+    但 dimensionality 仍为 None；后续 count()/search() 触发 compactor
+    时会因 "Error loading hnsw index" 崩溃。删掉 pickle 后 ChromaDB
+    回退到纯 SQLite 路径，完全正常工作。
+    """
+    for pickle_path in Path(settings.chroma_dir).rglob("index_metadata.pickle"):
+        try:
+            with pickle_path.open("rb") as fp:
+                meta = pickle.load(fp)
+            if isinstance(meta, dict) and meta.get("dimensionality") is None:
+                pickle_path.unlink(missing_ok=True)
+        except Exception:  # noqa: BLE001
+            pickle_path.unlink(missing_ok=True)
 
 
 def close_vectorstore() -> None:
@@ -69,6 +95,7 @@ def close_vectorstore() -> None:
         if callable(close):
             close()
     _cached_get_vectorstore.cache_clear()
+    _purge_uninit_hnsw_pickles()
 
 
 def migrate_legacy_vector_metadata() -> int:
@@ -80,7 +107,11 @@ def migrate_legacy_vector_metadata() -> int:
     with vectorstore_lock():
         try:
             collection = get_vectorstore()._collection
-            total = collection.count()
+            try:
+                total = collection.count()
+            except Exception:  # noqa: BLE001
+                # ChromaDB 1.5.x HNSW 索引未就绪时 count() 失败；无向量需要迁移。
+                return 0
             updated = 0
             for offset in range(0, total, _MIGRATION_BATCH_SIZE):
                 batch = collection.get(

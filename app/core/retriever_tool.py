@@ -12,13 +12,12 @@ from langchain_core.tools import tool
 
 from app.agent.context import EnterpriseContext
 from app.core.evidence import Evidence
-from app.core.vectorstore import close_vectorstore, get_vectorstore, vectorstore_lock
+from app.core.faiss_store import faiss_similarity_search_with_score
 
 # 检索召回数
 TOP_K = 5
-# 距离阈值（重要）：langchain_chroma 的 similarity_search_with_score 返回的是
-# “距离”，越小越相似（默认 l2 空间）。这里保留距离 <= 阈值的片段，过滤掉
-# 不相关结果。该值与 embedding/距离度量强相关，需按实际数据调优。
+# 距离阈值：FAISS IndexFlatL2 返回 L2 距离（越小越相似），与 ChromaDB 默认度量相同。
+# 对归一化嵌入向量，L2 距离范围 0–2；1.5 过滤掉不相关结果。
 MAX_DISTANCE = 1.5
 
 
@@ -27,16 +26,11 @@ def search_tenant_knowledge_base(
     tenant_id: str,
 ) -> tuple[str, list[Evidence]]:
     """只在指定租户向量分区检索，返回模型内容与服务端 artifact。"""
-    with vectorstore_lock():
-        try:
-            vectorstore = get_vectorstore()
-            results = vectorstore.similarity_search_with_score(
-                query,
-                k=TOP_K,
-                filter={"tenant_id": tenant_id},
-            )
-        finally:
-            close_vectorstore()
+    results = faiss_similarity_search_with_score(
+        query,
+        k=TOP_K,
+        tenant_id=tenant_id,
+    )
 
     kept = [(doc, score) for doc, score in results if score <= MAX_DISTANCE]
     if not kept:

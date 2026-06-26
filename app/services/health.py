@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import asyncio
+import sqlite3
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Awaitable, Callable
 
 from loguru import logger
@@ -10,7 +12,6 @@ from sqlalchemy import func, or_, select, text
 
 from app.config import settings
 from app.core.database import AsyncSessionLocal
-from app.core.vectorstore import close_vectorstore, get_vectorstore, vectorstore_lock
 from app.models.ingest_job import IngestJob
 
 Probe = Callable[[], Awaitable[None]]
@@ -22,14 +23,23 @@ async def probe_database() -> None:
 
 
 async def probe_vectorstore() -> None:
-    def _count() -> None:
-        with vectorstore_lock():
-            try:
-                get_vectorstore()._collection.count()
-            finally:
-                close_vectorstore()
+    """通过直接查询 chroma.sqlite3 验证向量库可读，避免重建 ChromaDB 连接的开销。
 
-    await asyncio.to_thread(_count)
+    ChromaDB 1.5.x 将向量存储在 SQLite 中；只需能读到 embeddings 表即视为健康。
+    这比重新打开 Chroma 客户端快几个数量级，不会触发 3s 探针超时。
+    """
+    def _check_sqlite() -> None:
+        db_path = Path(settings.chroma_dir) / "chroma.sqlite3"
+        if not db_path.exists():
+            raise FileNotFoundError(f"chroma.sqlite3 不存在: {db_path}")
+        con = sqlite3.connect(str(db_path), timeout=2.0)
+        try:
+            row = con.execute("SELECT COUNT(*) FROM embeddings").fetchone()
+            _ = row[0] if row else 0
+        finally:
+            con.close()
+
+    await asyncio.to_thread(_check_sqlite)
 
 
 async def probe_worker_leases() -> None:

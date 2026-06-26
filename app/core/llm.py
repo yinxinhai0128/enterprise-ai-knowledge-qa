@@ -50,7 +50,8 @@ def init_embeddings(**overrides: Any) -> OpenAIEmbeddings:
         model=settings.embed_model,
         api_key=settings.dashscope_api_key,
         base_url=settings.dashscope_base_url,
-        # 百炼批量上限较小，且不走 tiktoken 分块
+        # 百炼 text-embedding-v3 单次请求最多 10 条，必须显式设置否则默认 1000 超限报错
+        chunk_size=10,
         check_embedding_ctx_length=False,
     )
     params.update(overrides)

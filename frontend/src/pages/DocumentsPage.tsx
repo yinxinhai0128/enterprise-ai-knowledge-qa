@@ -17,7 +17,7 @@ import 'dayjs/locale/zh-cn'
 dayjs.extend(relativeTime)
 dayjs.locale('zh-cn')
 
-const ALLOWED_TYPES = ['.pdf', '.docx', '.xlsx', '.txt']
+const ALLOWED_TYPES = ['.pdf', '.docx', '.xlsx', '.txt', '.md']
 const MAX_SIZE_MB = 50
 
 function fileIcon(filename: string) {
