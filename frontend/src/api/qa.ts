@@ -56,6 +56,7 @@ export async function askQuestionStream(
       signal: handlers.signal,
     })
   } catch (err) {
+    if (err instanceof DOMException && err.name === 'AbortError') return
     handlers.onError(err instanceof Error ? err : new Error('网络错误'))
     return
   }
@@ -124,6 +125,7 @@ export async function askQuestionStream(
       }
     }
   } catch (err) {
+    if (err instanceof DOMException && err.name === 'AbortError') return
     handlers.onError(err instanceof Error ? err : new Error('流读取失败'))
   }
 }

@@ -207,6 +207,16 @@ export default function ChatPage() {
   // 记录已用历史填充过的会话，避免发送后历史刷新覆盖本地富消息（含结构化来源）
   const hydratedSessionRef = useRef<string | null>(null)
 
+  // 组件卸载时终止正在进行的流式请求，触发后端 finally 释放会话租约
+  const mountedRef = useRef(true)
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      abortRef.current?.abort()
+    }
+  }, [])
+
   // Load history when session changes
   const { data: history, isLoading: historyLoading } = useQuery({
     queryKey: ['history', currentSessionId],
@@ -263,11 +273,13 @@ export default function ChatPage() {
     await askQuestionStream(q, currentSessionId, {
       signal: abort.signal,
       onToken: (text: string) => {
+        if (!mountedRef.current) return
         setMessages(prev =>
           prev.map(m => (m.id === aiId ? { ...m, content: m.content + text } : m)),
         )
       },
       onDone: payload => {
+        if (!mountedRef.current) return
         const resp: AskResponse = {
           answer: payload.answer,
           sources: payload.sources,
@@ -280,7 +292,6 @@ export default function ChatPage() {
             m.id === aiId
               ? {
                   ...m,
-                  // 有结构化来源时剥离正文引用块，交给来源卡片展示，避免重复
                   content:
                     payload.sources.length > 0
                       ? stripCitationBlock(payload.answer)
@@ -293,6 +304,7 @@ export default function ChatPage() {
         )
       },
       onError: () => {
+        if (!mountedRef.current) return
         setMessages(prev =>
           prev.map(m =>
             m.id === aiId
@@ -309,6 +321,7 @@ export default function ChatPage() {
     })
 
     abortRef.current = null
+    if (!mountedRef.current) return
     setIsLoading(false)
     textareaRef.current?.focus()
   }, [input, isLoading, currentSessionId, sessions])
