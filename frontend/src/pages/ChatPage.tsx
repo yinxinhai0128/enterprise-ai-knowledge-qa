@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Send, Plus, ChevronDown, ChevronUp, FileText, AlertTriangle, UserCheck, Bot, RefreshCw, Menu, X } from 'lucide-react'
+import { Send, Square, Plus, ChevronDown, ChevronUp, FileText, AlertTriangle, UserCheck, Bot, RefreshCw, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Progress } from '@/components/ui/progress'
@@ -142,7 +142,12 @@ function AssistantBubble({ msg, onRetry }: { msg: Message; onRetry?: () => void 
               )}
             </div>
           ) : (
-            <SimpleMarkdown text={displayed} />
+            <span>
+              <SimpleMarkdown text={displayed} />
+              {msg.streaming && (
+                <span className="inline-block w-0.5 h-4 bg-gray-400 animate-pulse ml-0.5 align-middle rounded-sm" />
+              )}
+            </span>
           )}
         </div>
         {done && msg.response && !msg.error && (
@@ -198,6 +203,7 @@ export default function ChatPage() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const abortRef = useRef<AbortController | null>(null)
   // 记录已用历史填充过的会话，避免发送后历史刷新覆盖本地富消息（含结构化来源）
   const hydratedSessionRef = useRef<string | null>(null)
 
@@ -252,7 +258,10 @@ export default function ChatPage() {
       saveSessions(updated)
     }
 
+    const abort = new AbortController()
+    abortRef.current = abort
     await askQuestionStream(q, currentSessionId, {
+      signal: abort.signal,
       onToken: (text: string) => {
         setMessages(prev =>
           prev.map(m => (m.id === aiId ? { ...m, content: m.content + text } : m)),
@@ -299,9 +308,14 @@ export default function ChatPage() {
       },
     })
 
+    abortRef.current = null
     setIsLoading(false)
     textareaRef.current?.focus()
   }, [input, isLoading, currentSessionId, sessions])
+
+  const handleStop = useCallback(() => {
+    abortRef.current?.abort()
+  }, [])
 
   function handleNewSession() {
     const id = newSessionId()
@@ -438,7 +452,7 @@ export default function ChatPage() {
             </div>
           ))}
 
-          {isLoading && (
+          {isLoading && !messages.some(m => m.streaming && m.content.length > 0) && (
             <div className="flex justify-start">
               <LoadingBubble />
             </div>
@@ -468,14 +482,24 @@ export default function ChatPage() {
                 {input.length}/4000
               </span>
             </div>
-            <Button
-              onClick={handleSend}
-              disabled={isLoading || !input.trim()}
-              className="h-10 w-10 p-0 rounded-xl"
-              style={{ backgroundColor: '#3B4FCC' }}
-            >
-              <Send className="w-4 h-4" />
-            </Button>
+            {isLoading ? (
+              <Button
+                onClick={handleStop}
+                className="h-10 w-10 p-0 rounded-xl bg-red-500 hover:bg-red-600"
+                title="停止生成"
+              >
+                <Square className="w-4 h-4" />
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSend}
+                disabled={!input.trim()}
+                className="h-10 w-10 p-0 rounded-xl"
+                style={{ backgroundColor: '#3B4FCC' }}
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            )}
           </div>
           <p className="text-xs text-gray-300 mt-1.5">Enter 发送 · Shift+Enter 换行</p>
         </div>

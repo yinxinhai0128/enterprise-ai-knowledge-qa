@@ -2,15 +2,12 @@
 from __future__ import annotations
 
 import asyncio
-import sqlite3
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Awaitable, Callable
 
 from loguru import logger
 from sqlalchemy import func, or_, select, text
 
-from app.config import settings
 from app.core.database import AsyncSessionLocal
 from app.models.ingest_job import IngestJob
 
@@ -23,23 +20,21 @@ async def probe_database() -> None:
 
 
 async def probe_vectorstore() -> None:
-    """通过直接查询 chroma.sqlite3 验证向量库可读，避免重建 ChromaDB 连接的开销。
+    """检查 FAISS 索引文件是否存在且大小合理。
 
-    ChromaDB 1.5.x 将向量存储在 SQLite 中；只需能读到 embeddings 表即视为健康。
-    这比重新打开 Chroma 客户端快几个数量级，不会触发 3s 探针超时。
+    实际向量搜索已切换到 faiss-cpu（ChromaDB 1.5.x HNSW 在本机无法构建）。
+    健康探针也同步对齐到 FAISS，避免"健康绿灯但 QA 静默失败"的误报。
     """
-    def _check_sqlite() -> None:
-        db_path = Path(settings.chroma_dir) / "chroma.sqlite3"
-        if not db_path.exists():
-            raise FileNotFoundError(f"chroma.sqlite3 不存在: {db_path}")
-        con = sqlite3.connect(str(db_path), timeout=2.0)
-        try:
-            row = con.execute("SELECT COUNT(*) FROM embeddings").fetchone()
-            _ = row[0] if row else 0
-        finally:
-            con.close()
+    def _check_faiss() -> None:
+        from app.core.faiss_store import FAISS_INDEX_DIR
+        index_file = FAISS_INDEX_DIR / "index.faiss"
+        if not index_file.exists():
+            raise FileNotFoundError(f"FAISS index missing: {index_file}")
+        size = index_file.stat().st_size
+        if size < 4096:
+            raise RuntimeError(f"FAISS index suspiciously small: {size} bytes")
 
-    await asyncio.to_thread(_check_sqlite)
+    await asyncio.to_thread(_check_faiss)
 
 
 async def probe_worker_leases() -> None:
