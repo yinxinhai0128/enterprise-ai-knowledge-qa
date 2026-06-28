@@ -6,7 +6,11 @@ import { toast } from '@/hooks/use-toast'
 
 const NAV_ITEMS = [
   { icon: MessageSquare, label: '智能问答', path: '/chat' },
-  { icon: FileText, label: '知识库文档', path: '/documents' },
+]
+
+const ADMIN_ITEMS = [
+  { icon: FileText, label: '知识库管理', path: '/documents' },
+  { icon: Settings, label: '管理员面板', path: '/admin' },
 ]
 
 export function NavBar() {
@@ -24,7 +28,7 @@ export function NavBar() {
 
   const allItems = [
     ...NAV_ITEMS,
-    ...(auth.isAdmin ? [{ icon: Settings, label: '管理员面板', path: '/admin' }] : []),
+    ...(auth.isAdmin ? ADMIN_ITEMS : []),
   ]
 
   return (

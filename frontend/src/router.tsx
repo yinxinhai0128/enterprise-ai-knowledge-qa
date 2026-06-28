@@ -25,6 +25,14 @@ function ProtectedRoute() {
   return <Outlet />
 }
 
+function AdminRoute() {
+  const { token, isAdmin } = useAuth()
+  const location = useLocation()
+  if (!token) return <Navigate to="/login" state={{ from: location }} replace />
+  if (!isAdmin) return <Navigate to="/chat" replace />
+  return <Outlet />
+}
+
 function RootRedirect() {
   const { token } = useAuth()
   return <Navigate to={token ? '/chat' : '/login'} replace />
@@ -44,6 +52,11 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       { path: '/chat', element: wrap(ChatPage) },
+    ],
+  },
+  {
+    element: <AdminRoute />,
+    children: [
       { path: '/documents', element: wrap(DocumentsPage) },
       { path: '/admin', element: wrap(AdminPage) },
     ],
