@@ -25,6 +25,7 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.cache/
 .coverage
 htmlcov/
 .venv/
@@ -32,7 +33,7 @@ venv/
 
 # Formal/runtime data and backups must be mounted, never baked in
 storage/
-chroma_db/
+faiss_kb/
 logs/
 backups/
 kb_test_*/

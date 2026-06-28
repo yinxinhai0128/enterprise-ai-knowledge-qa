@@ -1,4 +1,4 @@
-"""SQLite、文件系统与 Chroma 的只读一致性巡检。"""
+"""SQLite、文件系统与 FAISS 的只读一致性巡检。"""
 from __future__ import annotations
 
 import asyncio
@@ -9,7 +9,7 @@ from sqlalchemy import select
 
 from app.config import settings
 from app.core.database import AsyncSessionLocal
-from app.core.vectorstore import close_vectorstore, get_vectorstore, vectorstore_lock
+from app.core.faiss_store import get_faiss_store
 from app.models.document import Document
 from app.models.ingest_job import IngestJob
 
@@ -34,12 +34,10 @@ class ConsistencyReport:
 
 
 def _vector_metadata() -> list[dict]:
-    with vectorstore_lock():
-        try:
-            result = get_vectorstore()._collection.get(include=["metadatas"])
-            return [dict(item or {}) for item in (result.get("metadatas") or [])]
-        finally:
-            close_vectorstore()
+    store = get_faiss_store()
+    if store is None:
+        return []
+    return [dict(doc.metadata) for doc in store.docstore._dict.values()]
 
 
 def _storage_files() -> set[Path]:

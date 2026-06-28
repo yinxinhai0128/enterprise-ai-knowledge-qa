@@ -65,3 +65,66 @@ def faiss_similarity_search_with_score(
         if doc.metadata.get("tenant_id") == tenant_id
     ]
     return filtered[:k]
+
+
+def add_documents_to_faiss(documents: list[Document]) -> None:
+    """Append documents to the FAISS store, creating it if needed. Thread-safe.
+
+    Uses chunk_id from metadata as the explicit FAISS vector ID so that
+    re-indexing the same content is idempotent (delete-then-add).
+    """
+    global _store
+    with _lock:
+        from app.core.llm import init_embeddings
+        embeddings = init_embeddings()
+        texts = [doc.page_content for doc in documents]
+        metadatas = [doc.metadata for doc in documents]
+        ids = [str(doc.metadata.get("chunk_id")) for doc in documents]
+        index_file = FAISS_INDEX_DIR / "index.faiss"
+        if _store is None:
+            if index_file.exists():
+                _store = LangchainFAISS.load_local(
+                    str(FAISS_INDEX_DIR),
+                    embeddings,
+                    allow_dangerous_deserialization=True,
+                )
+            else:
+                FAISS_INDEX_DIR.mkdir(parents=True, exist_ok=True)
+                _store = LangchainFAISS.from_texts(
+                    texts, embeddings, metadatas=metadatas, ids=ids
+                )
+                _store.save_local(str(FAISS_INDEX_DIR))
+                return
+        # Idempotency: remove existing vectors with same chunk_ids before re-adding
+        existing = [id_ for id_ in ids if id_ in _store.docstore._dict]
+        if existing:
+            _store.delete(existing)
+        _store.add_texts(texts, metadatas=metadatas, ids=ids)
+        _store.save_local(str(FAISS_INDEX_DIR))
+
+
+def delete_documents_from_faiss(tenant_id: str, doc_id: int) -> int:
+    """Delete all FAISS vectors for the given document. Returns count deleted. Thread-safe."""
+    global _store
+    with _lock:
+        if _store is None:
+            index_file = FAISS_INDEX_DIR / "index.faiss"
+            if not index_file.exists():
+                return 0
+            from app.core.llm import init_embeddings
+            _store = LangchainFAISS.load_local(
+                str(FAISS_INDEX_DIR),
+                init_embeddings(),
+                allow_dangerous_deserialization=True,
+            )
+        ids_to_delete = [
+            vid
+            for vid, doc in _store.docstore._dict.items()
+            if str(doc.metadata.get("tenant_id")) == str(tenant_id)
+            and int(doc.metadata.get("doc_id", -1)) == int(doc_id)
+        ]
+        if not ids_to_delete:
+            return 0
+        _store.delete(ids_to_delete)
+        _store.save_local(str(FAISS_INDEX_DIR))
+        return len(ids_to_delete)

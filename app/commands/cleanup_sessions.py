@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import asyncio
+import json
+import sys
 
 from app.core.checkpointer import close_checkpointer, init_checkpointer
 from app.core.database import engine, init_db
@@ -13,11 +15,14 @@ async def main() -> int:
     await init_checkpointer()
     try:
         count = await cleanup_expired_conversations()
-        print(f"expired_sessions_deleted={count}")
+        print(json.dumps({"expired_sessions_deleted": count}, ensure_ascii=False))
+        return 0
+    except Exception as exc:
+        print(json.dumps({"error": str(exc)}, ensure_ascii=False), file=sys.stderr)
+        return 1
     finally:
         await close_checkpointer()
         await engine.dispose()
-    return 0
 
 
 if __name__ == "__main__":

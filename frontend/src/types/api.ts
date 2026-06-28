@@ -12,7 +12,7 @@ export interface DocumentOut {
   created_at: string
 }
 
-export type JobStatus = 'pending' | 'processing' | 'succeeded' | 'failed' | 'cancelled'
+export type JobStatus = 'pending' | 'running' | 'retry' | 'succeeded' | 'failed' | 'cancelled'
 
 export interface IngestJobOut {
   id: number
@@ -100,7 +100,7 @@ export interface AdminQARecord {
   created_at: string
 }
 
-export type HumanTaskStatus = 'pending' | 'claimed' | 'completed'
+export type HumanTaskStatus = 'pending' | 'claimed' | 'completed' | 'cancelled'
 
 export interface HumanTaskOut {
   id: number
@@ -124,7 +124,7 @@ export interface HumanTaskEventOut {
   task_id: number
   actor_user_id: string
   action: string
-  from_status: string
+  from_status: string | null
   to_status: string
   note: string | null
   created_at: string

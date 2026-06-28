@@ -23,7 +23,6 @@ def _configure(root: Path) -> Path:
             "AUTH_JWT_SECRET": "stage12-schema-validation-secret-32-bytes",
             "DATABASE_URL": f"sqlite+aiosqlite:///{database.as_posix()}",
             "STORAGE_DIR": str(storage),
-            "CHROMA_DIR": str(root / "chroma_db"),
             "LOG_DIR": str(root / "logs"),
             "CHECKPOINT_DB_PATH": str(storage / "checkpoints.db"),
             "LANGCHAIN_TRACING_V2": "false",
@@ -39,9 +38,11 @@ async def _run_migrations() -> None:
     from app.core.database import engine, init_db
 
     settings.ensure_dirs()
-    await init_db()
-    await init_db()
-    await engine.dispose()
+    try:
+        await init_db()
+        await init_db()
+    finally:
+        await engine.dispose()
 
 
 def _inspect(database: Path) -> dict[str, str | int]:

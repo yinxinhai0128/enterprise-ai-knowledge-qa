@@ -11,7 +11,7 @@ from sqlalchemy import or_, select, text
 
 from app.config import settings
 from app.core.checkpointer import get_checkpointer
-from app.core.database import AsyncSessionLocal
+from app.core.database import AsyncSessionLocal, engine
 from app.models.conversation_session import ConversationSession
 
 
@@ -46,7 +46,7 @@ async def acquire_conversation(
     expires = now + timedelta(seconds=settings.conversation_lease_seconds)
     ttl = now + timedelta(days=settings.conversation_ttl_days)
     async with AsyncSessionLocal() as db:
-        if db.bind is not None and db.bind.dialect.name == "sqlite":
+        if engine.sync_engine.dialect.name == "sqlite":
             await db.execute(text("BEGIN IMMEDIATE"))
         session = await db.get(ConversationSession, thread_id)
         reset_checkpoint = False

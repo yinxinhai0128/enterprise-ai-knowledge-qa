@@ -1,10 +1,11 @@
-"""SQLite、Chroma 与文档文件的可验证备份/恢复工具。"""
+"""SQLite、FAISS 与文档文件的可验证备份/恢复工具。"""
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
 import os
+import pickle
 import shutil
 import sqlite3
 import sys
@@ -13,15 +14,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-import chromadb
 from dotenv import load_dotenv
 
 ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT / ".env", override=False)
 DEFAULT_STORAGE_DIR = Path(os.environ.get("STORAGE_DIR", ROOT / "storage"))
-DEFAULT_CHROMA_DIR = Path(os.environ.get("CHROMA_DIR", ROOT / "chroma_db"))
+DEFAULT_FAISS_DIR = Path.home() / "faiss_kb"
 
-SCHEMA_VERSION = 1
+# v1：Chroma 时代备份；v2 起改为 FAISS。
+SCHEMA_VERSION = 2
 SQLITE_SUFFIXES = {".db", ".sqlite", ".sqlite3"}
 
 
@@ -97,7 +98,7 @@ def create_backup(
     destination: Path,
     *,
     storage_dir: Path,
-    chroma_dir: Path,
+    faiss_dir: Path,
     maintenance_confirmed: bool,
 ) -> Path:
     """创建新备份；调用方必须先停止 API/Worker 写入。"""
@@ -110,7 +111,7 @@ def create_backup(
     destination.mkdir(parents=True)
     try:
         _copy_tree_with_sqlite_snapshots(storage_dir.resolve(), data_root / "storage")
-        _copy_tree_with_sqlite_snapshots(chroma_dir.resolve(), data_root / "chroma_db")
+        _copy_tree_with_sqlite_snapshots(faiss_dir.resolve(), data_root / "faiss_kb")
         manifest = {
             "schema_version": SCHEMA_VERSION,
             "created_at": datetime.now(timezone.utc).isoformat(),
@@ -130,9 +131,8 @@ def verify_manifest(backup_root: Path) -> dict[str, Any]:
     manifest_path = backup_root.resolve() / "manifest.json"
     data_root = manifest_path.parent / "data"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if manifest.get("schema_version") != SCHEMA_VERSION or not isinstance(
-        manifest.get("files"), list
-    ):
+    schema = manifest.get("schema_version")
+    if schema not in (1, SCHEMA_VERSION) or not isinstance(manifest.get("files"), list):
         raise ValueError("备份清单格式无效")
     expected_paths: set[str] = set()
     for entry in manifest["files"]:
@@ -158,16 +158,19 @@ def verify_manifest(backup_root: Path) -> dict[str, Any]:
 def restore_backup(backup_root: Path, target_root: Path) -> Path:
     """仅恢复到空目标，永不原地覆盖正式数据。"""
     backup_root = backup_root.resolve()
-    verify_manifest(backup_root)
+    manifest = verify_manifest(backup_root)
     target_root = target_root.resolve()
     if target_root.exists() and any(target_root.iterdir()):
         raise FileExistsError("恢复目标非空，禁止覆盖")
     target_root.mkdir(parents=True, exist_ok=True)
+    # v1 备份含 chroma_db；v2 起含 faiss_kb。
+    vector_dir_name = "faiss_kb" if manifest.get("schema_version", 1) >= 2 else "chroma_db"
     try:
-        for name in ("storage", "chroma_db"):
+        for name in ("storage", vector_dir_name):
             source = backup_root / "data" / name
             destination = target_root / name
-            shutil.copytree(source, destination)
+            if source.exists():
+                shutil.copytree(source, destination)
         return target_root
     except Exception:
         shutil.rmtree(target_root, ignore_errors=True)
@@ -210,8 +213,21 @@ def _sqlite_integrity_errors(root: Path) -> int:
     return errors
 
 
+def _load_faiss_metadatas(faiss_dir: Path) -> list[dict[str, Any]]:
+    """直接读 FAISS pickle，不需要 embeddings，避免 API key 依赖。"""
+    pkl_file = faiss_dir / "index.pkl"
+    if not pkl_file.is_file():
+        return []
+    try:
+        with pkl_file.open("rb") as f:
+            docstore, _ = pickle.load(f)  # (InMemoryDocstore, index_to_docstore_id)
+        return [doc.metadata for doc in docstore._dict.values()]
+    except Exception:
+        return []
+
+
 def verify_restored_consistency(target_root: Path) -> RestoreConsistencyReport:
-    """对恢复副本执行 SQLite、文件和 Chroma 三方只读一致性检查。"""
+    """对恢复副本执行 SQLite、文件和 FAISS 三方只读一致性检查。"""
     target_root = target_root.resolve()
     storage_root = target_root / "storage"
     database = storage_root / "app.db"
@@ -242,18 +258,8 @@ def verify_restored_consistency(target_root: Path) -> RestoreConsistencyReport:
         if path.is_file()
     }
 
-    metadatas: list[dict[str, Any]] = []
-    chroma_root = target_root / "chroma_db"
-    if chroma_root.is_dir():
-        client = chromadb.PersistentClient(path=str(chroma_root))
-        try:
-            if any(collection.name == "enterprise_kb" for collection in client.list_collections()):
-                result = client.get_collection("enterprise_kb").get(include=["metadatas"])
-                metadatas = [dict(item or {}) for item in (result.get("metadatas") or [])]
-        finally:
-            close = getattr(client, "close", None)
-            if callable(close):
-                close()
+    faiss_dir = target_root / "faiss_kb"
+    metadatas = _load_faiss_metadatas(faiss_dir)
 
     vector_counts: dict[tuple[str, int], int] = {}
     orphan_vectors = 0
@@ -295,7 +301,7 @@ def main() -> int:
     backup_parser = subparsers.add_parser("backup")
     backup_parser.add_argument("--destination", type=Path, required=True)
     backup_parser.add_argument("--storage-dir", type=Path, default=DEFAULT_STORAGE_DIR)
-    backup_parser.add_argument("--chroma-dir", type=Path, default=DEFAULT_CHROMA_DIR)
+    backup_parser.add_argument("--faiss-dir", type=Path, default=DEFAULT_FAISS_DIR)
     backup_parser.add_argument("--maintenance-confirmed", action="store_true")
     restore_parser = subparsers.add_parser("restore")
     restore_parser.add_argument("--backup", type=Path, required=True)
@@ -309,7 +315,7 @@ def main() -> int:
             manifest = create_backup(
                 args.destination,
                 storage_dir=args.storage_dir,
-                chroma_dir=args.chroma_dir,
+                faiss_dir=args.faiss_dir,
                 maintenance_confirmed=args.maintenance_confirmed,
             )
             print(json.dumps({"status": "ok", "manifest": str(manifest)}, ensure_ascii=False))

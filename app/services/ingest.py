@@ -24,8 +24,8 @@ from loguru import logger
 from openpyxl import load_workbook
 
 from app.config import settings
+from app.core.faiss_store import add_documents_to_faiss
 from app.core.process_pool import run_in_parser_process
-from app.core.vectorstore import close_vectorstore, get_vectorstore, vectorstore_lock
 
 
 @dataclass
@@ -134,7 +134,7 @@ def _load_and_split(
                 "uploaded_by": uploaded_by,
             }
         )
-    # 清掉 loader 可能带入的复杂/None metadata，避免 Chroma 写入报错
+    # 清掉 loader 可能带入的复杂/None metadata，避免 FAISS 写入报错
     return filter_complex_metadata(chunks)
 
 
@@ -187,7 +187,7 @@ async def ingest_document(
     try:
         trusted_dir = settings.storage_dir / "documents" / tenant_id
         await asyncio.to_thread(trusted_dir.mkdir, parents=True, exist_ok=True)
-        trusted_path = trusted_dir / path.name
+        trusted_path = trusted_dir / f"{doc_id}_{path.name}"
         if path.resolve() != trusted_path.resolve():
             await asyncio.to_thread(path.replace, trusted_path)
     except OSError:
@@ -195,15 +195,7 @@ async def ingest_document(
         return IngestResult(success=False, error_msg="文件归档失败")
 
     try:
-        with vectorstore_lock():
-            try:
-                vectorstore = get_vectorstore()
-                await vectorstore.aadd_documents(
-                    chunks,
-                    ids=[str(chunk.metadata["chunk_id"]) for chunk in chunks],
-                )
-            finally:
-                close_vectorstore()
+        await asyncio.to_thread(add_documents_to_faiss, chunks)
 
         logger.info("摄入完成 doc_id={} chunks={}", doc_id, len(chunks))
         return IngestResult(

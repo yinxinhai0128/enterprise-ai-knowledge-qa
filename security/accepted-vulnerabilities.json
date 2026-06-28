@@ -2,22 +2,6 @@
   "schema_version": 1,
   "accepted": [
     {
-      "id": "CVE-2026-45829",
-      "package": "chromadb",
-      "versions": ["1.5.9"],
-      "owner": "project-owner",
-      "accepted_on": "2026-06-22",
-      "expires_on": "2026-07-22",
-      "reason": "No fixed Chroma release exists. The vulnerable pre-auth HTTP collection endpoint is not started or exposed by this project.",
-      "controls": [
-        "Use embedded PersistentClient only",
-        "Never run the chroma CLI/server",
-        "No Chroma service or port in Compose",
-        "Container source is immutable and runs without Linux capabilities",
-        "Review PyPI and pip-audit weekly; upgrade immediately when fixed"
-      ]
-    },
-    {
       "id": "CVE-2026-12087",
       "package": "perl",
       "versions": ["5.36.0-7+deb12u3"],

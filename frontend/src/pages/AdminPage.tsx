@@ -21,18 +21,20 @@ import 'dayjs/locale/zh-cn'
 dayjs.extend(relativeTime)
 dayjs.locale('zh-cn')
 
-type TaskFilter = 'all' | 'pending' | 'claimed' | 'completed'
+type TaskFilter = 'all' | 'pending' | 'claimed' | 'completed' | 'cancelled'
 
 const FILTER_LABELS: Record<TaskFilter, string> = {
   all: '全部',
   pending: '待处理',
   claimed: '已领取',
   completed: '已完成',
+  cancelled: '已取消',
 }
 
 function TaskStatusBadge({ status }: { status: HumanTaskOut['status'] }) {
   if (status === 'pending') return <Badge variant="warning">待处理</Badge>
   if (status === 'claimed') return <Badge variant="info">已领取</Badge>
+  if (status === 'cancelled') return <Badge variant="secondary">已取消</Badge>
   return <Badge variant="success">已完成</Badge>
 }
 

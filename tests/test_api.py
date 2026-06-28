@@ -49,7 +49,7 @@ async def test_end_to_end_upload_index_ask(
 
     detail = await client.get(f"/documents/{doc_id}")
     assert detail.json()["status"] == "indexed"
-    assert vectorstore._collection.count() > 0
+    assert len(vectorstore.docstore._dict) > 0
 
     # 2) 假模型先真实调用检索工具，再生成不带可信来源的正文。
     agent = agent_factory(

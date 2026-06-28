@@ -124,7 +124,6 @@ class Settings(BaseSettings):
 
     # ---------- 路径（容器内 /app 下，与挂载卷对齐） ----------
     storage_dir: Path = Field(default=BASE_DIR / "storage", description="业务文件存储目录")
-    chroma_dir: Path = Field(default=BASE_DIR / "chroma_db", description="Chroma 持久化目录")
     log_dir: Path = Field(default=BASE_DIR / "logs", description="日志目录")
 
     # ---------- 数据库（SQLite + aiosqlite，落在 storage/ 下随卷持久化） ----------
@@ -146,7 +145,6 @@ class Settings(BaseSettings):
             self.storage_dir,
             self.storage_dir / "quarantine",
             self.storage_dir / "documents",
-            self.chroma_dir,
             self.log_dir,
             self.checkpoint_db_path.parent,
         ):

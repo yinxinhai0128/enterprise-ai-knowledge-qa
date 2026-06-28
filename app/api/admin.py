@@ -359,7 +359,7 @@ async def list_pending_audits(
 @router.get(
     "/consistency",
     response_model=dict,
-    summary="SQLite / 文件系统 / Chroma 一致性巡检",
+    summary="SQLite / 文件系统 / FAISS 一致性巡检",
 )
 async def consistency_check(auth: LimitedAdminAuth) -> dict:
     """只读一致性检查：对比 SQLite 文档记录、磁盘文件、向量库是否一致。"""

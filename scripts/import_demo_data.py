@@ -25,7 +25,6 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-
 # ---------------------------------------------------------------------------
 # 多部分表单编码（标准库实现，无需第三方 HTTP 库）
 # ---------------------------------------------------------------------------
@@ -216,7 +215,7 @@ def main() -> int:
         return 1
 
     print("\n所有文档已上传，Worker 将在后台完成索引（通常数秒内完成）。")
-    print(f"可通过以下命令查看文档状态：")
+    print("可通过以下命令查看文档状态：")
     print(f"  curl -H 'Authorization: Bearer <TOKEN>' {args.base_url}/api/documents")
     return 0
 

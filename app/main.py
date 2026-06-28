@@ -12,9 +12,9 @@ from uuid import uuid4
 
 from fastapi import FastAPI
 from fastapi import Request as FastAPIRequest
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.requests import Request

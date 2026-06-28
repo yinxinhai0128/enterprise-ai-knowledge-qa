@@ -1,4 +1,4 @@
-import { apiClient } from './client'
+import { apiClient, BASE_URL } from './client'
 import { getToken, clearToken } from './auth'
 import { navigateTo } from '@/lib/navigation'
 import type { AskResponse, HistoryResponse, StreamDonePayload } from '@/types/api'
@@ -12,8 +12,6 @@ export async function getHistory(sessionId: string): Promise<HistoryResponse> {
   const { data } = await apiClient.get<HistoryResponse>(`/qa/history/${sessionId}`)
   return data
 }
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8765'
 
 export interface StreamHandlers {
   onToken: (text: string) => void

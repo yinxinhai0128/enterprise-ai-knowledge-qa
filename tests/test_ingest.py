@@ -147,12 +147,13 @@ async def test_real_pdf_docx_xlsx_and_utf8_txt_are_parsed_and_indexed(
         doc_id = uploaded.json()["id"]
         detail = await client.get(f"/documents/{doc_id}")
         assert detail.json()["status"] == "indexed"
-        stored = vectorstore._collection.get(
-            where={"doc_id": doc_id}, include=["documents", "metadatas"]
-        )
-        assert stored["ids"]
-        assert any(expected_text in text for text in stored["documents"])
-        assert all(meta["source"] == filename for meta in stored["metadatas"])
+        stored_docs = [
+            doc for doc in vectorstore.docstore._dict.values()
+            if doc.metadata.get("doc_id") == doc_id
+        ]
+        assert stored_docs
+        assert any(expected_text in doc.page_content for doc in stored_docs)
+        assert all(doc.metadata["source"] == filename for doc in stored_docs)
 
 
 async def test_upload_success_then_indexed(client, vectorstore, worker_once):
@@ -174,11 +175,12 @@ async def test_upload_success_then_indexed(client, vectorstore, worker_once):
     assert data["status"] == "indexed"
     assert data["chunk_count"] > 0
     # 切片确实进了向量库
-    assert vectorstore._collection.count() > 0
-    stored = vectorstore._collection.get(include=["metadatas"])
-    assert stored["ids"][0] == stored["metadatas"][0]["chunk_id"]
-    assert stored["ids"][0].startswith(f"tenant-a:{doc_id}:0:")
-    assert len(stored["ids"][0].rsplit(":", 1)[1]) == 64
+    assert len(vectorstore.docstore._dict) > 0
+    first_id = list(vectorstore.docstore._dict.keys())[0]
+    first_doc = vectorstore.docstore._dict[first_id]
+    assert first_id == first_doc.metadata["chunk_id"]
+    assert first_id.startswith(f"tenant-a:{doc_id}:0:")
+    assert len(first_id.rsplit(":", 1)[1]) == 64
 
 
 @pytest.mark.parametrize("filename", ["bad.zip", "evil.exe", "noext"])

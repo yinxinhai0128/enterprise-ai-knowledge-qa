@@ -7,12 +7,17 @@ __pycache__/
 .venv/
 venv/
 .pytest_cache/
+.cache/
 
 # 运行产物（挂载卷）
 storage/
+faiss_kb/
 chroma_db/
 logs/
 backups/
+
+# 测试产物
+frontend/test-results/
 
 # 本地 Agent 配置
 .claude/settings.local.json

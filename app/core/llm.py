@@ -25,7 +25,7 @@ def init_llm(**overrides: Any) -> ChatOpenAI:
         model=settings.llm_model,
         api_key=settings.dashscope_api_key,
         base_url=settings.dashscope_base_url,
-        temperature=0.0,
+        temperature=0.4,
         max_tokens=settings.llm_max_output_tokens,
         timeout=60,
         max_retries=2,
@@ -44,7 +44,7 @@ def init_embeddings(**overrides: Any) -> OpenAIEmbeddings:
         **overrides: 临时覆盖参数，如 dimensions、model 等。
 
     Returns:
-        OpenAIEmbeddings: 可直接传入 Chroma 的向量化器实例。
+        OpenAIEmbeddings: 可直接传入 FAISS 的向量化器实例。
     """
     params: dict[str, Any] = dict(
         model=settings.embed_model,

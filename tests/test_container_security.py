@@ -18,7 +18,7 @@ def test_runtime_dependencies_are_exact_and_hash_locked():
 
     lock = (ROOT / "requirements.lock").read_text(encoding="utf-8")
     assert "--hash=sha256:" in lock
-    assert "chromadb==1.5.9" in lock
+    assert "faiss-cpu==1.14.3" in lock
 
 
 def test_dockerfile_pins_image_and_preserves_immutable_source():
@@ -49,7 +49,7 @@ def test_compose_has_no_chroma_server_and_enforces_runtime_controls():
 
 def test_docker_context_excludes_sensitive_and_development_inputs():
     ignored = set((ROOT / ".dockerignore").read_text(encoding="utf-8").splitlines())
-    required = {".env", ".git", ".claude", "tests", "requirements-dev.txt", "backups/", "storage/", "chroma_db/"}
+    required = {".env", ".git", ".claude", "tests", "requirements-dev.txt", "backups/", "storage/", "faiss_kb/"}
     assert required <= ignored
 
 
@@ -59,7 +59,6 @@ def test_vulnerability_acceptance_is_scoped_and_not_expired():
     )
     accepted = policy["accepted"]
     assert {(item["id"], item["package"]) for item in accepted} == {
-        ("CVE-2026-45829", "chromadb"),
         ("CVE-2026-12087", "perl"),
         ("CVE-2026-48959", "perl"),
         ("CVE-2026-48962", "perl"),

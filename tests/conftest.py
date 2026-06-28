@@ -1,12 +1,12 @@
-"""测试夹具：全程 mock，不消耗任何真实 API、不写正式数据库。
+﻿"""测试夹具：全程 mock，不消耗任何真实 API、不写正式数据库。
 
 设计要点：
-  - 在导入 app 之前把 DATABASE_URL / STORAGE_DIR / CHROMA_DIR 指向临时目录，
+  - 在导入 app 之前把 DATABASE_URL / STORAGE_DIR 指向临时目录，
     并补一个假的 DASHSCOPE_API_KEY，避免 Settings 因必填项报错。
   - 数据库引擎换成 NullPool：aiosqlite 在 pytest-asyncio 的每用例事件循环下，
-    连接池复用会触发“Future attached to a different loop”，NullPool 每次新连接最稳。
+    连接池复用会触发"Future attached to a different loop"，NullPool 每次新连接最稳。
   - LLM 用 GenericFakeChatModel 脚本化；Embedding 用 DeterministicFakeEmbedding；
-    Chroma 用内存集合（无 persist_directory）。
+    FAISS 用内存 store（monkeypatched，不落盘）。
 """
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ import os
 import shutil
 import socket
 import tempfile
+from collections.abc import Generator
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -25,7 +26,6 @@ _DB_PATH = (Path(_TMP) / "test.db").as_posix()
 os.environ.setdefault("DASHSCOPE_API_KEY", "test-key-not-used")
 os.environ["DATABASE_URL"] = f"sqlite+aiosqlite:///{_DB_PATH}"
 os.environ["STORAGE_DIR"] = _TMP
-os.environ["CHROMA_DIR"] = _TMP
 os.environ["CHECKPOINT_DB_PATH"] = str(Path(_TMP) / "checkpoints.db")
 # 测试不得把假 Agent 调用上传到真实 LangSmith 项目。
 os.environ["LANGCHAIN_TRACING_V2"] = "false"
@@ -94,20 +94,29 @@ def _force_external_tracing_off():
     ls.configure(client=None, enabled=False, project_name=None, tags=None, metadata=None)
 
 
+@pytest.fixture
+def tmp_path(request: pytest.FixtureRequest) -> Generator[Path, None, None]:
+    """Windows-safe tmp_path: bypasses pytest's numbered-directory accumulation
+    which causes PermissionError when old directories are locked by the OS."""
+    d = Path(tempfile.mkdtemp(prefix=f"pytest_{request.node.name[:20]}_"))
+    try:
+        yield d
+    finally:
+        shutil.rmtree(d, ignore_errors=True)
+
+
 @pytest.fixture(scope="session", autouse=True)
 async def _cleanup_test_runtime():
     """释放全局资源并删除本次 pytest 创建的唯一临时根目录。"""
     yield
 
+    import app.core.faiss_store as _faiss_mod
     from app.agent.agent import build_agent
     from app.core.checkpointer import close_checkpointer
     from app.core.process_pool import shutdown_parser_pool
-    from app.core.vectorstore import get_vectorstore
 
     build_agent.cache_clear()
-    if get_vectorstore.cache_info().currsize:
-        get_vectorstore()._client.close()
-    get_vectorstore.cache_clear()
+    _faiss_mod._store = None  # 重置 FAISS 单例
     await close_checkpointer()
     await database_module.engine.dispose()
     shutdown_parser_pool()
@@ -182,29 +191,59 @@ def mock_llm(monkeypatch):
 
 @pytest.fixture
 def vectorstore(monkeypatch, fake_embeddings):
-    """内存 Chroma，并把各处 get_vectorstore 指向它；用例后清理集合。"""
-    from langchain_chroma import Chroma
+    """内存 FAISS，并把各处 FAISS 函数指向它；用例后无需清理（全在内存）。"""
+    from langchain_community.vectorstores import FAISS as LangchainFAISS
+    from langchain_core.documents import Document as LCDocument
 
-    store = Chroma(collection_name="test_kb", embedding_function=fake_embeddings)
+    import app.core.faiss_store as _faiss_mod
 
-    for module in (
-        "app.core.vectorstore",
-        "app.core.retriever_tool",
-        "app.services.ingest",
-        "app.services.vector_ops",
-        "app.services.consistency",
-    ):
-        monkeypatch.setattr(f"{module}.get_vectorstore", lambda: store)
+    # 创建一个只含哨兵文档的内存 FAISS，然后删掉哨兵，得到空 store
+    sentinel = LCDocument(
+        page_content="_init_",
+        metadata={"tenant_id": "__sentinel__", "doc_id": -1},
+    )
+    store = LangchainFAISS.from_documents([sentinel], fake_embeddings)
+    sentinel_ids = list(store.docstore._dict.keys())
+    store.delete(sentinel_ids)
+
+    # 把模块级单例指向内存 store，get_faiss_store() 直接返回它
+    monkeypatch.setattr(_faiss_mod, "_store", store)
+    # 防止任何磁盘 I/O
+    monkeypatch.setattr(_faiss_mod, "FAISS_INDEX_DIR", Path("/nonexistent_test"))
+
+    # 补丁 add：写入内存 store，不落盘；用 chunk_id 作显式 ID 保证幂等性
+    def _fake_add(documents):
+        texts = [doc.page_content for doc in documents]
+        metadatas = [doc.metadata for doc in documents]
+        ids = [str(doc.metadata.get("chunk_id")) for doc in documents]
+        existing = [id_ for id_ in ids if id_ in store.docstore._dict]
+        if existing:
+            store.delete(existing)
+        store.add_texts(texts, metadatas=metadatas, ids=ids)
+
+    monkeypatch.setattr(_faiss_mod, "add_documents_to_faiss", _fake_add)
+    monkeypatch.setattr("app.services.ingest.add_documents_to_faiss", _fake_add)
+
+    # 补丁 delete：从内存 store 删除，不落盘
+    def _fake_delete(t_id: str, d_id: int) -> int:
+        ids = [
+            vid
+            for vid, doc in store.docstore._dict.items()
+            if str(doc.metadata.get("tenant_id")) == str(t_id)
+            and int(doc.metadata.get("doc_id", -1)) == int(d_id)
+        ]
+        if ids:
+            store.delete(ids)
+        return len(ids)
+
+    monkeypatch.setattr(_faiss_mod, "delete_documents_from_faiss", _fake_delete)
+    monkeypatch.setattr("app.services.vector_ops.delete_documents_from_faiss", _fake_delete)
 
     # 假向量的 l2 距离普遍较大，测试里放开距离阈值，保证有命中能被返回
     monkeypatch.setattr("app.core.retriever_tool.MAX_DISTANCE", float("inf"))
 
     yield store
-
-    try:
-        store.delete_collection()
-    finally:
-        store._client.close()
+    # monkeypatch 会在用例结束后自动恢复所有 setattr，无需手动清理
 
 
 @pytest.fixture

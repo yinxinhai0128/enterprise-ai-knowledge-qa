@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { useBlocker } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Send, Square, Plus, ChevronDown, ChevronUp, FileText, AlertTriangle, UserCheck, Bot, RefreshCw, Menu, X, MessageSquare, Copy, Check, ChevronsDown } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -20,6 +21,23 @@ const SUGGESTIONS = [
   '如何申请加班补贴？',
   '试用期转正需要满足哪些条件？',
 ]
+
+// sessionStorage helpers: survive Vite HMR module reloads unlike module-level Map.
+function _saveChat(sessionId: string, messages: Message[]) {
+  try {
+    sessionStorage.setItem(
+      `ekqa_chat_${sessionId}`,
+      JSON.stringify(messages.map(m => ({ ...m, streaming: false, isNew: false }))),
+    )
+  } catch {} // ignore QuotaExceededError
+}
+
+function _loadChat(sessionId: string): Message[] | null {
+  try {
+    const raw = sessionStorage.getItem(`ekqa_chat_${sessionId}`)
+    return raw ? (JSON.parse(raw) as Message[]) : null
+  } catch { return null }
+}
 
 // Session storage
 interface Session {
@@ -233,6 +251,12 @@ export default function ChatPage() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const abortRef = useRef<AbortController | null>(null)
   const hydratedSessionRef = useRef<string | null>(null)
+  // Refs for stale-closure–safe access inside cleanup functions
+  const messagesRef = useRef<Message[]>([])
+  const sessionIdRef = useRef(currentSessionId)
+
+  useEffect(() => { messagesRef.current = messages }, [messages])
+  useEffect(() => { sessionIdRef.current = currentSessionId }, [currentSessionId])
 
   function handleMessagesScroll() {
     const el = messagesContainerRef.current
@@ -247,9 +271,19 @@ export default function ChatPage() {
   const mountedRef = useRef(true)
   useEffect(() => {
     mountedRef.current = true
+    // Restore from sessionStorage on mount (survives navigation + Vite HMR reloads)
+    const cached = _loadChat(sessionIdRef.current)
+    if (cached && cached.length > 0) {
+      setMessages(cached)
+      hydratedSessionRef.current = sessionIdRef.current
+    }
     return () => {
       mountedRef.current = false
       abortRef.current?.abort()
+      // Snapshot current messages before unmounting (navigation-away preservation)
+      if (messagesRef.current.length > 0) {
+        _saveChat(sessionIdRef.current, messagesRef.current)
+      }
     }
   }, [])
 
@@ -362,7 +396,10 @@ export default function ChatPage() {
     abortRef.current?.abort()
   }, [])
 
+  const blocker = useBlocker(isLoading)
+
   function handleNewSession() {
+    if (messages.length > 0) _saveChat(currentSessionId, messages)
     const id = newSessionId()
     setCurrentSessionId(id)
     setMessages([])
@@ -371,8 +408,16 @@ export default function ChatPage() {
 
   function handleSelectSession(id: string) {
     if (id === currentSessionId) return
+    if (messages.length > 0) _saveChat(currentSessionId, messages)
+    const cached = _loadChat(id)
+    if (cached && cached.length > 0) {
+      setMessages(cached)
+      hydratedSessionRef.current = id
+    } else {
+      setMessages([])
+      hydratedSessionRef.current = null
+    }
     setCurrentSessionId(id)
-    setMessages([])
     setDrawerOpen(false)
   }
 
@@ -422,6 +467,30 @@ export default function ChatPage() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
+      {blocker.state === 'blocked' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 shadow-xl max-w-sm w-full mx-4">
+            <h3 className="font-semibold text-gray-800 mb-2">AI 正在回答中</h3>
+            <p className="text-sm text-gray-500 mb-5 leading-relaxed">
+              离开将中断本次回答，确定要离开吗？
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => blocker.reset?.()}
+                className="px-4 py-2 text-sm rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                继续等待
+              </button>
+              <button
+                onClick={() => blocker.proceed?.()}
+                className="px-4 py-2 text-sm rounded-xl bg-red-500 text-white hover:bg-red-600 transition-colors"
+              >
+                离开
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <NavBar />
 
       {/* Mobile drawer overlay */}

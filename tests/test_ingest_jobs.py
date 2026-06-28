@@ -65,14 +65,14 @@ async def test_job_survives_fresh_api_app_and_duplicate_upload_is_idempotent(
     assert jobs.json()[0]["status"] == "pending"
 
     assert await worker_once() is True
-    assert vectorstore._collection.count() == 1
+    assert len(vectorstore.docstore._dict) == 1
 
 
 async def test_crash_before_vector_write_is_reclaimed(client, vectorstore, worker_once):
     uploaded = await _upload(client, content=b"crash before vector")
     job_id = await claim_next_ingest_job("dead-worker")
     assert job_id is not None
-    assert vectorstore._collection.count() == 0
+    assert len(vectorstore.docstore._dict) == 0
 
     await _expire_job(job_id)
     recovered = await recover_stale_ingest_state()
@@ -80,7 +80,7 @@ async def test_crash_before_vector_write_is_reclaimed(client, vectorstore, worke
     assert await worker_once() is True
     detail = await client.get(f"/documents/{uploaded.json()['id']}")
     assert detail.json()["status"] == "indexed"
-    assert vectorstore._collection.count() == 1
+    assert len(vectorstore.docstore._dict) == 1
 
 
 async def test_crash_after_vector_write_recovers_path_and_upserts_same_chunk(
@@ -96,7 +96,7 @@ async def test_crash_after_vector_write_recovers_path_and_upserts_same_chunk(
             worker_id="dead-after-vector",
             after_ingest_hook=crash_after_vector,
         )
-    assert vectorstore._collection.count() == 1
+    assert len(vectorstore.docstore._dict) == 1
 
     async with database_module.AsyncSessionLocal() as db:
         job = (await db.execute(select(IngestJob))).scalar_one()
@@ -109,7 +109,7 @@ async def test_crash_after_vector_write_recovers_path_and_upserts_same_chunk(
     await _expire_job(job_id)
     assert (await recover_stale_ingest_state())["jobs"] == 1
     assert await run_worker_once(worker_id="recovery-worker") is True
-    assert vectorstore._collection.count() == 1
+    assert len(vectorstore.docstore._dict) == 1
     async with database_module.AsyncSessionLocal() as db:
         document = await db.get(Document, uploaded.json()["id"])
         assert document.status == "indexed"
@@ -121,14 +121,14 @@ async def test_vector_failure_never_marks_document_indexed(
 ):
     uploaded = await _upload(client, content=b"vector service failure")
 
-    async def fail_vector_write(*_args, **_kwargs):
+    def fail_vector_write(*_args, **_kwargs):
         raise RuntimeError("vector unavailable")
 
-    monkeypatch.setattr(vectorstore, "aadd_documents", fail_vector_write)
+    monkeypatch.setattr("app.services.ingest.add_documents_to_faiss", fail_vector_write)
     assert await worker_once() is True
     detail = await client.get(f"/documents/{uploaded.json()['id']}")
     assert detail.json()["status"] != "indexed"
-    assert vectorstore._collection.count() == 0
+    assert len(vectorstore.docstore._dict) == 0
     jobs = (await client.get(f"/documents/{uploaded.json()['id']}/jobs")).json()
     assert jobs[0]["status"] in {"retry", "failed"}
 
@@ -142,7 +142,7 @@ async def test_database_finalize_failure_compensates_vectors(
         raise RuntimeError("database unavailable")
 
     assert await worker_once(before_finalize_hook=fail_finalize) is True
-    assert vectorstore._collection.count() == 0
+    assert len(vectorstore.docstore._dict) == 0
     detail = await client.get(f"/documents/{uploaded.json()['id']}")
     assert detail.json()["status"] != "indexed"
     assert "补偿删除向量" in detail.json()["error_msg"]

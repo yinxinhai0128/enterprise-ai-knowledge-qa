@@ -1,4 +1,4 @@
-"""检索工具：把 Chroma 检索包装成 Agent 可调用的 @tool。
+"""检索工具：把 FAISS 检索包装成 Agent 可调用的 @tool。
 
 Agentic RAG 的关键：检索是一个工具，由 Agent 自主决定何时调用，
 而不是固定先检索再回答。工具的 docstring 就是给模型看的调用说明。
@@ -13,6 +13,7 @@ from langchain_core.tools import tool
 from app.agent.context import EnterpriseContext
 from app.core.evidence import Evidence
 from app.core.faiss_store import faiss_similarity_search_with_score
+from app.core.query_rewriter import rewrite_query
 
 # 检索召回数
 TOP_K = 5
@@ -26,6 +27,7 @@ def search_tenant_knowledge_base(
     tenant_id: str,
 ) -> tuple[str, list[Evidence]]:
     """只在指定租户向量分区检索，返回模型内容与服务端 artifact。"""
+    query = rewrite_query(query)
     results = faiss_similarity_search_with_score(
         query,
         k=TOP_K,
@@ -89,7 +91,7 @@ def search_knowledge_base(
     需要依据资料才能准确回答的内容时，调用本工具获取依据。
 
     Args:
-        query: 用自然语言表述的检索问题。
+        query: 用关键词短语表述的检索问题（如"年假申请流程天数"），而非完整问句。
 
     Returns:
         content 是带不可信数据边界的相关片段；artifact 是服务端结构化证据；

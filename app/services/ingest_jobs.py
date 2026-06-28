@@ -48,13 +48,22 @@ def create_ingest_job(
 
 
 def _repair_promoted_path(document: Document) -> None:
-    """崩溃可能发生在文件归档后、DB 路径提交前；恢复确定性归档路径。"""
+    """崩溃可能发生在文件归档后、DB 路径提交前；恢复确定性归档路径。
+
+    归档时文件名加了 doc_id 前缀（防路径碰撞），因此先找新格式，
+    再回退到旧格式（兼容本修复上线前已归档的存量文件）。
+    """
     current = Path(document.file_path)
     if current.is_file():
         return
-    promoted = settings.storage_dir / "documents" / document.tenant_id / current.name
-    if promoted.is_file():
-        document.file_path = str(promoted)
+    doc_dir = settings.storage_dir / "documents" / document.tenant_id
+    promoted_new = doc_dir / f"{document.id}_{current.name}"
+    if promoted_new.is_file():
+        document.file_path = str(promoted_new)
+        return
+    promoted_old = doc_dir / current.name
+    if promoted_old.is_file():
+        document.file_path = str(promoted_old)
 
 
 async def recover_stale_ingest_state() -> dict[str, int]:

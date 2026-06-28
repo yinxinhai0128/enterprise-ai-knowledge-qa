@@ -10,10 +10,12 @@ from app.services.consistency import inspect_consistency
 
 async def main() -> int:
     await init_db()
-    report = await inspect_consistency()
-    print(json.dumps(report.to_dict(), ensure_ascii=False, sort_keys=True))
-    await engine.dispose()
-    return 0 if report.total_issues == 0 else 1
+    try:
+        report = await inspect_consistency()
+        print(json.dumps(report.to_dict(), ensure_ascii=False, sort_keys=True))
+        return 0 if report.total_issues == 0 else 1
+    finally:
+        await engine.dispose()
 
 
 if __name__ == "__main__":
