@@ -503,7 +503,7 @@ export default function AdminPage() {
                     <tbody className="divide-y divide-gray-50">
                       {auditRecords.map(r => (
                         <tr key={r.id} className="hover:bg-gray-50/60 transition-colors">
-                          <td className="px-4 py-2.5 text-gray-400 whitespace-nowrap">{dayjs(r.created_at).fromNow()}</td>
+                          <td className="px-4 py-2.5 text-gray-400 whitespace-nowrap" title={dayjs(r.created_at).format('YYYY-MM-DD HH:mm:ss')}>{dayjs(r.created_at).fromNow()}</td>
                           <td className="px-4 py-2.5 text-gray-600 max-w-[80px] truncate font-mono">{r.user_id}</td>
                           <td className="px-4 py-2.5 text-gray-700 max-w-[200px] truncate">{r.question}</td>
                           <td className="px-4 py-2.5">
