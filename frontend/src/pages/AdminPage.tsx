@@ -9,7 +9,7 @@ import { Progress } from '@/components/ui/progress'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { NavBar } from '@/components/NavBar'
-import { getStats, getRefused, getHumanTasks, claimTask, completeTask, getFeedbackStats, getUsageReport } from '@/api/admin'
+import { getStats, getRefused, getHumanTasks, claimTask, completeTask, getFeedbackStats, getUsageReport, getRecentRecords } from '@/api/admin'
 import type { HumanTaskOut } from '@/types/api'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate } from 'react-router-dom'
@@ -203,6 +203,13 @@ export default function AdminPage() {
   const { data: refused = [], isLoading: refusedLoading } = useQuery({
     queryKey: ['admin-refused'],
     queryFn: getRefused,
+    refetchInterval: 30000,
+    enabled: auth.isAdmin,
+  })
+
+  const { data: auditRecords = [], isLoading: auditLoading } = useQuery({
+    queryKey: ['admin-records'],
+    queryFn: () => getRecentRecords(50),
     refetchInterval: 30000,
     enabled: auth.isAdmin,
   })
@@ -479,7 +486,7 @@ export default function AdminPage() {
 
             {/* Tab 3: Audit */}
             <TabsContent value="audit" className="animate-fade-in">
-              {refusedLoading ? <Skeleton className="h-64 rounded-2xl" /> : (
+              {auditLoading ? <Skeleton className="h-64 rounded-2xl" /> : (
                 <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
                   <table className="w-full text-xs">
                     <thead>
@@ -494,7 +501,7 @@ export default function AdminPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
-                      {refused.map(r => (
+                      {auditRecords.map(r => (
                         <tr key={r.id} className="hover:bg-gray-50/60 transition-colors">
                           <td className="px-4 py-2.5 text-gray-400 whitespace-nowrap">{dayjs(r.created_at).fromNow()}</td>
                           <td className="px-4 py-2.5 text-gray-600 max-w-[80px] truncate font-mono">{r.user_id}</td>
@@ -505,13 +512,13 @@ export default function AdminPage() {
                               : <span className="text-gray-200">—</span>}
                           </td>
                           <td className="px-4 py-2.5">
-                            {r.refused ? <Badge variant="warning" className="text-[10px] px-1.5">拒答</Badge> : null}
+                            {r.refused ? <Badge variant="warning" className="text-[10px] px-1.5">拒答</Badge> : <span className="text-gray-200">—</span>}
                           </td>
                           <td className="px-4 py-2.5 text-gray-500 tabular-nums">{r.total_tokens}</td>
                           <td className="px-4 py-2.5 text-gray-500 tabular-nums">{Math.round(r.latency_ms)}</td>
                         </tr>
                       ))}
-                      {refused.length === 0 && (
+                      {auditRecords.length === 0 && (
                         <tr>
                           <td colSpan={7} className="px-4 py-12 text-center text-gray-400">暂无审计记录</td>
                         </tr>

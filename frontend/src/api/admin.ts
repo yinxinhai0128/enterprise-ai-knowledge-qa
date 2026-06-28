@@ -11,6 +11,11 @@ export async function getRefused(): Promise<AdminQARecord[]> {
   return data
 }
 
+export async function getRecentRecords(limit = 50): Promise<AdminQARecord[]> {
+  const { data } = await apiClient.get<AdminQARecord[]>('/admin/records', { params: { limit } })
+  return data
+}
+
 export async function getHumanTasks(status?: string): Promise<HumanTaskOut[]> {
   const { data } = await apiClient.get<HumanTaskOut[]>('/admin/human-tasks', {
     params: status ? { status } : undefined,

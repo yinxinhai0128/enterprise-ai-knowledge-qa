@@ -217,6 +217,27 @@ async def list_refused(
 
 
 @router.get(
+    "/records",
+    response_model=list[AdminQARecord],
+    summary="最近问答记录（全量审计）",
+)
+async def list_records(
+    auth: LimitedAdminAuth,
+    db: AsyncSession = Depends(get_session),
+    limit: int = 50,
+) -> list[ChatRecord]:
+    """返回最近 N 条问答记录（不限拒答状态），用于审计日志。"""
+    limit = max(1, min(limit, 200))
+    result = await db.execute(
+        select(ChatRecord)
+        .where(ChatRecord.tenant_id == auth.tenant_id)
+        .order_by(ChatRecord.created_at.desc(), ChatRecord.id.desc())
+        .limit(limit)
+    )
+    return list(result.scalars().all())
+
+
+@router.get(
     "/human",
     response_model=list[AdminQARecord],
     summary="最近转人工问题",
