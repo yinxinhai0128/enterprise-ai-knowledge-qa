@@ -8,6 +8,7 @@ import { SimpleMarkdown } from '@/components/SimpleMarkdown'
 import { stripCitationBlock } from '@/lib/answer'
 import { askQuestionStream, getHistory, submitFeedback, searchSessions } from '@/api/qa'
 import type { AskResponse, SourceItem } from '@/types/api'
+import { toast } from '@/hooks/use-toast'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'
@@ -149,16 +150,25 @@ function FeedbackButtons({ recordId }: { recordId: number }) {
     if (r === 'down') {
       setShowComment(true)
     } else {
-      await submitFeedback(recordId, r)
-      setSubmitted(true)
+      try {
+        await submitFeedback(recordId, r)
+        setSubmitted(true)
+      } catch {
+        toast({ variant: 'destructive', title: '反馈提交失败', description: '请稍后重试' })
+        setRating(null)
+      }
     }
   }
 
   const handleSubmitComment = async () => {
     if (!rating) return
-    await submitFeedback(recordId, rating, comment || undefined)
-    setSubmitted(true)
-    setShowComment(false)
+    try {
+      await submitFeedback(recordId, rating, comment || undefined)
+      setSubmitted(true)
+      setShowComment(false)
+    } catch {
+      toast({ variant: 'destructive', title: '反馈提交失败', description: '请稍后重试' })
+    }
   }
 
   return (
