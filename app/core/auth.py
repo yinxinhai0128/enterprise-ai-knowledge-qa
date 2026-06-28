@@ -110,7 +110,17 @@ def require_role(role: str):
     return dependency
 
 
-require_user = require_role("user")
+def _require_user(auth: Annotated[AuthContext, Depends(get_auth_context)]) -> AuthContext:
+    """允许 user 或 admin 角色访问普通用户端点（管理员应能使用所有功能）。"""
+    if "user" not in auth.roles and "admin" not in auth.roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="权限不足",
+        )
+    return auth
+
+
+require_user = _require_user
 require_admin = require_role("admin")
 
 UserAuth = Annotated[AuthContext, Depends(require_user)]
