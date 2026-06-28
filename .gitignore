@@ -16,6 +16,11 @@ chroma_db/
 logs/
 backups/
 
+# Nginx SSL 证书（含私钥，严禁提交 git）
+nginx/ssl/*.pem
+nginx/ssl/*.key
+nginx/ssl/*.crt
+
 # 测试产物
 frontend/test-results/
 

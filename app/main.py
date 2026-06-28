@@ -22,6 +22,7 @@ from starlette.responses import JSONResponse, PlainTextResponse, Response
 
 from app.agent.agent import build_agent
 from app.api.admin import router as admin_router
+from app.api.auth import router as auth_router
 from app.api.documents import router as documents_router
 from app.api.qa import router as qa_router
 from app.config import settings
@@ -274,6 +275,7 @@ def create_app() -> FastAPI:
             media_type="text/plain; version=0.0.4; charset=utf-8",
         )
 
+    application.include_router(auth_router)
     application.include_router(documents_router)
     application.include_router(qa_router)
     application.include_router(admin_router)

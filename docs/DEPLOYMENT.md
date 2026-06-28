@@ -93,9 +93,12 @@ Compose 同时运行 API 和 Worker，挂载 `storage/`、`chroma_db/`、`logs/`
 | POST | `/qa/ask` | `user` |
 | POST | `/qa/stream` | `user` |
 | GET | `/qa/history/{session_id}` | `user` |
-| GET | `/admin/stats`, `/admin/refused`, `/admin/human`, `/admin/human-tasks`, `/admin/audits/pending`, `/admin/consistency` | `admin` |
+| POST | `/qa/feedback` | `user` |
+| GET | `/qa/sessions/search` | `user` |
+| POST | `/auth/login`, `/auth/register`, `/auth/change-password` | 见各端点说明 |
+| GET | `/admin/stats`, `/admin/refused`, `/admin/human`, `/admin/human-tasks`, `/admin/audits/pending`, `/admin/consistency`, `/admin/feedback-stats` | `admin` |
 | POST | `/admin/human-tasks/{task_id}/claim`, `/admin/human-tasks/{task_id}/complete` | `admin` |
-| GET | `/admin/human-tasks/{task_id}/events` | `admin` |
+| GET | `/admin/human-tasks/{task_id}/events`, `/admin/reports/usage` | `admin` |
 
 所有业务数据查询同时带来自已验签 Token 的 `tenant_id`。客户端提交的 `user_id` 或 `tenant_id` 不构成身份。
 
@@ -146,4 +149,99 @@ Compose 同时运行 API 和 Worker，挂载 `storage/`、`chroma_db/`、`logs/`
 
 ## 12. 发布前证据
 
-执行测试、依赖审计、容器构建、恢复演练和威胁模型复核。阶段 12 全部门通过前，只能称“生产候选整改中”，不能声称已生产可用。
+执行测试、依赖审计、容器构建、恢复演练和威胁模型复核。阶段 12 全部门通过前，只能称”生产候选整改中”，不能声称已生产可用。
+
+## 13. 生产网络层（Nginx + HTTPS）部署
+
+### 前置条件
+
+- Docker ≥ 24、Docker Compose ≥ 2（`docker compose version` 确认）
+- 已解析到服务器 IP 的域名
+- 服务器 80 和 443 端口对外开放（防火墙/安全组放行）
+- 前端已完成构建（`frontend/dist/` 存在）
+
+### 1. 配置 .env
+
+```bash
+cp .env.example .env
+```
+
+必填项清单：
+
+| 变量 | 说明 |
+|---|---|
+| `DASHSCOPE_API_KEY` | 阿里云百炼 API Key |
+| `AUTH_JWT_SECRET` | HS256 密钥，至少 32 个随机字符，不得使用示例值 |
+| `APP_ENV` | 改为 `production` |
+| `DOMAIN` | 实际域名，例如 `kb.example.com` |
+
+### 2. 申请 SSL 证书
+
+```bash
+# 在服务器上安装 certbot
+apt install certbot
+
+# 确保 80 端口未被占用后申请（standalone 模式）
+certbot certonly --standalone -d your-domain.com
+
+# 将证书复制到项目目录
+cp /etc/letsencrypt/live/your-domain.com/fullchain.pem nginx/ssl/cert.pem
+cp /etc/letsencrypt/live/your-domain.com/privkey.pem nginx/ssl/key.pem
+chmod 600 nginx/ssl/key.pem
+```
+
+开发/测试环境可使用自签名证书：
+
+```bash
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout nginx/ssl/key.pem \
+  -out nginx/ssl/cert.pem \
+  -subj “/CN=localhost”
+```
+
+### 3. 构建前端
+
+```bash
+bash scripts/build_frontend.sh
+```
+
+构建产物输出到 `frontend/dist/`，Nginx 容器以只读方式挂载。
+
+### 4. 启动生产环境
+
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
+
+首次启动会拉取 `nginx:1.27-alpine` 镜像并构建 API 镜像。
+
+### 5. 验证服务状态
+
+```bash
+# 检查所有容器健康状态
+docker compose -f docker-compose.prod.yml ps
+
+# 查看各服务日志
+docker compose -f docker-compose.prod.yml logs nginx
+docker compose -f docker-compose.prod.yml logs api
+docker compose -f docker-compose.prod.yml logs worker
+```
+
+所有容器 Status 应显示 `healthy`。可通过 `https://your-domain.com/api/health/ready` 验证后端健康检查。
+
+### 6. 常见问题
+
+**证书路径错误**：Nginx 容器启动失败时，先确认 `nginx/ssl/cert.pem` 和 `nginx/ssl/key.pem` 均存在，再执行 `docker compose -f docker-compose.prod.yml logs nginx` 查看具体错误。
+
+**80/443 端口被占用**：执行 `ss -tlnp | grep -E ':80|:443'`（Linux）确认端口占用进程，停止冲突服务后重新启动。
+
+**前端 404**：确认 `frontend/dist/index.html` 存在；若构建产物缺失，重新运行 `bash scripts/build_frontend.sh`。
+
+**API 502 Bad Gateway**：API 容器可能尚未通过 healthcheck，等待约 20 秒后刷新；或执行 `docker compose -f docker-compose.prod.yml logs api` 查看启动错误。
+
+**查看 Nginx 访问/错误日志**：
+
+```bash
+docker exec enterprise-kb-nginx cat /var/log/nginx/error.log
+docker exec enterprise-kb-nginx cat /var/log/nginx/access.log
+```

@@ -37,6 +37,29 @@ export function parseFrame(raw: string): { event: string; data: string } | null 
 }
 
 /** 真流式提问：POST /qa/stream，逐帧解析 SSE 并回调。 */
+export async function submitFeedback(
+  recordId: number,
+  rating: 'up' | 'down',
+  comment?: string,
+): Promise<void> {
+  await apiClient.post('/qa/feedback', { record_id: recordId, rating, comment })
+}
+
+export interface SessionSearchResult {
+  record_id: number
+  session_id: string
+  question: string
+  created_at: string
+}
+
+export async function searchSessions(q: string): Promise<SessionSearchResult[]> {
+  if (!q.trim()) return []
+  const res = await apiClient.get<SessionSearchResult[]>('/qa/sessions/search', {
+    params: { q: q.trim() },
+  })
+  return res.data
+}
+
 export async function askQuestionStream(
   question: string,
   sessionId: string,

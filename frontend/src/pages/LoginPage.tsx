@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Bot, BookOpen, Lock, FlaskConical, ClipboardPaste } from 'lucide-react'
+import { Bot, BookOpen, Lock, FlaskConical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
 import { useAuth } from '@/stores/auth'
 import { toast } from '@/hooks/use-toast'
 
@@ -13,59 +13,51 @@ const FEATURES = [
 ]
 
 export default function LoginPage() {
-  const [token, setToken] = useState('')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const auth = useAuth()
   const navigate = useNavigate()
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     if (auth.token) navigate('/chat', { replace: true })
   }, [auth.token, navigate])
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const t = params.get('token')
-    if (t) { setToken(t); window.history.replaceState({}, '', '/login') }
-  }, [])
-
-  function validate(t: string): string {
-    const trimmed = t.trim()
-    if (!trimmed) return '请输入访问令牌'
-    if (!trimmed.startsWith('eyJ')) return '令牌格式不正确（应以 eyJ 开头）'
-    return ''
-  }
-
-  function handleLogin() {
-    const trimmed = token.trim()
-    const err = validate(trimmed)
-    if (err) { setError(err); return }
+  async function handleLogin() {
+    if (!username.trim()) { setError('请输入用户名'); return }
+    if (!password) { setError('请输入密码'); return }
     setLoading(true)
     setError('')
-    const ok = auth.login(trimmed)
-    setLoading(false)
-    if (!ok) {
-      setError('令牌已过期或无效，请重新获取')
-    } else {
-      navigate('/chat', { replace: true })
-    }
-  }
-
-  async function handlePaste() {
     try {
-      const text = await navigator.clipboard.readText()
-      setToken(text)
-      setError('')
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username.trim(), password }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setError(data.detail ?? '用户名或密码错误')
+        return
+      }
+      const { access_token } = await res.json()
+      const ok = auth.login(access_token)
+      if (!ok) {
+        setError('登录失败，令牌无效')
+      } else {
+        navigate('/chat', { replace: true })
+      }
     } catch {
-      toast({ variant: 'destructive', title: '无法读取剪贴板', description: '请手动粘贴令牌' })
+      setError('网络错误，请稍后重试')
+    } finally {
+      setLoading(false)
     }
   }
 
   function handleDevHint() {
     toast({
-      title: '开发模式：生成临时 Token',
-      description: '在项目终端运行：python scripts/create_dev_token.py --roles user,admin --ttl-seconds 3600',
+      title: '开发模式：创建管理员账号',
+      description: '运行：python scripts/create_admin.py --username admin --password 强密码 --tenant default',
     })
   }
 
@@ -117,28 +109,28 @@ export default function LoginPage() {
 
         <div className="w-full max-w-md">
           <h1 className="text-2xl font-bold text-gray-900 mb-1">欢迎回来</h1>
-          <p className="text-gray-500 text-sm mb-8">请使用您的访问令牌登录</p>
+          <p className="text-gray-500 text-sm mb-8">请使用账号密码登录</p>
 
           <div className="space-y-4">
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-sm font-medium text-gray-700">访问令牌</label>
-                <button
-                  type="button"
-                  onClick={handlePaste}
-                  className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700"
-                >
-                  <ClipboardPaste className="w-3 h-3" />
-                  粘贴
-                </button>
-              </div>
-              <Textarea
-                ref={textareaRef}
-                value={token}
-                onChange={e => { setToken(e.target.value); setError('') }}
-                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                className="font-mono text-xs resize-none h-20"
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleLogin() } }}
+              <label className="text-sm font-medium text-gray-700 block mb-1.5">用户名</label>
+              <Input
+                value={username}
+                onChange={e => { setUsername(e.target.value); setError('') }}
+                placeholder="请输入用户名"
+                autoComplete="username"
+                onKeyDown={e => { if (e.key === 'Enter') handleLogin() }}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 block mb-1.5">密码</label>
+              <Input
+                type="password"
+                value={password}
+                onChange={e => { setPassword(e.target.value); setError('') }}
+                placeholder="请输入密码"
+                autoComplete="current-password"
+                onKeyDown={e => { if (e.key === 'Enter') handleLogin() }}
               />
               {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
             </div>
@@ -149,7 +141,7 @@ export default function LoginPage() {
               onClick={handleLogin}
               disabled={loading}
             >
-              {loading ? '验证中…' : '登录系统'}
+              {loading ? '登录中…' : '登录系统'}
             </Button>
 
             {isDev && (
@@ -168,14 +160,14 @@ export default function LoginPage() {
                   onClick={handleDevHint}
                 >
                   <FlaskConical className="w-4 h-4" />
-                  开发模式：如何获取 Token
+                  开发模式：如何创建账号
                 </Button>
               </>
             )}
           </div>
 
           <p className="text-center text-xs text-gray-400 mt-6">
-            令牌由系统管理员颁发，有效期内使用
+            账号由系统管理员创建，如有问题请联系管理员
           </p>
         </div>
       </div>

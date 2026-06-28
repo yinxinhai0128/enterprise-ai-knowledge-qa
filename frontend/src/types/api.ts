@@ -58,6 +58,7 @@ export interface StreamDonePayload {
   refused: boolean
   need_human: boolean
   human_task_id: number | null
+  record_id?: number
 }
 
 export interface HistoryMessage {

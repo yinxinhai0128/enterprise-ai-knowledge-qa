@@ -9,6 +9,7 @@ from app.config import settings
 from app.core.database import AsyncSessionLocal
 from app.models.chat_record import ChatRecord
 from app.models.human_task import HumanTask, HumanTaskEvent
+from app.services.notification import notify_human_review
 from app.services.sensitive_policy import PolicyMatch
 
 
@@ -143,6 +144,15 @@ async def complete_audit(
                         )
                     task_id = task.id
                 await _commit(db)
+                if need_human and settings.wechat_work_webhook_url:
+                    asyncio.ensure_future(
+                        notify_human_review(
+                            question=question,
+                            category=review_match.category if review_match else "",
+                            task_id=task_id,
+                            webhook_url=settings.wechat_work_webhook_url,
+                        )
+                    )
                 return task_id
         except Exception as exc:  # noqa: BLE001
             last_error = exc

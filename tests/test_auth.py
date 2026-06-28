@@ -55,8 +55,10 @@ async def test_openapi_declares_bearer_security(anonymous_client):
     assert schemes["BearerAuth"]["type"] == "http"
     assert schemes["BearerAuth"]["scheme"] == "bearer"
 
+    # /auth/login 是公开端点，无需 Bearer；其余业务路由必须声明安全方案
+    public_paths = {"/health", "/health/live", "/health/ready", "/metrics", "/auth/login"}
     for path, operations in schema["paths"].items():
-        if path in {"/health", "/health/live", "/health/ready", "/metrics"}:
+        if path in public_paths:
             continue
         for operation in operations.values():
             assert {"BearerAuth": []} in operation.get("security", []), path
@@ -166,3 +168,80 @@ async def test_admin_queries_are_limited_to_token_tenant(
         response = await tenant_b_admin.get("/admin/stats")
         assert response.status_code == 200
         assert response.json()["documents"]["total"] == 0
+
+
+# ---------- 账号密码认证端点测试 ----------
+
+async def test_register_and_login(client, auth_headers):
+    """管理员注册新用户，新用户登录获取 Token。"""
+    admin_headers = auth_headers(roles=("admin",))
+
+    resp = await client.post(
+        "/auth/register",
+        json={"username": "testuser001", "password": "TestPass123", "tenant_id": "test", "roles": ["user"]},
+        headers=admin_headers,
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["ok"] is True
+    assert "user_id" in body
+
+    resp = await client.post(
+        "/auth/login",
+        json={"username": "testuser001", "password": "TestPass123"},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "access_token" in data
+    assert data["token_type"] == "bearer"
+
+
+async def test_login_wrong_password(client, auth_headers):
+    admin_headers = auth_headers(roles=("admin",))
+
+    await client.post(
+        "/auth/register",
+        json={"username": "testuser002", "password": "TestPass123", "tenant_id": "test", "roles": ["user"]},
+        headers=admin_headers,
+    )
+    resp = await client.post(
+        "/auth/login",
+        json={"username": "testuser002", "password": "WrongPass"},
+    )
+    assert resp.status_code == 401
+
+
+async def test_login_nonexistent_user(client):
+    resp = await client.post(
+        "/auth/login",
+        json={"username": "no_such_user", "password": "whatever"},
+    )
+    assert resp.status_code == 401
+
+
+async def test_register_requires_admin(client, auth_headers):
+    """普通用户无法注册新账号。"""
+    user_headers = auth_headers(roles=("user",))
+    resp = await client.post(
+        "/auth/register",
+        json={"username": "testuser003", "password": "TestPass123", "tenant_id": "test", "roles": []},
+        headers=user_headers,
+    )
+    assert resp.status_code == 403
+
+
+async def test_register_duplicate_username(client, auth_headers):
+    """重复注册同名用户返回 409。"""
+    admin_headers = auth_headers(roles=("admin",))
+
+    await client.post(
+        "/auth/register",
+        json={"username": "testuser004", "password": "TestPass123", "tenant_id": "test", "roles": []},
+        headers=admin_headers,
+    )
+    resp = await client.post(
+        "/auth/register",
+        json={"username": "testuser004", "password": "AnotherPass1", "tenant_id": "test", "roles": []},
+        headers=admin_headers,
+    )
+    assert resp.status_code == 409

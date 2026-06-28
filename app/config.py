@@ -115,6 +115,9 @@ class Settings(BaseSettings):
     audit_write_retries: int = Field(default=3, ge=1, le=10)
     sensitive_rules_path: Path = Path("config/sensitive_rules.json")
 
+    # ---------- 运营通知（企业微信群机器人） ----------
+    wechat_work_webhook_url: str = Field(default="", description="企业微信群机器人 Webhook URL，留空则不发通知")
+
     # ---------- 身份认证（HS256 JWT，仅验证，不提供 Token 签发接口） ----------
     auth_jwt_secret: SecretStr = Field(
         default=SecretStr(""), description="JWT HMAC 密钥，至少 32 字符"

@@ -27,3 +27,37 @@ export async function completeTask(id: number, resolution: string): Promise<Huma
   const { data } = await apiClient.post<HumanTaskOut>(`/admin/human-tasks/${id}/complete`, { resolution })
   return data
 }
+
+export interface FeedbackStats {
+  total_rated: number
+  up_count: number
+  down_count: number
+  approval_rate: number
+  recent_negatives: Array<{
+    id: number
+    user_id: string
+    question: string
+    comment: string | null
+    created_at: string
+  }>
+}
+
+export interface UsageReport {
+  days: number
+  total: number
+  today: number
+  refused_rate: number
+  daily: Array<{ date: string; total: number; refused: number; human: number }>
+  top_users: Array<{ user_id: string; count: number }>
+  top_docs: Array<{ doc_name: string; cite_count: number }>
+}
+
+export async function getFeedbackStats(): Promise<FeedbackStats> {
+  const { data } = await apiClient.get<FeedbackStats>('/admin/feedback-stats')
+  return data
+}
+
+export async function getUsageReport(days = 7): Promise<UsageReport> {
+  const { data } = await apiClient.get<UsageReport>('/admin/reports/usage', { params: { days } })
+  return data
+}

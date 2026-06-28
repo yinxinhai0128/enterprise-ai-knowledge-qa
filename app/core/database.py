@@ -58,6 +58,8 @@ def _migrate_schema(connection: Connection) -> None:
             ("audit_error", "TEXT NULL"),
             ("policy_category", "VARCHAR(64) NULL"),
             ("policy_rule_version", "VARCHAR(64) NULL"),
+            ("feedback_rating", "VARCHAR(8) NULL"),
+            ("feedback_comment", "TEXT NULL"),
         ),
     }
     for table, columns in migrations.items():

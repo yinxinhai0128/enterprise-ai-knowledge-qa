@@ -44,6 +44,8 @@ class ChatRecord(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+    feedback_rating: Mapped[str | None] = mapped_column(String(8), nullable=True)
+    feedback_comment: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     def __repr__(self) -> str:  # pragma: no cover
         return f"<ChatRecord id={self.id} session={self.session_id} need_human={self.need_human}>"

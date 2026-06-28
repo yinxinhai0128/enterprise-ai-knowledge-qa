@@ -11,7 +11,7 @@ from collections.abc import AsyncIterator
 from time import perf_counter
 from uuid import uuid4
 
-from fastapi import APIRouter, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from fastapi.responses import StreamingResponse
 from langchain.agents.middleware.model_call_limit import ModelCallLimitExceededError
 from langchain.agents.middleware.tool_call_limit import ToolCallLimitExceededError
@@ -30,7 +30,12 @@ from app.config import settings
 from app.core.auth import build_thread_id
 from app.core.checkpointer import get_checkpointer
 from app.core.evidence import validated_evidence_list
+from app.core.database import get_session
 from app.core.limits import QAAuth, reserve_daily_model_budget
+from app.models.chat_record import ChatRecord as _ChatRecord
+from pydantic import BaseModel
+from sqlalchemy import select as _select
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.qa import (
     AskRequest,
     AskResponse,
@@ -49,6 +54,20 @@ from app.services.conversations import (
 from app.services.sensitive_policy import classify_question, denied_match
 
 router = APIRouter(prefix="/qa", tags=["qa"])
+
+
+class FeedbackRequest(BaseModel):
+    record_id: int
+    rating: str
+    comment: str | None = None
+
+
+class SessionSearchItem(BaseModel):
+    record_id: int
+    session_id: str
+    question: str
+    created_at: str
+
 
 # 消息类型 -> 角色
 _ROLE_MAP = {
@@ -479,6 +498,7 @@ async def stream(req: AskRequest, auth: QAAuth, request: Request) -> StreamingRe
                 "refused": refused,
                 "need_human": need_human,
                 "human_task_id": human_task_id,
+                "record_id": audit_id,
             },
         )
 
@@ -515,3 +535,72 @@ async def history(session_id: str, auth: QAAuth) -> HistoryResponse:
         if (text := _text(msg))
     ]
     return HistoryResponse(session_id=session_id, messages=messages)
+
+
+@router.post("/feedback", summary="提交回答反馈")
+async def submit_feedback(
+    req: FeedbackRequest,
+    auth: QAAuth,
+    db: AsyncSession = Depends(get_session),
+) -> dict:
+    if req.rating not in ("up", "down"):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="rating 只能是 up 或 down",
+        )
+    if req.comment and len(req.comment) > 200:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="comment 最多 200 字",
+        )
+    result = await db.execute(
+        _select(_ChatRecord).where(
+            _ChatRecord.id == req.record_id,
+            _ChatRecord.user_id == auth.user_id,
+            _ChatRecord.tenant_id == auth.tenant_id,
+        )
+    )
+    record = result.scalar_one_or_none()
+    if record is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="记录不存在或无权访问",
+        )
+    record.feedback_rating = req.rating
+    record.feedback_comment = req.comment
+    await db.commit()
+    return {"ok": True}
+
+
+@router.get(
+    "/sessions/search",
+    response_model=list[SessionSearchItem],
+    summary="搜索历史会话",
+)
+async def search_sessions(
+    auth: QAAuth,
+    q: str | None = Query(default=None),
+    db: AsyncSession = Depends(get_session),
+) -> list[SessionSearchItem]:
+    if not q or not q.strip():
+        return []
+    result = await db.execute(
+        _select(_ChatRecord)
+        .where(
+            _ChatRecord.tenant_id == auth.tenant_id,
+            _ChatRecord.user_id == auth.user_id,
+            _ChatRecord.question.contains(q.strip()),
+        )
+        .order_by(_ChatRecord.created_at.desc(), _ChatRecord.id.desc())
+        .limit(50)
+    )
+    records = list(result.scalars().all())
+    return [
+        SessionSearchItem(
+            record_id=r.id,
+            session_id=r.session_id,
+            question=r.question[:100],
+            created_at=r.created_at.isoformat(),
+        )
+        for r in records
+    ]

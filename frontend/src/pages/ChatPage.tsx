@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { NavBar } from '@/components/NavBar'
 import { SimpleMarkdown } from '@/components/SimpleMarkdown'
 import { stripCitationBlock } from '@/lib/answer'
-import { askQuestionStream, getHistory } from '@/api/qa'
+import { askQuestionStream, getHistory, submitFeedback } from '@/api/qa'
 import type { AskResponse, SourceItem } from '@/types/api'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -134,9 +134,78 @@ interface Message {
   error?: boolean
   isNew?: boolean
   streaming?: boolean
+  record_id?: number
 }
 
-function AssistantBubble({ msg, onRetry }: { msg: Message; onRetry?: () => void }) {
+function FeedbackButtons({ recordId }: { recordId: number }) {
+  const [rating, setRating] = useState<'up' | 'down' | null>(null)
+  const [showComment, setShowComment] = useState(false)
+  const [comment, setComment] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+
+  const handleRate = async (r: 'up' | 'down') => {
+    if (submitted) return
+    setRating(r)
+    if (r === 'down') {
+      setShowComment(true)
+    } else {
+      await submitFeedback(recordId, r)
+      setSubmitted(true)
+    }
+  }
+
+  const handleSubmitComment = async () => {
+    if (!rating) return
+    await submitFeedback(recordId, rating, comment || undefined)
+    setSubmitted(true)
+    setShowComment(false)
+  }
+
+  return (
+    <div className="mt-2 flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-400">这个回答有帮助吗？</span>
+        <button
+          onClick={() => handleRate('up')}
+          disabled={submitted}
+          className={`p-1 rounded text-sm transition-colors ${
+            rating === 'up' ? 'text-green-600 bg-green-50' : 'text-gray-400 hover:text-green-500'
+          }`}
+        >
+          👍
+        </button>
+        <button
+          onClick={() => handleRate('down')}
+          disabled={submitted}
+          className={`p-1 rounded text-sm transition-colors ${
+            rating === 'down' ? 'text-red-500 bg-red-50' : 'text-gray-400 hover:text-red-400'
+          }`}
+        >
+          👎
+        </button>
+        {submitted && <span className="text-xs text-gray-400">已记录，感谢反馈</span>}
+      </div>
+      {showComment && !submitted && (
+        <div className="flex flex-col gap-1">
+          <textarea
+            value={comment}
+            onChange={e => setComment(e.target.value.slice(0, 200))}
+            placeholder="告诉我们哪里不满意（可选）"
+            className="text-xs p-2 border border-gray-200 rounded-lg resize-none h-16 focus:outline-none focus:ring-1 focus:ring-gray-300"
+          />
+          <button
+            onClick={handleSubmitComment}
+            className="self-end text-xs px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+          >
+            提交
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function AssistantBubble({ msg, onRetry, isLoading }: { msg: Message; onRetry?: () => void; isLoading?: boolean }) {
   const [copied, setCopied] = useState(false)
   const isStream = msg.isNew === true && (msg.streaming === true || msg.response !== undefined)
   const typewriter = useTypewriter(msg.content, msg.isNew === true && !isStream)
@@ -207,6 +276,9 @@ function AssistantBubble({ msg, onRetry }: { msg: Message; onRetry?: () => void 
               </div>
             )}
             {msg.response.sources.length > 0 && <SourceCard sources={msg.response.sources} />}
+            {msg.record_id && !isLoading && (
+              <FeedbackButtons recordId={msg.record_id} />
+            )}
           </div>
         )}
       </div>
@@ -364,6 +436,7 @@ export default function ChatPage() {
                       : payload.answer,
                   response: resp,
                   streaming: false,
+                  record_id: payload.record_id,
                 }
               : m,
           ),
@@ -592,6 +665,7 @@ export default function ChatPage() {
               ) : (
                 <AssistantBubble
                   msg={msg}
+                  isLoading={isLoading}
                   onRetry={msg.error ? () => {
                     const userMsg = [...messages].slice(0, idx).reverse().find(m => m.role === 'user')
                     if (userMsg) { setInput(userMsg.content); textareaRef.current?.focus() }

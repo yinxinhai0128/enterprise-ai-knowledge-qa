@@ -1,0 +1,95 @@
+x-runtime-security: &runtime-security
+  user: "10001:10001"
+  read_only: true
+  init: true
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  pids_limit: 256
+  tmpfs:
+    - /tmp:size=64m,mode=1777
+
+x-runtime-volumes: &runtime-volumes
+  - ./storage:/app/storage:rw
+  - ./faiss_kb:/home/appuser/faiss_kb:rw
+  - ./logs:/app/logs:rw
+
+services:
+  api:
+    <<: *runtime-security
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: enterprise-kb-api:rc
+    container_name: enterprise-kb-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes: *runtime-volumes
+    mem_limit: 1g
+    cpus: 1.0
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health/ready').status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      - internal
+
+  worker:
+    <<: *runtime-security
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: enterprise-kb-api:rc
+    container_name: enterprise-kb-worker
+    restart: unless-stopped
+    command: ["python", "-m", "app.worker"]
+    env_file:
+      - .env
+    volumes: *runtime-volumes
+    mem_limit: 2g
+    cpus: 1.5
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - internal
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: enterprise-kb-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./frontend/dist:/app/dist:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:size=64m,mode=1777
+      - /var/run:size=8m,mode=1777
+      - /tmp:size=16m,mode=1777
+    networks:
+      - internal
+      - external
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "--tries=1", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  internal:
+    internal: true
+  external: {}

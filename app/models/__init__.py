@@ -6,6 +6,7 @@ from app.models.human_task import HUMAN_TASK_STATUS, HumanTask, HumanTaskEvent
 from app.models.ingest_job import JOB_STATUS, JOB_TYPES, IngestJob
 from app.models.trace_governance_event import TraceGovernanceEvent
 from app.models.usage_daily import UsageDaily
+from app.models.user import User
 
 __all__ = [
     "Document",
@@ -20,4 +21,5 @@ __all__ = [
     "HumanTask",
     "HumanTaskEvent",
     "TraceGovernanceEvent",
+    "User",
 ]

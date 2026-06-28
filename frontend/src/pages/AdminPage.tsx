@@ -9,7 +9,7 @@ import { Progress } from '@/components/ui/progress'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { NavBar } from '@/components/NavBar'
-import { getStats, getRefused, getHumanTasks, claimTask, completeTask } from '@/api/admin'
+import { getStats, getRefused, getHumanTasks, claimTask, completeTask, getFeedbackStats, getUsageReport } from '@/api/admin'
 import type { HumanTaskOut } from '@/types/api'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate } from 'react-router-dom'
@@ -58,6 +58,122 @@ function StatCard({
       </div>
       <p className="text-3xl font-bold text-gray-900 tabular-nums">{value}</p>
       {sub && <div className="mt-2">{sub}</div>}
+    </div>
+  )
+}
+
+function MiniBarChart({ data }: { data: Array<{ date: string; total: number }> }) {
+  const max = Math.max(...data.map(d => d.total), 1)
+  return (
+    <div className="flex items-end gap-1 h-20">
+      {data.map(d => (
+        <div key={d.date} className="flex-1 flex flex-col items-center gap-1">
+          <div
+            className="w-full rounded-t"
+            style={{
+              height: `${Math.max((d.total / max) * 64, d.total ? 4 : 0)}px`,
+              background: 'linear-gradient(180deg, #5B72F5 0%, #3B4FCC 100%)',
+            }}
+          />
+          <span className="text-[9px] text-gray-400 truncate w-full text-center">
+            {d.date.slice(5)}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function ReportsTab() {
+  const { data: report, isLoading } = useQuery({
+    queryKey: ['usage-report'],
+    queryFn: () => getUsageReport(7),
+  })
+  const { data: fbStats } = useQuery({
+    queryKey: ['feedback-stats'],
+    queryFn: getFeedbackStats,
+  })
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-28 rounded-2xl" />
+        ))}
+      </div>
+    )
+  }
+  if (!report) return null
+
+  const approvalRate = fbStats ? Math.round(fbStats.approval_rate * 100) : null
+
+  return (
+    <div className="space-y-4">
+      {/* 概览卡片 */}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+          <p className="text-xs text-gray-400 mb-1">总问答数</p>
+          <p className="text-2xl font-bold text-gray-900">{report.total}</p>
+        </div>
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+          <p className="text-xs text-gray-400 mb-1">今日问答</p>
+          <p className="text-2xl font-bold text-gray-900">{report.today}</p>
+        </div>
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+          <p className="text-xs text-gray-400 mb-1">拒答率</p>
+          <p className="text-2xl font-bold text-gray-900">
+            {(report.refused_rate * 100).toFixed(1)}%
+          </p>
+        </div>
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+          <p className="text-xs text-gray-400 mb-1">好评率</p>
+          <p className="text-2xl font-bold text-gray-900">
+            {approvalRate !== null ? `${approvalRate}%` : '—'}
+          </p>
+        </div>
+      </div>
+
+      {/* 每日趋势 */}
+      <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+        <p className="text-sm font-medium text-gray-700 mb-3">过去 {report.days} 天问答量</p>
+        <MiniBarChart data={report.daily} />
+      </div>
+
+      {/* 热门文档 + 活跃用户 */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <p className="text-sm font-medium text-gray-700 mb-3">热门文档 Top 5</p>
+          {report.top_docs.length === 0 ? (
+            <p className="text-xs text-gray-400">暂无数据</p>
+          ) : (
+            <ol className="space-y-2">
+              {report.top_docs.map((d, i) => (
+                <li key={d.doc_name} className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500 mr-2 w-4 text-right">{i + 1}.</span>
+                  <span className="flex-1 truncate text-gray-700">{d.doc_name}</span>
+                  <span className="text-xs text-gray-400 ml-2">{d.cite_count} 次</span>
+                </li>
+              ))}
+            </ol>
+          )}
+        </div>
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <p className="text-sm font-medium text-gray-700 mb-3">活跃用户 Top 10</p>
+          {report.top_users.length === 0 ? (
+            <p className="text-xs text-gray-400">暂无数据</p>
+          ) : (
+            <ol className="space-y-2">
+              {report.top_users.map((u, i) => (
+                <li key={u.user_id + i} className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500 mr-2 w-4 text-right">{i + 1}.</span>
+                  <span className="flex-1 text-gray-700 font-mono">{u.user_id}</span>
+                  <span className="text-xs text-gray-400 ml-2">{u.count} 条</span>
+                </li>
+              ))}
+            </ol>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
@@ -133,6 +249,7 @@ export default function AdminPage() {
               <TabsTrigger value="stats" className="rounded-lg text-sm">统计概览</TabsTrigger>
               <TabsTrigger value="tasks" className="rounded-lg text-sm">人工任务</TabsTrigger>
               <TabsTrigger value="audit" className="rounded-lg text-sm">审计记录</TabsTrigger>
+              <TabsTrigger value="reports">使用报表</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Stats */}
@@ -353,6 +470,11 @@ export default function AdminPage() {
                   ))}
                 </div>
               )}
+            </TabsContent>
+
+            {/* Tab 4: Reports */}
+            <TabsContent value="reports" className="animate-fade-in">
+              <ReportsTab />
             </TabsContent>
 
             {/* Tab 3: Audit */}
