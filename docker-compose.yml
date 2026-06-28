@@ -12,7 +12,7 @@ x-runtime-security: &runtime-security
 
 x-runtime-volumes: &runtime-volumes
   - ./storage:/app/storage:rw
-  - ./chroma_db:/app/chroma_db:rw
+  - ./faiss_kb:/home/appuser/faiss_kb:rw
   - ./logs:/app/logs:rw
 
 services:

@@ -24,9 +24,9 @@ COPY --chown=root:root config /app/config
 
 # Source remains root-owned and read-only to the runtime identity. Only these
 # three persistence mount points are writable by appuser.
-RUN mkdir -p /app/storage /app/chroma_db /app/logs \
-    && chown appuser:appuser /app/storage /app/chroma_db /app/logs \
-    && chmod 0750 /app/storage /app/chroma_db /app/logs \
+RUN mkdir -p /app/storage /app/logs /home/appuser/faiss_kb \
+    && chown appuser:appuser /app/storage /app/logs /home/appuser/faiss_kb \
+    && chmod 0750 /app/storage /app/logs /home/appuser/faiss_kb \
     && chmod -R a-w /app/app /app/config /app/requirements.lock
 
 USER 10001:10001
