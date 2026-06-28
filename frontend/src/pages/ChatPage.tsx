@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useBlocker } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Send, Square, Plus, ChevronDown, ChevronUp, FileText, AlertTriangle, UserCheck, Bot, RefreshCw, Menu, X, MessageSquare, Copy, Check, ChevronsDown } from 'lucide-react'
+import { Send, Square, Plus, ChevronDown, ChevronUp, FileText, AlertTriangle, UserCheck, Bot, RefreshCw, Menu, X, MessageSquare, Copy, Check, ChevronsDown, Search } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { NavBar } from '@/components/NavBar'
 import { SimpleMarkdown } from '@/components/SimpleMarkdown'
 import { stripCitationBlock } from '@/lib/answer'
-import { askQuestionStream, getHistory, submitFeedback } from '@/api/qa'
+import { askQuestionStream, getHistory, submitFeedback, searchSessions } from '@/api/qa'
 import type { AskResponse, SourceItem } from '@/types/api'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -318,6 +318,10 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [showScrollBtn, setShowScrollBtn] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<{ record_id: number; session_id: string; question: string; created_at: string }[]>([])
+  const [searchLoading, setSearchLoading] = useState(false)
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -329,6 +333,24 @@ export default function ChatPage() {
 
   useEffect(() => { messagesRef.current = messages }, [messages])
   useEffect(() => { sessionIdRef.current = currentSessionId }, [currentSessionId])
+
+  useEffect(() => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current)
+    const q = searchQuery.trim()
+    if (!q) { setSearchResults([]); setSearchLoading(false); return }
+    setSearchLoading(true)
+    searchTimerRef.current = setTimeout(async () => {
+      try {
+        const results = await searchSessions(q)
+        setSearchResults(results)
+      } catch {
+        setSearchResults([])
+      } finally {
+        setSearchLoading(false)
+      }
+    }, 350)
+    return () => { if (searchTimerRef.current) clearTimeout(searchTimerRef.current) }
+  }, [searchQuery])
 
   function handleMessagesScroll() {
     const el = messagesContainerRef.current
@@ -498,7 +520,7 @@ export default function ChatPage() {
 
   const SessionList = () => (
     <>
-      <div className="p-3">
+      <div className="p-3 space-y-2">
         <button
           onClick={() => { handleNewSession(); setDrawerOpen(false) }}
           className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-medium text-white transition-all hover:opacity-90 active:scale-[0.98]"
@@ -506,34 +528,79 @@ export default function ChatPage() {
         >
           <Plus className="w-4 h-4" /> 新对话
         </button>
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+          <input
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="搜索历史问题…"
+            className="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-300 placeholder-gray-400"
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500">
+              <X className="w-3 h-3" />
+            </button>
+          )}
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto px-2 pb-2 scrollbar-thin">
-        {sessions.length === 0 && (
-          <p className="text-xs text-gray-400 text-center py-8">暂无会话记录</p>
+        {searchQuery.trim() ? (
+          searchLoading ? (
+            <p className="text-xs text-gray-400 text-center py-6">搜索中…</p>
+          ) : searchResults.length === 0 ? (
+            <p className="text-xs text-gray-400 text-center py-6">未找到相关记录</p>
+          ) : (
+            searchResults.map(r => (
+              <button
+                key={r.record_id}
+                onClick={() => { handleSelectSession(r.session_id); setSearchQuery(''); setDrawerOpen(false) }}
+                className={`w-full text-left px-3 py-2.5 rounded-xl mb-1 transition-all ${
+                  r.session_id === currentSessionId
+                    ? 'bg-white shadow-sm border-l-[3px]'
+                    : 'hover:bg-white/70 border-l-[3px] border-transparent'
+                }`}
+                style={r.session_id === currentSessionId ? { borderLeftColor: '#3B4FCC' } : undefined}
+              >
+                <div className="flex items-start gap-2">
+                  <Search className="w-3.5 h-3.5 mt-0.5 shrink-0 text-gray-400" />
+                  <div className="min-w-0">
+                    <p className="text-sm text-gray-700 font-medium truncate leading-snug">{r.question}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{dayjs(r.created_at).fromNow()}</p>
+                  </div>
+                </div>
+              </button>
+            ))
+          )
+        ) : (
+          <>
+            {sessions.length === 0 && (
+              <p className="text-xs text-gray-400 text-center py-8">暂无会话记录</p>
+            )}
+            {sessions.map(s => (
+              <button
+                key={s.id}
+                onClick={() => handleSelectSession(s.id)}
+                className={`w-full text-left px-3 py-2.5 rounded-xl mb-1 transition-all ${
+                  s.id === currentSessionId
+                    ? 'bg-white shadow-sm border-l-[3px]'
+                    : 'hover:bg-white/70 border-l-[3px] border-transparent'
+                }`}
+                style={s.id === currentSessionId ? { borderLeftColor: '#3B4FCC' } : undefined}
+              >
+                <div className="flex items-start gap-2">
+                  <MessageSquare className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${s.id === currentSessionId ? 'text-[#3B4FCC]' : 'text-gray-400'}`} />
+                  <div className="min-w-0">
+                    <p className="text-sm text-gray-700 font-medium truncate leading-snug">{s.firstQuestion || '新对话'}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{dayjs(s.createdAt).fromNow()}</p>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </>
         )}
-        {sessions.map(s => (
-          <button
-            key={s.id}
-            onClick={() => handleSelectSession(s.id)}
-            className={`w-full text-left px-3 py-2.5 rounded-xl mb-1 transition-all ${
-              s.id === currentSessionId
-                ? 'bg-white shadow-sm border-l-[3px]'
-                : 'hover:bg-white/70 border-l-[3px] border-transparent'
-            }`}
-            style={s.id === currentSessionId ? { borderLeftColor: '#3B4FCC' } : undefined}
-          >
-            <div className="flex items-start gap-2">
-              <MessageSquare className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${s.id === currentSessionId ? 'text-[#3B4FCC]' : 'text-gray-400'}`} />
-              <div className="min-w-0">
-                <p className="text-sm text-gray-700 font-medium truncate leading-snug">{s.firstQuestion || '新对话'}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{dayjs(s.createdAt).fromNow()}</p>
-              </div>
-            </div>
-          </button>
-        ))}
       </div>
       <div className="px-4 py-2.5 border-t border-gray-200/60">
-        <p className="text-xs text-gray-400">{sessions.length} 个会话</p>
+        <p className="text-xs text-gray-400">{searchQuery.trim() ? `${searchResults.length} 条结果` : `${sessions.length} 个会话`}</p>
       </div>
     </>
   )
