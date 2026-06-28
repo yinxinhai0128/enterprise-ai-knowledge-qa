@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/stores/auth'
 import { toast } from '@/hooks/use-toast'
+import { apiClient } from '@/api/client'
 
 const FEATURES = [
   { icon: Bot, title: '智能问答', desc: '基于企业文档，拒绝幻觉，来源可溯' },
@@ -30,25 +31,19 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username.trim(), password }),
+      const res = await apiClient.post<{ access_token: string }>('/auth/login', {
+        username: username.trim(),
+        password,
       })
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        setError(data.detail ?? '用户名或密码错误')
-        return
-      }
-      const { access_token } = await res.json()
-      const ok = auth.login(access_token)
+      const ok = auth.login(res.data.access_token)
       if (!ok) {
         setError('登录失败，令牌无效')
       } else {
         navigate('/chat', { replace: true })
       }
-    } catch {
-      setError('网络错误，请稍后重试')
+    } catch (err: unknown) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      setError(typeof detail === 'string' ? detail : '用户名或密码错误')
     } finally {
       setLoading(false)
     }
