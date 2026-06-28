@@ -100,7 +100,7 @@ function UploadZone({ onFiles }: { onFiles: (files: File[]) => void }) {
         拖拽文件到此处，或{' '}
         <span className="underline" style={{ color: '#3B4FCC' }}>点击选择文件</span>
       </p>
-      <p className="text-xs text-gray-400 mt-2">支持 PDF · DOCX · XLSX · TXT，单文件最大 {MAX_SIZE_MB} MB</p>
+      <p className="text-xs text-gray-400 mt-2">支持 PDF · DOCX · XLSX · TXT · MD，单文件最大 {MAX_SIZE_MB} MB</p>
     </div>
   )
 }
@@ -214,7 +214,7 @@ export default function DocumentsPage() {
                 <FolderOpen className="w-8 h-8" style={{ color: '#3B4FCC' }} />
               </div>
               <h3 className="text-base font-semibold text-gray-700 mb-2">知识库暂无文档</h3>
-              <p className="text-sm text-gray-400 mb-6">上传您的第一份文档，开启智能问答之旅</p>
+              <p className="text-sm text-gray-400 mb-6">支持 PDF · DOCX · XLSX · TXT · MD，上传后自动索引</p>
               <Button
                 onClick={() => setUploadOpen(true)}
                 className="text-white"
@@ -331,7 +331,7 @@ export default function DocumentsPage() {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>上传文档</DialogTitle>
-            <DialogDescription>将文件添加到知识库，支持 PDF、DOCX、XLSX、TXT</DialogDescription>
+            <DialogDescription>将文件添加到知识库，支持 PDF、DOCX、XLSX、TXT、MD</DialogDescription>
           </DialogHeader>
           {uploading ? (
             <div className="py-8 space-y-4">

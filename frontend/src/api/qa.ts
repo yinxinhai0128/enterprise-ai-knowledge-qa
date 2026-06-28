@@ -36,7 +36,6 @@ export function parseFrame(raw: string): { event: string; data: string } | null 
   return { event, data: dataLines.join('\n') }
 }
 
-/** 真流式提问：POST /qa/stream，逐帧解析 SSE 并回调。 */
 export async function submitFeedback(
   recordId: number,
   rating: 'up' | 'down',
@@ -60,6 +59,7 @@ export async function searchSessions(q: string): Promise<SessionSearchResult[]> 
   return res.data
 }
 
+/** 真流式提问：POST /qa/stream，逐帧解析 SSE 并回调。 */
 export async function askQuestionStream(
   question: string,
   sessionId: string,

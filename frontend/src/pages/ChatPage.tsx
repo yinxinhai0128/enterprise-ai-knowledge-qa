@@ -684,7 +684,7 @@ export default function ChatPage() {
         </div>
 
         {/* Input area */}
-        <div className="bg-white border-t border-gray-100 px-4 md:px-8 py-4 pb-5 md:pb-5 pb-20">
+        <div className="bg-white border-t border-gray-100 px-4 md:px-8 py-4 pb-20 md:pb-5">
           <div className="max-w-3xl mx-auto">
             <div className={`relative rounded-2xl border shadow-sm transition-all ${
               isLoading

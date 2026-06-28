@@ -32,7 +32,9 @@ apiClient.interceptors.response.use(
     if (status === 401) {
       // 同时重置 Zustand 状态（clearToken 只清 localStorage，不会触发 UI 更新）
       useAuthStore.getState().logout()
-      navigateTo('/login')
+      if (window.location.pathname !== '/login') {
+        navigateTo('/login')
+      }
       return Promise.reject(error)
     }
 

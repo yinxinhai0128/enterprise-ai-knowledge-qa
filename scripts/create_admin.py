@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import re
 import sys
 from pathlib import Path
 
@@ -21,6 +22,10 @@ async def main() -> int:
     parser.add_argument("--password", required=True)
     parser.add_argument("--tenant", default="default")
     args = parser.parse_args()
+
+    if not re.fullmatch(r"[A-Za-z0-9._@-]+", args.username):
+        print("用户名只能包含字母、数字及 . _ @ -", file=sys.stderr)
+        return 1
 
     if len(args.password) < 8:
         print("密码至少 8 位", file=sys.stderr)
