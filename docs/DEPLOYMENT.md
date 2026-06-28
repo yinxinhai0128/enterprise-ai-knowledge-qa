@@ -96,7 +96,7 @@ Compose 同时运行 API 和 Worker，挂载 `storage/`、`chroma_db/`、`logs/`
 | POST | `/qa/feedback` | `user` |
 | GET | `/qa/sessions/search` | `user` |
 | POST | `/auth/login`, `/auth/register`, `/auth/change-password` | 见各端点说明 |
-| GET | `/admin/stats`, `/admin/refused`, `/admin/human`, `/admin/human-tasks`, `/admin/audits/pending`, `/admin/consistency`, `/admin/feedback-stats` | `admin` |
+| GET | `/admin/stats`, `/admin/refused`, `/admin/human`, `/admin/human-tasks`, `/admin/audits/pending`, `/admin/consistency`, `/admin/feedback-stats`, `/admin/records` | `admin` |
 | POST | `/admin/human-tasks/{task_id}/claim`, `/admin/human-tasks/{task_id}/complete` | `admin` |
 | GET | `/admin/human-tasks/{task_id}/events`, `/admin/reports/usage` | `admin` |
 
