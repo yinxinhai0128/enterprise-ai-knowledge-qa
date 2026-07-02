@@ -1,6 +1,7 @@
-"""管理接口：文档与问答统计、拒答列表、人工介入列表。"""
+"""管理接口：文档与问答统计、拒答列表、人工介入列表、用户管理。"""
 from __future__ import annotations
 
+import bcrypt as _bcrypt
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 
@@ -14,6 +15,7 @@ from app.core.limits import LimitedAdminAuth
 from app.models.chat_record import ChatRecord
 from app.models.document import Document
 from app.models.human_task import HUMAN_TASK_STATUS, HumanTask, HumanTaskEvent
+from app.models.user import User
 from app.services.consistency import ConsistencyReport, inspect_consistency
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -110,6 +112,25 @@ class NegativeFeedback(BaseModel):
     question: str
     comment: str | None
     created_at: datetime
+
+class UserOut(BaseModel):
+    """用户列表条目。"""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    username: str
+    tenant_id: str
+    roles: list[str]
+    is_active: bool
+    created_at: datetime
+
+
+class CreateUserRequest(BaseModel):
+    username: str = Field(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9._@-]+$")
+    password: str = Field(min_length=8, max_length=256)
+    roles: list[str] = Field(default_factory=lambda: ["user"])
+
 
 class FeedbackStats(BaseModel):
     total_rated: int
@@ -565,3 +586,63 @@ async def get_usage_report(
         top_users=top_users,
         top_docs=top_docs,
     )
+
+
+# ---------- 用户管理 ----------
+
+@router.get("/users", response_model=list[UserOut], summary="用户列表")
+async def list_users(
+    auth: LimitedAdminAuth,
+    db: AsyncSession = Depends(get_session),
+) -> list[User]:
+    result = await db.execute(
+        select(User)
+        .where(User.tenant_id == auth.tenant_id)
+        .order_by(User.created_at.desc())
+    )
+    return list(result.scalars().all())
+
+
+@router.post("/users", response_model=UserOut, status_code=201, summary="创建用户")
+async def create_user(
+    req: CreateUserRequest,
+    auth: LimitedAdminAuth,
+    db: AsyncSession = Depends(get_session),
+) -> User:
+    existing = (
+        await db.execute(select(User).where(User.username == req.username))
+    ).scalar_one_or_none()
+    if existing is not None:
+        raise HTTPException(status_code=409, detail="用户名已存在")
+    user = User(
+        username=req.username,
+        hashed_password=_bcrypt.hashpw(req.password.encode(), _bcrypt.gensalt()).decode(),
+        tenant_id=auth.tenant_id,
+        roles=req.roles,
+        is_active=True,
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user
+
+
+@router.patch("/users/{username}/active", response_model=UserOut, summary="启用/禁用用户")
+async def toggle_user_active(
+    username: str,
+    auth: LimitedAdminAuth,
+    db: AsyncSession = Depends(get_session),
+) -> User:
+    user = (
+        await db.execute(
+            select(User).where(User.username == username, User.tenant_id == auth.tenant_id)
+        )
+    ).scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="用户不存在")
+    if user.username == auth.user_id:
+        raise HTTPException(status_code=400, detail="不能禁用自己的账号")
+    user.is_active = not user.is_active
+    await db.commit()
+    await db.refresh(user)
+    return user

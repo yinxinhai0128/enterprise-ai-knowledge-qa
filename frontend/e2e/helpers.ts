@@ -131,7 +131,40 @@ export async function mockApi(page: Page): Promise<void> {
     })
   })
 
-  // 管理统计
+  // 用户列表
+  await page.route(`${API_BASE}/admin/users`, (route) => {
+    if (route.request().method() === 'GET') {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([
+          {
+            id: 1,
+            username: 'e2e-test-user',
+            tenant_id: 'e2e-tenant',
+            roles: ['user', 'admin'],
+            is_active: true,
+            created_at: new Date().toISOString(),
+          },
+        ]),
+      })
+    } else {
+      route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: 2,
+          username: 'new-user',
+          tenant_id: 'e2e-tenant',
+          roles: ['user'],
+          is_active: true,
+          created_at: new Date().toISOString(),
+        }),
+      })
+    }
+  })
+
+  // 管理统计（其余 admin 路由兜底）
   await page.route(`${API_BASE}/admin/**`, (route) => {
     route.fulfill({
       status: 200,

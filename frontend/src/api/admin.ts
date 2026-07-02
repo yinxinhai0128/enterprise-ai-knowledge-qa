@@ -66,3 +66,33 @@ export async function getUsageReport(days = 7): Promise<UsageReport> {
   const { data } = await apiClient.get<UsageReport>('/admin/reports/usage', { params: { days } })
   return data
 }
+
+export interface UserOut {
+  id: number
+  username: string
+  tenant_id: string
+  roles: string[]
+  is_active: boolean
+  created_at: string
+}
+
+export interface CreateUserPayload {
+  username: string
+  password: string
+  roles: string[]
+}
+
+export async function getUsers(): Promise<UserOut[]> {
+  const { data } = await apiClient.get<UserOut[]>('/admin/users')
+  return data
+}
+
+export async function createUser(payload: CreateUserPayload): Promise<UserOut> {
+  const { data } = await apiClient.post<UserOut>('/admin/users', payload)
+  return data
+}
+
+export async function toggleUserActive(username: string): Promise<UserOut> {
+  const { data } = await apiClient.patch<UserOut>(`/admin/users/${username}/active`)
+  return data
+}
