@@ -64,13 +64,13 @@
 
 配套 **React 18 + TypeScript + Tailwind CSS + shadcn/ui** 单页应用，已对接全部后端接口，支持移动端响应式布局。
 
-| 登录（Bearer JWT） | 智能问答（来源可溯 + 打字机动效） |
+| 登录（账号密码） | 智能问答（真 SSE 流式 + 来源可溯） |
 |:---:|:---:|
 | ![登录页](docs/screenshots/01-login.png) | ![聊天页](docs/screenshots/02-chat.png) |
-| **知识库文档（拖拽上传 + 状态轮询）** | **管理员面板（统计 / 人工任务 / 审计）** |
+| **知识库文档（拖拽上传 + 状态轮询）** | **管理员面板（统计 / 人工任务 / 审计 / 用户管理）** |
 | ![文档页](docs/screenshots/03-documents.png) | ![管理页](docs/screenshots/04-admin.png) |
 
-> 技术要点：Agentic RAG 无流式接口，打字机为前端 `setInterval` 模拟；来源引用、拒答、转人工状态均由服务端真实 artifact 驱动，前端不臆造。
+> 技术要点：问答走 `/qa/stream` 真 SSE 流式逐字推送，`/qa/ask` 为完整 JSON 兜底（保留 fail-closed 审计语义）；来源引用、拒答、转人工状态均由服务端真实 artifact 驱动，前端不臆造。
 
 ## 快速开始
 
@@ -99,13 +99,18 @@ Copy-Item .env.example .env     # 仅首次执行，避免覆盖已有密钥
 # 该脚本会真实调用 LLM/Embedding 并可能产生费用，不属于自动化启动前提
 
 # 5. 分别启动 API 与摄入 Worker（两个终端，均先激活 .venv）
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --port 8765
 python -m app.worker
-#   打开 http://127.0.0.1:8000/docs 交互式 API 文档
+#   打开 http://127.0.0.1:8765/docs 查看交互式 API 文档
 
-# 6. development 环境获取 15 分钟本地 Token（生产必须从企业 IdP 获取）
-$env:TOKEN = python scripts\create_dev_token.py --roles user --ttl-seconds 900
-Invoke-RestMethod http://127.0.0.1:8000/health/ready
+# 6. 首次运行：创建管理员账号（用于前端登录）
+python scripts\create_admin.py --username admin --password YourPassword
+#   密码至少 8 位；之后可在 http://localhost:5173 用此账号密码登录
+
+# 7. 验证服务就绪
+Invoke-RestMethod http://127.0.0.1:8765/health/ready
+#   如需直接调用 API，可用 create_dev_token.py 生成测试 Token：
+#   $env:TOKEN = python scripts\create_dev_token.py --roles user,admin --ttl-seconds 900
 ```
 
 macOS/Linux 请用 `python3.12 -m venv .venv`、`source .venv/bin/activate`，并将 `Copy-Item` 换成 `cp`。
@@ -139,12 +144,9 @@ python scripts\import_demo_data.py --token $env:TOKEN --base-url http://127.0.0.
 cd frontend
 npm install
 npm run dev          # 默认 http://localhost:5173
-
-# 生成带 admin 角色的 Token 用于登录（user,admin）
-python scripts\create_dev_token.py --roles user,admin --ttl-seconds 3600
 ```
 
-打开 `http://localhost:5173`，粘贴上面生成的 Token 登录即可。前端默认请求 `http://127.0.0.1:8765`（见 `frontend/.env.development`，需与后端端口一致）。Windows 用户也可直接运行根目录 `start.ps1` 一键拉起后端 + Worker + 前端三个窗口。
+打开 `http://localhost:5173`，用步骤 6 创建的管理员账号密码登录。前端请求 `http://127.0.0.1:8765`（见 `frontend/.env.development`，需与后端端口一致）。Windows 用户也可直接运行根目录 `start.ps1` 一键拉起后端 + Worker + 前端三个窗口。
 
 容器化部署：`docker compose up -d --build`（已挂载 `storage` / `chroma_db` / `logs` 卷）。镜像以 UID/GID 10001 非 root 身份和只读根文件系统运行，源码由 root 拥有且不可修改。
 
