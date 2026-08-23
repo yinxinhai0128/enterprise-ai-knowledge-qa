@@ -1,6 +1,8 @@
 """eval_metrics 纯函数单测：不碰网络、不碰数据库。"""
 from __future__ import annotations
 
+from pathlib import Path
+
 from app.core.eval_metrics import aggregate, hit_at_k, keyword_coverage, reciprocal_rank
 
 
@@ -72,3 +74,28 @@ def test_aggregate_empty() -> None:
     assert out["total"] == 0
     assert out["pass_rate"] == 0.0
     assert out["by_level"] == {}
+
+
+def test_validate_golden_rejects_bad_rows(tmp_path) -> None:
+    import json as _json
+    import sys as _sys
+
+    _sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "evals"))
+    from validate_golden import validate
+
+    good = {
+        "id": "RT-L1-001", "category": "RT", "level": "L1",
+        "question": "q", "expected_doc": "07-退换货与退款政策",
+        "expected_keywords": ["30 天"], "should_refuse": False,
+    }
+    bad_oos = dict(good, id="OOS-001", category="OOS", level="OOS",
+                   should_refuse=True, expected_doc="07-x", expected_keywords=["k"])
+    dup = dict(good)
+    file = tmp_path / "g.jsonl"
+    file.write_text(
+        "\n".join(_json.dumps(r, ensure_ascii=False) for r in (good, bad_oos, dup)),
+        encoding="utf-8",
+    )
+    errors = validate(file)
+    assert any("OOS" in e for e in errors)
+    assert any("重复" in e for e in errors)
