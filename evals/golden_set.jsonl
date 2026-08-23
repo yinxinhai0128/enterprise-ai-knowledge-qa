@@ -1,0 +1,121 @@
+{"id": "RT-L1-001", "category": "RT", "level": "L1", "question": "退货期限是多少天？", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["30"], "should_refuse": false}
+{"id": "RT-L1-002", "category": "RT", "level": "L1", "question": "质量保证期多长？", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["180"], "should_refuse": false}
+{"id": "RT-L1-003", "category": "RT", "level": "L1", "question": "质量问题退货的运费谁承担？", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["云棉", "免费", "我司"], "should_refuse": false}
+{"id": "RT-L1-004", "category": "RT", "level": "L1", "question": "退款多久能到账？", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["3–5", "3-5", "工作日"], "should_refuse": false}
+{"id": "RT-L1-005", "category": "RT", "level": "L1", "question": "亚马逊买的怎么退货？", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["平台", "Buyer-Seller", "亚马逊"], "should_refuse": false}
+{"id": "RT-L1-006", "category": "RT", "level": "L1", "question": "换货流程是什么？", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["验收", "标签", "寄回"], "should_refuse": false}
+{"id": "RT-L1-007", "category": "RT", "level": "L1", "question": "哪些情况不属于质量问题？", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["缩水", "浮色", "色差"], "should_refuse": false}
+{"id": "RT-L1-008", "category": "RT", "level": "L1", "question": "尺寸买错了可以换吗？", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["换货", "运费"], "should_refuse": false}
+{"id": "RT-L2-001", "category": "RT", "level": "L2", "question": "被子用了一个月想退，还能退吗？", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["30", "已使用", "未洗涤"], "should_refuse": false}
+{"id": "RT-L2-002", "category": "RT", "level": "L2", "question": "床单洗完缩水了算质量问题吗？", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["3–5%", "3-5%", "首次缩水", "正常"], "should_refuse": false}
+{"id": "RT-L2-003", "category": "RT", "level": "L2", "question": "钱什么时候能退回来啊，急用", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["3–5", "3-5", "工作日"], "should_refuse": false}
+{"id": "RT-L2-004", "category": "RT", "level": "L2", "question": "东西还没发货我不想买了怎么取消", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["1 小时", "1小时", "取消"], "should_refuse": false}
+{"id": "RT-L2-005", "category": "RT", "level": "L2", "question": "收到的枕套颜色跟图片不一样怎么办", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["5%", "10%", "色差", "屏幕"], "should_refuse": false}
+{"id": "RT-L2-006", "category": "RT", "level": "L2", "question": "被套拉链坏了你们管不管", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["拉链损坏", "质量", "180"], "should_refuse": false}
+{"id": "RT-L2-007", "category": "RT", "level": "L2", "question": "我想换个颜色可以吗", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["颜色", "差价", "换货"], "should_refuse": false}
+{"id": "RT-L2-008", "category": "RT", "level": "L2", "question": "买的四件套有一片污渍像是用过的，能要求赔偿吗", "expected_doc": "12-投诉处理与赔偿标准", "expected_keywords": ["收到错误产品", "全额退款", "补发"], "should_refuse": false}
+{"id": "RT-L3-001", "category": "RT", "level": "L3", "question": "我在黑五买的 Final Sale 被芯有质量问题，还能按质保处理吗？", "expected_doc": "09-促销积分与礼品卡", "expected_keywords": ["180", "质保", "Final Sale", "不冲突"], "should_refuse": false}
+{"id": "RT-L3-002", "category": "RT", "level": "L3", "question": "分期付款（Klarna）买的被子想退货，已经还了两期，钱怎么退？", "expected_doc": "08-支付货币与发票", "expected_keywords": ["原路", "分期路径", "服务商"], "should_refuse": false}
+{"id": "RT-L3-003", "category": "RT", "level": "L3", "question": "我用礼品卡付款的商品退货后钱去哪里？可以转给我朋友吗？", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["礼品卡余额", "即时", "转赠"], "should_refuse": false}
+{"id": "RT-L3-004", "category": "RT", "level": "L3", "question": "退货寄回后他们多久确认收到？确认后多久打款？", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["1–2", "1-2", "验收", "3–5", "3-5"], "should_refuse": false}
+{"id": "LG-L1-001", "category": "LG", "level": "L1", "question": "免邮门槛是多少？", "expected_doc": "06-物流配送政策", "expected_keywords": ["$49", "49 美元"], "should_refuse": false}
+{"id": "LG-L1-002", "category": "LG", "level": "L1", "question": "美国东部一般几天到？", "expected_doc": "06-物流配送政策", "expected_keywords": ["2–5", "2-5"], "should_refuse": false}
+{"id": "LG-L1-003", "category": "LG", "level": "L1", "question": "英国仓发英国要几天？", "expected_doc": "06-物流配送政策", "expected_keywords": ["1–3", "1-3"], "should_refuse": false}
+{"id": "LG-L1-004", "category": "LG", "level": "L1", "question": "加急配送多少钱？", "expected_doc": "06-物流配送政策", "expected_keywords": ["$15", "15 美元"], "should_refuse": false}
+{"id": "LG-L1-005", "category": "LG", "level": "L1", "question": "可以寄到 PO Box 吗？", "expected_doc": "06-物流配送政策", "expected_keywords": ["USPS", "PO Box", "支持"], "should_refuse": false}
+{"id": "LG-L1-006", "category": "LG", "level": "L1", "question": "订单发货后多久能查到物流？", "expected_doc": "06-物流配送政策", "expected_keywords": ["24", "追踪"], "should_refuse": false}
+{"id": "LG-L1-007", "category": "LG", "level": "L1", "question": "日本仓发日本要几天？", "expected_doc": "06-物流配送政策", "expected_keywords": ["2–4", "2-4"], "should_refuse": false}
+{"id": "LG-L2-001", "category": "LG", "level": "L2", "question": "我的包裹显示已投递但我没拿到，怎么回事", "expected_doc": "06-物流配送政策", "expected_keywords": ["3 个工作日", "调查", "邻居"], "should_refuse": false}
+{"id": "LG-L2-002", "category": "LG", "level": "L2", "question": "下单好几天了怎么还不发货", "expected_doc": "06-物流配送政策", "expected_keywords": ["1–3", "1-3", "工作日", "旺季"], "should_refuse": false}
+{"id": "LG-L2-003", "category": "LG", "level": "L2", "question": "澳洲这边多久能送到啊", "expected_doc": "06-物流配送政策", "expected_keywords": ["7–14", "7-14"], "should_refuse": false}
+{"id": "LG-L2-004", "category": "LG", "level": "L2", "question": "包裹卡在一个地方好几天不动了正常吗", "expected_doc": "06-物流配送政策", "expected_keywords": ["清关", "国际段", "扫描"], "should_refuse": false}
+{"id": "LG-L2-005", "category": "LG", "level": "L2", "question": "黑五下单会不会比平时慢", "expected_doc": "06-物流配送政策", "expected_keywords": ["1–2", "延长", "旺季"], "should_refuse": false}
+{"id": "LG-L2-006", "category": "LG", "level": "L2", "question": "地址填错了刚下的单还能改吗", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["1 小时", "1小时", "改地址"], "should_refuse": false}
+{"id": "LG-L3-001", "category": "LG", "level": "L3", "question": "德国客户买了 150 欧的东西会被额外收关税或 VAT 吗？", "expected_doc": "08-支付货币与发票", "expected_keywords": ["VAT", "含税", "20%"], "should_refuse": false}
+{"id": "LG-L3-002", "category": "LG", "level": "L3", "question": "从杭州直发的跨境订单和海外仓订单有什么区别？", "expected_doc": "06-物流配送政策", "expected_keywords": ["杭州", "直发", "进口税费", "买家承担"], "should_refuse": false}
+{"id": "PAY-L1-001", "category": "PAY", "level": "L1", "question": "支持哪些支付方式？", "expected_doc": "08-支付货币与发票", "expected_keywords": ["PayPal", "Visa", "Apple Pay"], "should_refuse": false}
+{"id": "PAY-L1-002", "category": "PAY", "level": "L1", "question": "可以用 Klarna 分期吗？", "expected_doc": "08-支付货币与发票", "expected_keywords": ["Klarna", "Afterpay", "4 期"], "should_refuse": false}
+{"id": "PAY-L1-003", "category": "PAY", "level": "L1", "question": "网站显示的价格是美元还是本地货币？", "expected_doc": "08-支付货币与发票", "expected_keywords": ["美元", "结算", "展示", "汇率"], "should_refuse": false}
+{"id": "PAY-L1-004", "category": "PAY", "level": "L1", "question": "可以开发票吗？", "expected_doc": "08-支付货币与发票", "expected_keywords": ["VAT", "发票", "企业"], "should_refuse": false}
+{"id": "PAY-L1-005", "category": "PAY", "level": "L1", "question": "日本站的价格含消费税吗？", "expected_doc": "08-支付货币与发票", "expected_keywords": ["10%", "消费税"], "should_refuse": false}
+{"id": "PAY-L2-001", "category": "PAY", "level": "L2", "question": "刷卡的时候被拒绝了怎么办", "expected_doc": "08-支付货币与发票", "expected_keywords": ["发卡行", "风控", "换"], "should_refuse": false}
+{"id": "PAY-L2-002", "category": "PAY", "level": "L2", "question": "为什么账单金额和我下单时看到的不一样", "expected_doc": "08-支付货币与发票", "expected_keywords": ["汇率", "银行", "外币费"], "should_refuse": false}
+{"id": "PAY-L2-003", "category": "PAY", "level": "L2", "question": "被重复扣款了怎么处理", "expected_doc": "08-支付货币与发票", "expected_keywords": ["截图", "核实", "原路退回"], "should_refuse": false}
+{"id": "PAY-L2-004", "category": "PAY", "level": "L2", "question": "分期逾期了会有什么后果", "expected_doc": "08-支付货币与发票", "expected_keywords": ["服务商", "Klarna", "信用"], "should_refuse": false}
+{"id": "PROMO-L1-001", "category": "PROMO", "level": "L1", "question": "CloudCoins 是什么？", "expected_doc": "09-促销积分与礼品卡", "expected_keywords": ["积分", "$1", "100"], "should_refuse": false}
+{"id": "PROMO-L1-002", "category": "PROMO", "level": "L1", "question": "新用户有优惠吗？", "expected_doc": "09-促销积分与礼品卡", "expected_keywords": ["10%", "首单", "订阅"], "should_refuse": false}
+{"id": "PROMO-L1-003", "category": "PROMO", "level": "L1", "question": "礼品卡有效期多久？", "expected_doc": "09-促销积分与礼品卡", "expected_keywords": ["3 年", "三年"], "should_refuse": false}
+{"id": "PROMO-L1-004", "category": "PROMO", "level": "L1", "question": "积分会过期吗？", "expected_doc": "09-促销积分与礼品卡", "expected_keywords": ["12 个月", "12个月", "滚动"], "should_refuse": false}
+{"id": "PROMO-L2-001", "category": "PROMO", "level": "L2", "question": "两个折扣码能一起用吗", "expected_doc": "09-促销积分与礼品卡", "expected_keywords": ["叠加", "不能", "一次"], "should_refuse": false}
+{"id": "PROMO-L2-002", "category": "PROMO", "level": "L2", "question": "推荐朋友买东西我能得到什么", "expected_doc": "09-促销积分与礼品卡", "expected_keywords": ["推荐", "$10", "奖励"], "should_refuse": false}
+{"id": "PROMO-L2-003", "category": "PROMO", "level": "L2", "question": "昨天买的今天降价了能补差价吗", "expected_doc": "08-支付货币与发票", "expected_keywords": ["价格保护", "7 天", "差价"], "should_refuse": false}
+{"id": "PROD-L1-001", "category": "PROD", "level": "L1", "question": "你们有哪些产品系列？", "expected_doc": "02-产品目录与SKU规则", "expected_keywords": ["Cloud Luxe", "竹风", "酒店系列"], "should_refuse": false}
+{"id": "PROD-L1-002", "category": "PROD", "level": "L1", "question": "旗舰系列是多少支的？", "expected_doc": "02-产品目录与SKU规则", "expected_keywords": ["600TC", "600 TC"], "should_refuse": false}
+{"id": "PROD-L1-003", "category": "PROD", "level": "L1", "question": "Queen 尺寸的被套是多大的？", "expected_doc": "03-尺寸规格对照", "expected_keywords": ["90×90", "90x90"], "should_refuse": false}
+{"id": "PROD-L1-004", "category": "PROD", "level": "L1", "question": "学生宿舍用什么尺寸？", "expected_doc": "03-尺寸规格对照", "expected_keywords": ["Twin XL", "TwinXL"], "should_refuse": false}
+{"id": "PROD-L1-005", "category": "PROD", "level": "L1", "question": "白鹅绒被的蓬松度是多少？", "expected_doc": "04-材质详解与性能对比", "expected_keywords": ["600–800", "600-800", "FP"], "should_refuse": false}
+{"id": "PROD-L1-006", "category": "PROD", "level": "L1", "question": "浴巾的克重是多少？", "expected_doc": "04-材质详解与性能对比", "expected_keywords": ["700GSM", "700 GSM"], "should_refuse": false}
+{"id": "PROD-L1-007", "category": "PROD", "level": "L1", "question": "有机棉是什么认证？", "expected_doc": "04-材质详解与性能对比", "expected_keywords": ["GOTS", "CU12345678"], "should_refuse": false}
+{"id": "PROD-L1-008", "category": "PROD", "level": "L1", "question": "记忆棉枕头能水洗吗？", "expected_doc": "05-洗涤护理指南", "expected_keywords": ["不可水洗", "点洗", "外壳"], "should_refuse": false}
+{"id": "PROD-L2-001", "category": "PROD", "level": "L2", "question": "夏天睡觉出汗多买哪个系列合适", "expected_doc": "04-材质详解与性能对比", "expected_keywords": ["竹纤维", "天丝", "凉感"], "should_refuse": false}
+{"id": "PROD-L2-002", "category": "PROD", "level": "L2", "question": "宝宝的东西你们有吗？安全吗？", "expected_doc": "02-产品目录与SKU规则", "expected_keywords": ["Kids Cloud", "儿童", "CPSC"], "should_refuse": false}
+{"id": "PROD-L2-003", "category": "PROD", "level": "L2", "question": "床垫特别厚有没有合适的保护垫", "expected_doc": "03-尺寸规格对照", "expected_keywords": ["Deep Pocket", "深兜", "18"], "should_refuse": false}
+{"id": "PROD-L2-004", "category": "PROD", "level": "L2", "question": "酒店同款自己家用划算吗", "expected_doc": "02-产品目录与SKU规则", "expected_keywords": ["Hotel Collection", "250TC", "耐用"], "should_refuse": false}
+{"id": "PROD-L2-005", "category": "PROD", "level": "L2", "question": "羽绒被会不会钻绒啊", "expected_doc": "04-材质详解与性能对比", "expected_keywords": ["Downproof", "防绒", "高密"], "should_refuse": false}
+{"id": "PROD-L3-001", "category": "PROD", "level": "L3", "question": "敏感肌又怕热，选有机棉还是天丝凉感？", "expected_doc": "04-材质详解与性能对比", "expected_keywords": ["有机棉", "天丝", "凉感", "吸湿"], "should_refuse": false}
+{"id": "PROD-L3-002", "category": "PROD", "level": "L3", "question": "德国客户说家里的床是 155×200 的，该配哪档床品？", "expected_doc": "03-尺寸规格对照", "expected_keywords": ["155×220", "欧标", "德标"], "should_refuse": false}
+{"id": "CARE-L1-001", "category": "CARE", "level": "L1", "question": "埃及棉四件套怎么洗？", "expected_doc": "05-洗涤护理指南", "expected_keywords": ["冷水", "40°C", "中性"], "should_refuse": false}
+{"id": "CARE-L1-002", "category": "CARE", "level": "L1", "question": "天丝能用烘干机吗？", "expected_doc": "05-洗涤护理指南", "expected_keywords": ["低温", "阴干", "不建议"], "should_refuse": false}
+{"id": "CARE-L1-003", "category": "CARE", "level": "L1", "question": "羽绒被怎么存放？", "expected_doc": "05-洗涤护理指南", "expected_keywords": ["透气", "真空", "压缩"], "should_refuse": false}
+{"id": "CARE-L1-004", "category": "CARE", "level": "L1", "question": "法兰绒起球了正常吗？", "expected_doc": "04-材质详解与性能对比", "expected_keywords": ["浮毛", "正常", "几次"], "should_refuse": false}
+{"id": "CARE-L1-005", "category": "CARE", "level": "L1", "question": "可以用漂白剂吗？", "expected_doc": "05-洗涤护理指南", "expected_keywords": ["禁止", "含氯", "损伤"], "should_refuse": false}
+{"id": "CARE-L2-001", "category": "CARE", "level": "L2", "question": "血渍弄到床单上了怎么洗掉", "expected_doc": "05-洗涤护理指南", "expected_keywords": ["冷水", "酶", "热水"], "should_refuse": false}
+{"id": "CARE-L2-002", "category": "CARE", "level": "L2", "question": "毛巾用久了发硬怎么恢复", "expected_doc": "05-洗涤护理指南", "expected_keywords": ["白醋", "柔顺剂"], "should_refuse": false}
+{"id": "CARE-L2-003", "category": "CARE", "level": "L2", "question": "被子晒完有股味道是怎么回事", "expected_doc": "05-洗涤护理指南", "expected_keywords": ["通风", "腥味", "晾晒"], "should_refuse": false}
+{"id": "CARE-L2-004", "category": "CARE", "level": "L2", "question": "深色床单第一次洗需要注意什么", "expected_doc": "05-洗涤护理指南", "expected_keywords": ["单独", "翻面", "浮色"], "should_refuse": false}
+{"id": "B2B-L1-001", "category": "B2B", "level": "L1", "question": "批量采购从多少件起有折扣？", "expected_doc": "11-B2B批发与企业采购", "expected_keywords": ["50"], "should_refuse": false}
+{"id": "B2B-L1-002", "category": "B2B", "level": "L1", "question": "批发折扣最高几折？", "expected_doc": "11-B2B批发与企业采购", "expected_keywords": ["7 折", "30%"], "should_refuse": false}
+{"id": "B2B-L1-003", "category": "B2B", "level": "L1", "question": "定制 LOGO 刺绣有什么要求？", "expected_doc": "11-B2B批发与企业采购", "expected_keywords": ["1000", "刺绣"], "should_refuse": false}
+{"id": "B2B-L1-004", "category": "B2B", "level": "L1", "question": "批量采购找哪个邮箱？", "expected_doc": "11-B2B批发与企业采购", "expected_keywords": ["wholesale@cloudcottonhome.com"], "should_refuse": false}
+{"id": "B2B-L2-001", "category": "B2B", "level": "L2", "question": "我们是开民宿的，20 套能拿批发价吗", "expected_doc": "11-B2B批发与企业采购", "expected_keywords": ["50", "MOQ", "未达"], "should_refuse": false}
+{"id": "B2B-L2-002", "category": "B2B", "level": "L2", "question": "样品可以先寄来看看吗", "expected_doc": "11-B2B批发与企业采购", "expected_keywords": ["全价", "抵扣", "首单"], "should_refuse": false}
+{"id": "COMP-L1-001", "category": "COMP", "level": "L1", "question": "你们公司什么时候成立的？", "expected_doc": "01-公司概况与品牌认证", "expected_keywords": ["2019"], "should_refuse": false}
+{"id": "COMP-L1-002", "category": "COMP", "level": "L1", "question": "总部在哪里？", "expected_doc": "01-公司概况与品牌认证", "expected_keywords": ["杭州", "浙江"], "should_refuse": false}
+{"id": "COMP-L1-003", "category": "COMP", "level": "L1", "question": "OEKO-TEX 证书编号是多少？", "expected_doc": "01-公司概况与品牌认证", "expected_keywords": ["21.HIN.12345"], "should_refuse": false}
+{"id": "COMP-L1-004", "category": "COMP", "level": "L1", "question": "客服邮箱是什么？", "expected_doc": "10-客户服务与FAQ", "expected_keywords": ["support@cloudcottonhome.com"], "should_refuse": false}
+{"id": "COMP-L2-001", "category": "COMP", "level": "L2", "question": "你们的包装环保吗？", "expected_doc": "01-公司概况与品牌认证", "expected_keywords": ["FSC", "PLA", "可回收"], "should_refuse": false}
+{"id": "COMP-L2-002", "category": "COMP", "level": "L2", "question": "客服多久会回复邮件？", "expected_doc": "10-客户服务与FAQ", "expected_keywords": ["12 小时", "12小时"], "should_refuse": false}
+{"id": "CS-L2-001", "category": "CS", "level": "L2", "question": "投诉了多久能有结果", "expected_doc": "12-投诉处理与赔偿标准", "expected_keywords": ["48 小时", "48小时", "方案"], "should_refuse": false}
+{"id": "CS-L2-002", "category": "CS", "level": "L2", "question": "包裹丢了你们赔多少", "expected_doc": "12-投诉处理与赔偿标准", "expected_keywords": ["全额重发", "退款"], "should_refuse": false}
+{"id": "CS-L2-003", "category": "CS", "level": "L2", "question": "物流延误有补偿吗", "expected_doc": "12-投诉处理与赔偿标准", "expected_keywords": ["$10", "礼品卡", "10 工作日"], "should_refuse": false}
+{"id": "OOS-001", "category": "OOS", "level": "OOS", "question": "你们卖沙发吗？", "expected_doc": null, "expected_keywords": [], "should_refuse": true}
+{"id": "OOS-002", "category": "OOS", "level": "OOS", "question": "帮我写一首关于棉花的诗", "expected_doc": null, "expected_keywords": [], "should_refuse": true}
+{"id": "OOS-003", "category": "OOS", "level": "OOS", "question": "今天杭州天气怎么样？", "expected_doc": null, "expected_keywords": [], "should_refuse": true}
+{"id": "OOS-004", "category": "OOS", "level": "OOS", "question": "你们竞争对手某某品牌的价格是多少？", "expected_doc": null, "expected_keywords": [], "should_refuse": true}
+{"id": "OOS-005", "category": "OOS", "level": "OOS", "question": "帮我查一下我的银行流水", "expected_doc": null, "expected_keywords": [], "should_refuse": true}
+{"id": "PROMO-L1-005", "category": "PROMO", "level": "L1", "question": "会员等级有哪些档位？", "expected_doc": "09-促销积分与礼品卡", "expected_keywords": ["Silver", "Gold", "等级"], "should_refuse": false}
+{"id": "CS-L1-001", "category": "CS", "level": "L1", "question": "在线聊天的工作时间是什么时候？", "expected_doc": "10-客户服务与FAQ", "expected_keywords": ["24/7", "EST"], "should_refuse": false}
+{"id": "PROD-L1-009", "category": "PROD", "level": "L1", "question": "竹纤维系列的混纺比例是多少？", "expected_doc": "04-材质详解与性能对比", "expected_keywords": ["60%", "40%"], "should_refuse": false}
+{"id": "RT-L2-009", "category": "RT", "level": "L2", "question": "退货标签怎么用？家里没有打印机怎么办", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["二维码", "网点", "打印"], "should_refuse": false}
+{"id": "LG-L2-007", "category": "LG", "level": "L2", "question": "放快递柜被别人拿走了算谁的责任", "expected_doc": "06-物流配送政策", "expected_keywords": ["代收", "视同已投递"], "should_refuse": false}
+{"id": "PAY-L2-005", "category": "PAY", "level": "L2", "question": "订单显示待支付但银行卡已经被扣钱了", "expected_doc": "08-支付货币与发票", "expected_keywords": ["待支付", "截图", "核实"], "should_refuse": false}
+{"id": "PROMO-L2-004", "category": "PROMO", "level": "L2", "question": "下单好几天了积分怎么还没到账", "expected_doc": "09-促销积分与礼品卡", "expected_keywords": ["退货期", "入账", "待结算"], "should_refuse": false}
+{"id": "CARE-L2-005", "category": "CARE", "level": "L2", "question": "波轮洗衣机洗天丝床品要注意什么", "expected_doc": "05-洗涤护理指南", "expected_keywords": ["轻柔", "缠绕"], "should_refuse": false}
+{"id": "RT-L3-005", "category": "RT", "level": "L3", "question": "黑五用了 10% 折扣码买的被子，三天后商品又降价了，能申请补差价吗？", "expected_doc": "08-支付货币与发票", "expected_keywords": ["不叠加", "不追溯"], "should_refuse": false}
+{"id": "RT-L3-006", "category": "RT", "level": "L3", "question": "申请换货但是目标颜色断货了，我有哪几种选择？", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["等补货", "换其他", "转为退款"], "should_refuse": false}
+{"id": "LG-L3-004", "category": "LG", "level": "L3", "question": "我加了 $15 选的 Express，结果比承诺时效晚了一天，加急费能退吗？", "expected_doc": "06-物流配送政策", "expected_keywords": ["承运商原因", "退还", "不可抗力"], "should_refuse": false}
+{"id": "LG-L3-005", "category": "LG", "level": "L3", "question": "跨境直发的包裹在清关被扣了要求补充收件人身份信息，我该怎么配合？", "expected_doc": "06-物流配送政策", "expected_keywords": ["清关", "文件", "承运商"], "should_refuse": false}
+{"id": "PAY-L3-001", "category": "PAY", "level": "L3", "question": "我们是德国公司，批量采购后需要 VAT 发票和对公付款，流程怎么走？", "expected_doc": "08-支付货币与发票", "expected_keywords": ["VAT", "企业", "发票"], "should_refuse": false}
+{"id": "PAY-L3-002", "category": "PAY", "level": "L3", "question": "我已经向银行发起了拒付，但现在又想直接退款，两边可以同时进行吗？", "expected_doc": "08-支付货币与发票", "expected_keywords": ["冲突", "选择其一", "冻结"], "should_refuse": false}
+{"id": "PAY-L3-003", "category": "PAY", "level": "L3", "question": "Klarna 分期买的订单还没发货，我想改成全款重新下单该怎么操作？", "expected_doc": "08-支付货币与发票", "expected_keywords": ["未发货前", "取消", "重新"], "should_refuse": false}
+{"id": "PROMO-L3-001", "category": "PROMO", "level": "L3", "question": "下个月是我生日，你们有什么福利？怎么确保能收到？", "expected_doc": "09-促销积分与礼品卡", "expected_keywords": ["15%", "生日"], "should_refuse": false}
+{"id": "PROMO-L3-002", "category": "PROMO", "level": "L3", "question": "参加旧衣回收计划和选绿色配送分别能拿多少积分？", "expected_doc": "09-促销积分与礼品卡", "expected_keywords": ["100", "20"], "should_refuse": false}
+{"id": "PROD-L3-003", "category": "PROD", "level": "L3", "question": "给刚出生的宝宝布置婴儿床，床品和保护垫怎么选？有什么安全注意事项？", "expected_doc": "03-尺寸规格对照", "expected_keywords": ["Crib", "安全", "软性"], "should_refuse": false}
+{"id": "CARE-L3-001", "category": "CARE", "level": "L3", "question": "白鹅绒被收进衣柜前和明年拿出来用时分别要注意什么？", "expected_doc": "05-洗涤护理指南", "expected_keywords": ["彻底", "烘干", "透气", "压缩"], "should_refuse": false}
+{"id": "CARE-L3-003", "category": "CARE", "level": "L3", "question": "圆珠笔漏墨划到被子上了，还能救回来吗？", "expected_doc": "05-洗涤护理指南", "expected_keywords": ["酒精", "外围"], "should_refuse": false}
+{"id": "B2B-L3-001", "category": "B2B", "level": "L3", "question": "我们酒店 200 间房要做整房床品配置，大概走什么合作模式和交付条款？", "expected_doc": "11-B2B批发与企业采购", "expected_keywords": ["DDP", "整房", "案例"], "should_refuse": false}
+{"id": "COMP-L3-001", "category": "COMP", "level": "L3", "question": "你们工厂在哪个城市？公司有多少员工？", "expected_doc": "01-公司概况与品牌认证", "expected_keywords": ["不便透露", "内部信息"], "should_refuse": false}
+{"id": "CS-L3-001", "category": "CS", "level": "L3", "question": "客户说不在 24 小时内赔他 100 美元就挂 Reddit 差评，客服按 SOP 该怎么做？", "expected_doc": "12-投诉处理与赔偿标准", "expected_keywords": ["升级", "主管", "评价"], "should_refuse": false}
+{"id": "CS-L3-002", "category": "CS", "level": "L3", "question": "同一个问题客户已经第三次来问了还是没解决，按照规范应该怎么处理？", "expected_doc": "12-投诉处理与赔偿标准", "expected_keywords": ["强制升级", "主管"], "should_refuse": false}
+{"id": "LG-L1-008", "category": "LG", "level": "L1", "question": "澳洲仓发澳大利亚要几天？", "expected_doc": "06-物流配送政策", "expected_keywords": ["7–14", "7-14"], "should_refuse": false}
+{"id": "OOS-006", "category": "OOS", "level": "OOS", "question": "帮我订一张明天去东京的机票", "expected_doc": null, "expected_keywords": [], "should_refuse": true}
