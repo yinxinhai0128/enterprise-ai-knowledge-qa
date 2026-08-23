@@ -43,11 +43,11 @@ def _name(source: object) -> str:
     return Path(text.replace("\\", "/")).name
 
 
-def evaluate_one(row: dict, k: int, tenant_id: str) -> dict:
+async def evaluate_one(row: dict, k: int, tenant_id: str) -> dict:
     started = time.perf_counter()
     query = rewrite_query(row["question"])
-    results = asyncio.run(
-        pgvector_similarity_search_with_score(query, k=k, tenant_id=tenant_id)
+    results = await pgvector_similarity_search_with_score(
+        query, k=k, tenant_id=tenant_id
     )
     latency_ms = (time.perf_counter() - started) * 1000
     ranked_names = [_name(doc.metadata.get("source")) for doc, _ in results]
@@ -128,15 +128,29 @@ def main() -> int:
     parser.add_argument("--tenant-id", default="cloudcotton")
     parser.add_argument("--k", type=int, default=5)
     parser.add_argument("--limit", type=int, default=None)
+    parser.add_argument("--offset", type=int, default=0)
     parser.add_argument("--report-dir", default=str(ROOT / "evals" / "reports"))
     args = parser.parse_args()
 
-    golden = load_golden(Path(args.golden), args.limit)
+    all_golden = load_golden(Path(args.golden), None)
+    if args.offset:
+        all_golden = all_golden[args.offset :]
+    if args.limit:
+        all_golden = all_golden[: args.limit]
+    # OOS 拒答是 Agent 层行为（LLM 判断知识库无答案），由 evaluate_qa.py 的
+    # should_refuse 三关考核；检索层只评 hit@k / MRR，故剔除 OOS 题。
+    skipped_oos = [r for r in all_golden if r["level"] == "OOS"]
+    golden = [r for r in all_golden if r["level"] != "OOS"]
+    if skipped_oos:
+        print(f"跳过 {len(skipped_oos)} 道 OOS 题（拒答在 evaluate_qa.py 中考核）")
     print(
         f"评测 {len(golden)} 题（tenant={args.tenant_id}, k={args.k}, "
         f"MAX_DISTANCE={MAX_DISTANCE}）"
     )
-    rows = [evaluate_one(row, args.k, args.tenant_id) for row in golden]
+    async def _run_all() -> list[dict]:
+        return [await evaluate_one(row, args.k, args.tenant_id) for row in golden]
+
+    rows = asyncio.run(_run_all())
     summary = aggregate(
         [{key: r[key] for key in ("id", "category", "level", "passed")} for r in rows]
     )

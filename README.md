@@ -1,11 +1,24 @@
-# 企业级 Agentic RAG 知识库
+# 云棉家居智能售后知识库（CloudCotton Home Support KB）
 
-> 基于 **LangChain 1.3 + LangGraph** 的企业知识问答模板，全栈使用**国产大模型**（阿里云百炼）。
-> Agentic RAG 参考实现：文档摄入、自主检索问答、可信来源、审计与安全边界。
+> 跨境电商家居品牌「云棉家居」的**企业级 Agentic RAG 售后知识库**：12 篇主题语料（物流/退换货/支付/促销/B2B/投诉 SOP 等）、121 题黄金评测集、检索与端到端双层评测体系。
+> 基于 **LangChain 1.3 + LangGraph + pgvector**，全栈使用**国产大模型**（阿里云百炼 Qwen + text-embedding-v3）。
+
+**业务场景**：客服团队日常面对退换货政策、物流时效、尺寸适配、材质护理等高频咨询。本系统把 3500+ 行客服知识库文档摄入为向量索引，由 Agent 自主决定何时检索，回答强制附带可信来源引用；知识库不覆盖的问题（如闲聊、外部竞品）服务端强制拒答——拒答不是提示词约定，而是"无证据不回答"的架构约束。
+
+**评测驱动迭代**（实测数据见 [评测报告](evals/reports/)）：
+
+- 黄金集 **121 题**：L1 直查 49 / L2 口语改写 42 / L3 多跳推理 24 / OOS 拒答 6
+- 检索层 hit@5 与 MRR 由 `scripts/evaluate_retrieval.py` 实测（真实 pgvector + 百炼 embedding）
+- 端到端 QA 由 `scripts/evaluate_qa.py` 三关判定：拒答正确 + 关键词覆盖 + 来源一致
+- 同义词典 `config/query_synonyms.json`（63 组电商口语词条："退钱"→退款、"多久到"→物流时效）把口语化提问映射到书面政策语言
+
+> **工程基座说明**：本项目基于企业级 RAG 参考实现改造，保留其经过验收的工程能力（可恢复摄入、租户隔离、审计、资源安全边界）；业务语料、评测体系与同义词调优为本项目新增。原 HARNESS 阶段验收报告见[阶段 12 验收](docs/audit/stage12-acceptance-2026-06-23.md)。
 
 > **状态说明：生产候选验收已通过。** HARNESS 阶段 0–12 已于 2026-06-23 完成，证据见[阶段 12 验收报告](docs/audit/stage12-acceptance-2026-06-23.md)。这不替代企业 IdP、恶意软件扫描、容量压测、TLS 反向代理和防火墙，未经这些部署控制仍不得直接暴露到局域网或公网。
 
 [![CI](https://github.com/yinxinhai0128/enterprise-ai-knowledge-qa/actions/workflows/ci.yml/badge.svg)](https://github.com/yinxinhai0128/enterprise-ai-knowledge-qa/actions/workflows/ci.yml)
+
+> **当前迁移说明（2026-07-03）：** 工作区已切换到 PostgreSQL + pgvector 作为关系与向量存储，并引入 Redis、Alembic、Prometheus/Grafana 开发基础设施；本地 `.env` 需要先启动 `docker-compose.infra.yml` 中的 Postgres/Redis 后再运行 API、Worker 与一致性巡检。下方仍保留部分历史 Chroma/SQLite 说明，仅作为旧生产候选基线背景，实际以当前代码、`.env.example`、`docker-compose.infra.yml` 和 `docs/DEPLOYMENT.md` 的迁移说明为准。
 
 `LangChain 1.3` · `LangGraph` · `FastAPI` · `Chroma` · `React 18` · `阿里云百炼` · `Python 3.12`
 
@@ -299,6 +312,44 @@ npm run dev          # 默认 http://localhost:5173
 - 模型生成的来源标注会被清除，再由真实 artifact 重建展示引用。
 - 文档片段使用 `UNTRUSTED_DOCUMENT_CONTENT` 边界传给模型；文档中的提示、角色或工具指令一律视为不可信数据。
 - `refused`、`has_source` 与 evidence 均为结构化状态，管理统计直接读取数据库字段。
+
+## 评测体系（评测驱动迭代）
+
+本项目以"可复现的检索质量数字"作为同义词典与语料工程的验收标准，拒绝只凭肉眼感觉判断效果。
+
+### 黄金评测集
+
+`evals/golden_set.jsonl` 共 **121 题**，由 `evals/validate_golden.py` 校验 schema、枚举值、id 唯一性与 OOS 约定：
+
+| 层级 | 数量 | 考察能力 | 示例 |
+|------|------|---------|------|
+| L1 直查 | 49 | 政策原文命中 | "退货期限是多少天？" |
+| L2 口语改写 | 42 | 同义词典 + 口语理解 | "钱什么时候能退回来啊，急用" |
+| L3 多跳推理 | 24 | 跨文档组合（Final Sale × 质保、分期 × 退货） | "Klarna 分期买的被子想退货，已还两期，钱怎么退？" |
+| OOS 拒答 | 6 | 知识库外问题强制拒答 | "帮我订一张明天去东京的机票" |
+
+类别覆盖：RT 退换货 23 / LG 物流 19 / PROD 产品 17 / PAY 支付 13 / CARE 洗护 12 / PROMO 促销 11 / B2B 7 / COMP 公司 7 / CS 客诉 6 / OOS 6。
+
+### 两层评测
+
+1. **检索层** `scripts/evaluate_retrieval.py`：rewrite → 百炼 embedding → pgvector top-k → 距离过滤，输出 hit@5 / MRR / 分层分组 / 未命中清单。OOS 题不进入检索层分母——拒答是 Agent 层行为，在端到端评测中考核。
+2. **端到端层** `scripts/evaluate_qa.py`：全量走真实 `/qa/ask`（消耗 token，手动触发），三关判定：拒答正确（`should_refuse`）+ 关键词覆盖（`expected_keywords`）+ 来源一致（sources 含 `expected_doc`）。支持 `--level/--category` 分片出报告。
+
+### 运行
+
+```bash
+# 校验黄金集
+python evals/validate_golden.py
+
+# 检索层评测（真实 embedding 调用）
+python scripts/evaluate_retrieval.py --tenant-id cloudcotton --k 5
+
+# 端到端 QA 评测（先起后端+worker，签发 dev token）
+python scripts/create_dev_token.py --tenant-id cloudcotton > token.txt
+python scripts/evaluate_qa.py --base-url http://127.0.0.1:8765 --token $(cat token.txt)
+```
+
+报告落盘 `evals/reports/`（Markdown + JSON 双格式），未命中题目即下一轮同义词典迭代抓手。
 
 ## 会话、审计与分类访问策略
 
