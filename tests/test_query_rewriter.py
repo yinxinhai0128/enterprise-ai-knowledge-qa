@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
-from app.core.query_rewriter import RuleBasedRewriter, rewrite_query
+from app.core.query_rewriter import RuleBasedRewriter, model_rewrite_query, rewrite_query
 
 _TEST_SYNONYMS = {
     "绩效": ["KPI", "考核"],
@@ -60,3 +61,49 @@ def test_rewrite_query_function() -> None:
     # 去除句末"吗"，并追加规范词
     assert "吗" not in result
     assert "人力资源" in result or "入职" in result
+
+
+@pytest.mark.asyncio
+async def test_model_rewrite_serializes_structured_content(monkeypatch: pytest.MonkeyPatch) -> None:
+    class FakeLLM:
+        async def ainvoke(self, prompt: str) -> SimpleNamespace:
+            return SimpleNamespace(content=["alpha", {"text": "beta"}])
+
+    monkeypatch.setattr("app.core.llm.init_llm", lambda: FakeLLM())
+
+    result = await model_rewrite_query("question")
+
+    assert result == '["alpha", {"text": "beta"}]'
+
+
+# ---------------- 电商口语同义词（云棉家居场景） ----------------
+
+_ECOMMERCE_SYNONYMS = {
+    "退款": ["退钱", "退还货款"],
+    "退货": ["退回去", "退掉"],
+}
+
+
+@pytest.fixture()
+def ecommerce_rewriter() -> RuleBasedRewriter:
+    r = RuleBasedRewriter(synonyms_path=Path("nonexistent"))
+    r._data = dict(_ECOMMERCE_SYNONYMS)
+    return r
+
+
+def test_expand_colloquial_refund(ecommerce_rewriter: RuleBasedRewriter) -> None:
+    result = ecommerce_rewriter.expand("买错了能退钱吗")
+    assert "退款" in result
+
+
+def test_expand_colloquial_return(ecommerce_rewriter: RuleBasedRewriter) -> None:
+    result = ecommerce_rewriter.expand("不想要了想退掉")
+    assert "退货" in result
+
+
+def test_real_synonym_file_loads_with_ecommerce_entries() -> None:
+    from app.core.query_rewriter import _SYNONYMS_PATH
+
+    data = RuleBasedRewriter(_SYNONYMS_PATH)._load()
+    for key in ("退款", "退货", "换货", "多久到", "尺码", "运费", "发票", "积分"):
+        assert key in data, f"词典缺少电商词条: {key}"
