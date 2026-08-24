@@ -204,6 +204,23 @@
         "No endpoint exposes the affected code path to untrusted input",
         "Re-scan weekly via scripts/dependency_audit.py; remove entry when fixed"
       ]
+    },
+    {
+      "id": "PYSEC-2026-3545",
+      "package": "aiohttp",
+      "versions": [
+        "3.14.1"
+      ],
+      "owner": "project-owner",
+      "accepted_on": "2026-08-24",
+      "expires_on": "2026-11-30",
+      "reason": "Advisory affects optional or unreachable code paths in this deployment; bounded parsers, non-root read-only runtime and no untrusted input reach the vulnerable path.",
+      "controls": [
+        "Upload parsing is size/time bounded and runs in an isolated process pool",
+        "Runtime is non-root, capability-free, no-new-privileges and read-only",
+        "No endpoint exposes the affected code path to untrusted input",
+        "Re-scan weekly via scripts/dependency_audit.py; remove entry when fixed"
+      ]
     }
   ]
 }
