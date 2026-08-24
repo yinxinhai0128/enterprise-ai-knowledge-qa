@@ -10,17 +10,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { NavBar } from '@/components/NavBar'
-import { getStats, getRefused, getHumanTasks, claimTask, completeTask, getFeedbackStats, getUsageReport, getRecentRecords, getUsers, createUser, toggleUserActive } from '@/api/admin'
+import { getStats, getRefused, getHumanTasks, claimTask, completeTask, getFeedbackStats, getUsageReport, getRecentRecords, getUsers, createUser, toggleUserActive, getConsistency } from '@/api/admin'
 import type { HumanTaskOut } from '@/types/api'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/stores/auth'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import utc from 'dayjs/plugin/utc'
 import 'dayjs/locale/zh-cn'
 
 dayjs.extend(relativeTime)
+dayjs.extend(utc)
 dayjs.locale('zh-cn')
+
+const parseUTC = (s: string) => dayjs.utc(s).local()
 
 type TaskFilter = 'all' | 'pending' | 'claimed' | 'completed' | 'cancelled'
 
@@ -172,8 +176,8 @@ function UsersTab({ currentUser }: { currentUser: string }) {
                       ? <Badge variant="success">启用</Badge>
                       : <Badge variant="secondary">禁用</Badge>}
                   </td>
-                  <td className="px-4 py-3 text-gray-400 text-xs whitespace-nowrap" title={dayjs(u.created_at).format('YYYY-MM-DD HH:mm:ss')}>
-                    {dayjs(u.created_at).fromNow()}
+                  <td className="px-4 py-3 text-gray-400 text-xs whitespace-nowrap" title={parseUTC(u.created_at).format('YYYY-MM-DD HH:mm:ss')}>
+                    {parseUTC(u.created_at).fromNow()}
                   </td>
                   <td className="px-4 py-3">
                     {u.username !== currentUser && (
@@ -381,6 +385,13 @@ export default function AdminPage() {
     enabled: auth.isAdmin,
   })
 
+  const { data: consistency } = useQuery({
+    queryKey: ['admin-consistency'],
+    queryFn: getConsistency,
+    refetchInterval: 60000,
+    enabled: auth.isAdmin,
+  })
+
   const { data: refused = [], isLoading: refusedLoading } = useQuery({
     queryKey: ['admin-refused'],
     queryFn: getRefused,
@@ -500,6 +511,37 @@ export default function AdminPage() {
                 </div>
               ) : null}
 
+              {/* 系统健康卡 */}
+              {consistency && (
+                <div className={`rounded-2xl p-5 shadow-sm border mb-4 ${consistency.total_issues > 0 ? 'bg-amber-50 border-amber-200' : 'bg-white border-gray-100'}`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${consistency.total_issues > 0 ? 'bg-amber-100' : 'bg-green-50'}`}>
+                        {consistency.total_issues > 0
+                          ? <AlertTriangle className="w-4 h-4 text-amber-500" />
+                          : <CheckCircle2 className="w-4 h-4 text-green-500" />}
+                      </div>
+                      <h3 className="text-sm font-medium text-gray-700">系统数据健康</h3>
+                    </div>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${consistency.total_issues > 0 ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'}`}>
+                      {consistency.total_issues > 0 ? `${consistency.total_issues} 项异常` : '全部正常'}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                    {([
+                      ['孤儿租户文档', consistency.orphan_tenant_docs],
+                      ['孤儿向量', consistency.orphan_vectors],
+                      ['缺失向量', consistency.missing_vectors],
+                      ['缺失文件', consistency.missing_files],
+                    ] as [string, number][]).map(([label, val]) => (
+                      <div key={label} className={`rounded-lg px-3 py-2 ${val > 0 ? 'bg-amber-100 text-amber-700' : 'bg-gray-50 text-gray-400'}`}>
+                        <span className="font-semibold">{val}</span> {label}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Recent refused */}
                 <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
@@ -521,7 +563,7 @@ export default function AdminPage() {
                           <span className="w-1.5 h-1.5 rounded-full bg-red-300 mt-1.5 shrink-0" />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-700 truncate">{r.question}</p>
-                            <p className="text-xs text-gray-400 mt-0.5">{dayjs(r.created_at).fromNow()}</p>
+                            <p className="text-xs text-gray-400 mt-0.5">{parseUTC(r.created_at).fromNow()}</p>
                           </div>
                         </div>
                       ))}
@@ -551,7 +593,7 @@ export default function AdminPage() {
                             <p className="text-sm text-gray-700 truncate">{t.reason}</p>
                             <div className="flex items-center gap-2 mt-0.5">
                               <Badge variant="destructive" className="text-[10px]">{t.category}</Badge>
-                              <span className="text-xs text-gray-400">{dayjs(t.created_at).fromNow()}</span>
+                              <span className="text-xs text-gray-400">{parseUTC(t.created_at).fromNow()}</span>
                             </div>
                           </div>
                         </div>
@@ -616,7 +658,7 @@ export default function AdminPage() {
                             <span className="text-xs text-gray-400">#{t.id}</span>
                             <span className="text-xs text-gray-400 flex items-center gap-1">
                               <Clock className="w-3 h-3" />
-                              {dayjs(t.created_at).fromNow()}
+                              {parseUTC(t.created_at).fromNow()}
                             </span>
                           </div>
                           <div className="bg-gray-50 rounded-xl px-4 py-3 mb-3 border border-gray-100">
@@ -692,7 +734,7 @@ export default function AdminPage() {
                     <tbody className="divide-y divide-gray-50">
                       {auditRecords.map(r => (
                         <tr key={r.id} className="hover:bg-gray-50/60 transition-colors">
-                          <td className="px-4 py-2.5 text-gray-400 whitespace-nowrap" title={dayjs(r.created_at).format('YYYY-MM-DD HH:mm:ss')}>{dayjs(r.created_at).fromNow()}</td>
+                          <td className="px-4 py-2.5 text-gray-400 whitespace-nowrap" title={parseUTC(r.created_at).format('YYYY-MM-DD HH:mm:ss')}>{parseUTC(r.created_at).fromNow()}</td>
                           <td className="px-4 py-2.5 text-gray-600 max-w-[80px] truncate font-mono">{r.user_id}</td>
                           <td className="px-4 py-2.5 text-gray-700 max-w-[200px] truncate">{r.question}</td>
                           <td className="px-4 py-2.5">

@@ -20,7 +20,6 @@ export function NavBar() {
 
   function handleLogout() {
     auth.logout()
-    navigate('/login')
     toast({ title: '已退出登录' })
   }
 

@@ -96,3 +96,19 @@ export async function toggleUserActive(username: string): Promise<UserOut> {
   const { data } = await apiClient.patch<UserOut>(`/admin/users/${username}/active`)
   return data
 }
+
+export interface ConsistencyReport {
+  missing_files: number
+  missing_vectors: number
+  extra_vectors: number
+  orphan_vectors: number
+  orphan_files: number
+  orphan_jobs: number
+  orphan_tenant_docs: number
+  total_issues: number
+}
+
+export async function getConsistency(): Promise<ConsistencyReport> {
+  const { data } = await apiClient.get<ConsistencyReport>('/admin/consistency')
+  return data
+}

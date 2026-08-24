@@ -9,6 +9,7 @@ import { stripCitationBlock } from '@/lib/answer'
 import { askQuestionStream, getHistory, submitFeedback, searchSessions } from '@/api/qa'
 import type { AskResponse, SourceItem } from '@/types/api'
 import { toast } from '@/hooks/use-toast'
+import { useAuth } from '@/stores/auth'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'
@@ -24,18 +25,18 @@ const SUGGESTIONS = [
 ]
 
 // sessionStorage helpers: survive Vite HMR module reloads unlike module-level Map.
-function _saveChat(sessionId: string, messages: Message[]) {
+function _saveChat(userId: string, sessionId: string, messages: Message[]) {
   try {
     sessionStorage.setItem(
-      `ekqa_chat_${sessionId}`,
+      `ekqa_chat_${userId}_${sessionId}`,
       JSON.stringify(messages.map(m => ({ ...m, streaming: false, isNew: false }))),
     )
   } catch {} // ignore QuotaExceededError
 }
 
-function _loadChat(sessionId: string): Message[] | null {
+function _loadChat(userId: string, sessionId: string): Message[] | null {
   try {
-    const raw = sessionStorage.getItem(`ekqa_chat_${sessionId}`)
+    const raw = sessionStorage.getItem(`ekqa_chat_${userId}_${sessionId}`)
     return raw ? (JSON.parse(raw) as Message[]) : null
   } catch { return null }
 }
@@ -47,12 +48,12 @@ interface Session {
   createdAt: string
 }
 
-function getSessions(): Session[] {
-  try { return JSON.parse(localStorage.getItem('ekqa_sessions') ?? '[]') } catch { return [] }
+function getSessions(userId: string): Session[] {
+  try { return JSON.parse(localStorage.getItem(`ekqa_sessions_${userId}`) ?? '[]') } catch { return [] }
 }
 
-function saveSessions(sessions: Session[]) {
-  localStorage.setItem('ekqa_sessions', JSON.stringify(sessions.slice(0, 50)))
+function saveSessions(sessions: Session[], userId: string) {
+  localStorage.setItem(`ekqa_sessions_${userId}`, JSON.stringify(sessions.slice(0, 50)))
 }
 
 function newSessionId(): string {
@@ -318,9 +319,11 @@ function LoadingBubble() {
 }
 
 export default function ChatPage() {
-  const [sessions, setSessions] = useState<Session[]>(getSessions)
+  const auth = useAuth()
+  const userId = auth.userId ?? 'anonymous'
+  const [sessions, setSessions] = useState<Session[]>(() => getSessions(userId))
   const [currentSessionId, setCurrentSessionId] = useState<string>(() => {
-    const s = getSessions()
+    const s = getSessions(userId)
     return s.length > 0 ? s[0].id : newSessionId()
   })
   const [messages, setMessages] = useState<Message[]>([])
@@ -340,9 +343,11 @@ export default function ChatPage() {
   // Refs for stale-closure–safe access inside cleanup functions
   const messagesRef = useRef<Message[]>([])
   const sessionIdRef = useRef(currentSessionId)
+  const userIdRef = useRef(userId)
 
   useEffect(() => { messagesRef.current = messages }, [messages])
   useEffect(() => { sessionIdRef.current = currentSessionId }, [currentSessionId])
+  useEffect(() => { userIdRef.current = userId }, [userId])
 
   useEffect(() => {
     if (searchTimerRef.current) clearTimeout(searchTimerRef.current)
@@ -376,7 +381,7 @@ export default function ChatPage() {
   useEffect(() => {
     mountedRef.current = true
     // Restore from sessionStorage on mount (survives navigation + Vite HMR reloads)
-    const cached = _loadChat(sessionIdRef.current)
+    const cached = _loadChat(userId, sessionIdRef.current)
     if (cached && cached.length > 0) {
       setMessages(cached)
       hydratedSessionRef.current = sessionIdRef.current
@@ -386,10 +391,10 @@ export default function ChatPage() {
       abortRef.current?.abort()
       // Snapshot current messages before unmounting (navigation-away preservation)
       if (messagesRef.current.length > 0) {
-        _saveChat(sessionIdRef.current, messagesRef.current)
+        _saveChat(userIdRef.current, sessionIdRef.current, messagesRef.current)
       }
     }
-  }, [])
+  }, [userId])
 
   const { data: history, isLoading: historyLoading } = useQuery({
     queryKey: ['history', currentSessionId],
@@ -435,7 +440,7 @@ export default function ChatPage() {
       const newSession: Session = { id: currentSessionId, firstQuestion: q.slice(0, 30), createdAt: new Date().toISOString() }
       const updated = [newSession, ...sessions]
       setSessions(updated)
-      saveSessions(updated)
+      saveSessions(updated, userId)
     }
 
     const abort = new AbortController()
@@ -495,7 +500,7 @@ export default function ChatPage() {
     if (!mountedRef.current) return
     setIsLoading(false)
     textareaRef.current?.focus()
-  }, [input, isLoading, currentSessionId, sessions])
+  }, [input, isLoading, currentSessionId, sessions, userId])
 
   const handleStop = useCallback(() => {
     abortRef.current?.abort()
@@ -504,7 +509,7 @@ export default function ChatPage() {
   const blocker = useBlocker(isLoading)
 
   function handleNewSession() {
-    if (messages.length > 0) _saveChat(currentSessionId, messages)
+    if (messages.length > 0) _saveChat(userId, currentSessionId, messages)
     const id = newSessionId()
     setCurrentSessionId(id)
     setMessages([])
@@ -513,8 +518,8 @@ export default function ChatPage() {
 
   function handleSelectSession(id: string) {
     if (id === currentSessionId) return
-    if (messages.length > 0) _saveChat(currentSessionId, messages)
-    const cached = _loadChat(id)
+    if (messages.length > 0) _saveChat(userId, currentSessionId, messages)
+    const cached = _loadChat(userId, id)
     if (cached && cached.length > 0) {
       setMessages(cached)
       hydratedSessionRef.current = id

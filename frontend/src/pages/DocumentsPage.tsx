@@ -12,10 +12,14 @@ import type { DocumentOut } from '@/types/api'
 import { toast } from '@/hooks/use-toast'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import utc from 'dayjs/plugin/utc'
 import 'dayjs/locale/zh-cn'
 
 dayjs.extend(relativeTime)
+dayjs.extend(utc)
 dayjs.locale('zh-cn')
+
+const parseUTC = (s: string) => dayjs.utc(s).local()
 
 const ALLOWED_TYPES = ['.pdf', '.docx', '.xlsx', '.txt', '.md']
 const MAX_SIZE_MB = 50
@@ -251,7 +255,7 @@ export default function DocumentsPage() {
                         </td>
                         <td className="px-4 py-3"><StatusBadge status={doc.status} errorMsg={doc.error_msg} /></td>
                         <td className="px-4 py-3 text-gray-500">{doc.status === 'failed' ? '—' : doc.chunk_count || '—'}</td>
-                        <td className="px-4 py-3 text-gray-400 text-xs">{dayjs(doc.created_at).fromNow()}</td>
+                        <td className="px-4 py-3 text-gray-400 text-xs" title={parseUTC(doc.created_at).fromNow()}>{parseUTC(doc.created_at).format('YYYY年M月D日 HH:mm')}</td>
                         <td className="px-4 py-3">
                           <div className="flex items-center justify-end gap-2">
                             {doc.status === 'indexed' && (
@@ -296,7 +300,7 @@ export default function DocumentsPage() {
                     </div>
                     <div className="flex items-center justify-between text-xs text-gray-400">
                       <span>{doc.status === 'failed' ? '处理失败' : `${doc.chunk_count || 0} 个分块`}</span>
-                      <span>{dayjs(doc.created_at).fromNow()}</span>
+                      <span title={parseUTC(doc.created_at).fromNow()}>{parseUTC(doc.created_at).format('YYYY年M月D日 HH:mm')}</span>
                     </div>
                     <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
                       {doc.status === 'indexed' && (
