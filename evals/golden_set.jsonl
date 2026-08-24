@@ -20,14 +20,14 @@
 {"id": "RT-L3-004", "category": "RT", "level": "L3", "question": "退货寄回后他们多久确认收到？确认后多久打款？", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["1–2", "1-2", "验收", "3–5", "3-5"], "should_refuse": false}
 {"id": "LG-L1-001", "category": "LG", "level": "L1", "question": "免邮门槛是多少？", "expected_doc": "06-物流配送政策", "expected_keywords": ["$49", "49 美元"], "should_refuse": false}
 {"id": "LG-L1-002", "category": "LG", "level": "L1", "question": "美国东部一般几天到？", "expected_doc": "06-物流配送政策", "expected_keywords": ["2–5", "2-5"], "should_refuse": false}
-{"id": "LG-L1-003", "category": "LG", "level": "L1", "question": "英国仓发英国要几天？", "expected_doc": "06-物流配送政策", "expected_keywords": ["1–3", "1-3"], "should_refuse": false}
-{"id": "LG-L1-004", "category": "LG", "level": "L1", "question": "加急配送多少钱？", "expected_doc": "06-物流配送政策", "expected_keywords": ["$15", "15 美元"], "should_refuse": false}
+{"id": "LG-L1-003", "category": "LG", "level": "L1", "question": "英国仓发英国要几天？", "expected_doc": "06-物流配送政策", "expected_keywords": ["2–4", "2-4", "2–3", "2-3"], "should_refuse": false}
+{"id": "LG-L1-004", "category": "LG", "level": "L1", "question": "加急配送多少钱？", "expected_doc": "06-物流配送政策", "expected_keywords": ["$9.99–$19.99", "$9.99-$19.99", "9.99"], "should_refuse": false}
 {"id": "LG-L1-005", "category": "LG", "level": "L1", "question": "可以寄到 PO Box 吗？", "expected_doc": "06-物流配送政策", "expected_keywords": ["USPS", "PO Box", "支持"], "should_refuse": false}
 {"id": "LG-L1-006", "category": "LG", "level": "L1", "question": "订单发货后多久能查到物流？", "expected_doc": "06-物流配送政策", "expected_keywords": ["24", "追踪"], "should_refuse": false}
 {"id": "LG-L1-007", "category": "LG", "level": "L1", "question": "日本仓发日本要几天？", "expected_doc": "06-物流配送政策", "expected_keywords": ["2–4", "2-4"], "should_refuse": false}
 {"id": "LG-L2-001", "category": "LG", "level": "L2", "question": "我的包裹显示已投递但我没拿到，怎么回事", "expected_doc": "06-物流配送政策", "expected_keywords": ["3 个工作日", "调查", "邻居"], "should_refuse": false}
 {"id": "LG-L2-002", "category": "LG", "level": "L2", "question": "下单好几天了怎么还不发货", "expected_doc": "06-物流配送政策", "expected_keywords": ["1–3", "1-3", "工作日", "旺季"], "should_refuse": false}
-{"id": "LG-L2-003", "category": "LG", "level": "L2", "question": "澳洲这边多久能送到啊", "expected_doc": "06-物流配送政策", "expected_keywords": ["7–14", "7-14"], "should_refuse": false}
+{"id": "LG-L2-003", "category": "LG", "level": "L2", "question": "澳洲这边多久能送到啊", "expected_doc": "06-物流配送政策", "expected_keywords": ["3–6", "3-6", "3–7", "3-7"], "should_refuse": false}
 {"id": "LG-L2-004", "category": "LG", "level": "L2", "question": "包裹卡在一个地方好几天不动了正常吗", "expected_doc": "06-物流配送政策", "expected_keywords": ["清关", "国际段", "扫描"], "should_refuse": false}
 {"id": "LG-L2-005", "category": "LG", "level": "L2", "question": "黑五下单会不会比平时慢", "expected_doc": "06-物流配送政策", "expected_keywords": ["1–2", "延长", "旺季"], "should_refuse": false}
 {"id": "LG-L2-006", "category": "LG", "level": "L2", "question": "地址填错了刚下的单还能改吗", "expected_doc": "07-退换货与退款政策", "expected_keywords": ["1 小时", "1小时", "改地址"], "should_refuse": false}

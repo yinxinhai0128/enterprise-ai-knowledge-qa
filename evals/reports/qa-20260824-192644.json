@@ -1,0 +1,115 @@
+{
+  "rows": [
+    {
+      "id": "OOS-001",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库信息，我们**不卖沙发**。\n\n我们主要销售**床品和家居纺织品**，具体包括：\n*   **床品套装**（四件套、三件套、五件套及单品）\n*   **枕芯**（羽绒枕、记忆棉枕等）\n*   **被芯**（羽绒被、替代羽绒被、四季",
+      "sources": [
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md",
+        "02-产品目录与SKU规则.md"
+      ]
+    },
+    {
+      "id": "OOS-002",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "抱歉，经过多次检索，企业内部知识库中**未收录**任何关于棉花的诗歌或文学创作。\n\n知识库中关于棉花的内容均为**产品材质说明与技术参数**，主要涉及：\n*   **埃及长绒棉**：纤维长度≥36mm，旗舰款 600TC，手感顺滑如丝。\n*",
+      "sources": [
+        "04-材质详解与性能对比.md",
+        "04-材质详解与性能对比.md",
+        "04-材质详解与性能对比.md"
+      ]
+    },
+    {
+      "id": "OOS-003",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "知识库中没有找到相关资料，无法基于可信证据回答。",
+      "sources": []
+    },
+    {
+      "id": "OOS-004",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库的指引，我无法提供竞争对手的具体价格信息。在应对此类咨询时，我们遵循“不评价对手，只讲我司事实”的原则。\n\n针对价格差异，建议您关注以下核心因素：\n*   **原料等级**：价格往往反映原料成本。例如，即便纱线密度（TC）",
+      "sources": [
+        "04-材质详解与性能对比.md",
+        "02-产品目录与SKU规则.md",
+        "11-B2B批发与企业采购.md"
+      ]
+    },
+    {
+      "id": "OOS-005",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "抱歉，我无法直接为您查询银行流水。银行流水属于您的个人金融隐私数据，建议您通过以下官方渠道查询：\n\n1.  **手机银行 APP**：登录您的发卡行 APP，在“账户”、“明细”或“交易记录”中查看。\n2.  **网上银行**：登录银行官网",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "OOS-006",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "抱歉，我无法为您预订机票。\n\n当前的企业内部知识库主要包含 **CloudCotton 家居** 相关的客户服务、物流配送、B2B 批发及促销政策等内容，**不包含差旅预订或机票购买服务**。\n\n建议您通过专业的旅行平台（如携程、飞猪、航司",
+      "sources": [
+        "11-B2B批发与企业采购.md",
+        "06-物流配送政策.md",
+        "11-B2B批发与企业采购.md"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "pass_rate": 1.0,
+    "by_level": {
+      "OOS": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      }
+    },
+    "by_category": {
+      "OOS": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      }
+    }
+  }
+}
