@@ -16,6 +16,8 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
+import urllib.error
 import urllib.request
 from datetime import datetime
 from pathlib import Path
@@ -33,17 +35,32 @@ def _name(source: object) -> str:
 
 def ask(base_url: str, token: str, question: str, session_id: str) -> dict:
     body = json.dumps({"question": question, "session_id": session_id}).encode()
-    req = urllib.request.Request(
-        f"{base_url.rstrip('/')}/qa/ask",
-        data=body,
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json",
-        },
-        method="POST",
-    )
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        return json.loads(resp.read().decode())
+    last_err: Exception | None = None
+    # 429 指数退避重试：百炼免费/低档配额在连续请求下会触发限流，
+    # 无重试会导致雪崩式全卷失败（2026-08-24 全量跑实测：第34题起 88 连环 429）。
+    for attempt in range(6):
+        if attempt:
+            wait = min(15 * 2 ** (attempt - 1), 120)  # 15/30/60/120/120s
+            print(f"    [429退避] {wait}s 后第 {attempt + 1} 次尝试…", flush=True)
+            time.sleep(wait)
+        req = urllib.request.Request(
+            f"{base_url.rstrip('/')}/qa/ask",
+            data=body,
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                return json.loads(resp.read().decode())
+        except urllib.error.HTTPError as e:
+            if e.code == 429:
+                last_err = e
+                continue
+            raise
+    raise last_err  # type: ignore[misc]
 
 
 def judge(row: dict, resp: dict) -> dict:
