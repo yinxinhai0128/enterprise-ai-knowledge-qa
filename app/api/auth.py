@@ -3,8 +3,9 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
+import bcrypt as _bcrypt
 import jwt
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,15 +13,24 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.core.auth import JWT_ALGORITHM
 from app.core.database import get_session
-from app.core.limits import LimitedAdminAuth, QAAuth
+from app.core.limits import LimitedAdminAuth, QAAuth, request_limiter
 from app.models.user import User
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+
+async def _auth_guard(request: Request):
+    client_host = request.client.host if request.client else "unknown"
+    async with request_limiter.limit(
+        scope="auth",
+        identity=client_host,
+        per_minute=settings.auth_login_rate_limit_per_minute,
+        max_concurrency=settings.auth_login_max_concurrency,
+    ):
+        yield
+
+
+router = APIRouter(prefix="/auth", tags=["auth"], dependencies=[Depends(_auth_guard)])
 
 # ---------- 密码哈希 ----------
-import bcrypt as _bcrypt
-
-
 def _hash_pwd(pwd: str) -> str:
     return _bcrypt.hashpw(pwd.encode(), _bcrypt.gensalt()).decode()
 
@@ -36,7 +46,7 @@ _DEFAULT_EXPIRE_SECONDS = 86400  # 1 天
 def _issue_token(*, username: str, tenant_id: str, roles: list[str]) -> str:
     """签发与现有验签完全兼容的 JWT。"""
     secret = settings.auth_jwt_secret.get_secret_value()
-    expire_seconds = getattr(settings, "auth_jwt_expire_seconds", _DEFAULT_EXPIRE_SECONDS)
+    expire_seconds = settings.auth_jwt_expire_seconds
     now = datetime.now(timezone.utc)
     claims = {
         "sub": username,
