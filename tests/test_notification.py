@@ -1,8 +1,9 @@
 """运营通知服务的测试。"""
 from __future__ import annotations
 
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import patch, AsyncMock
 
 
 @pytest.mark.asyncio
@@ -21,11 +22,11 @@ async def test_notify_skips_when_no_webhook():
 @pytest.mark.asyncio
 async def test_notify_sends_request_when_webhook_set():
     """有 webhook URL 时发送 HTTP POST（mock 掉网络）。"""
-    from app.services.notification import notify_human_review
     import urllib.request
 
+    from app.services.notification import notify_human_review
+
     call_args = {}
-    original_urlopen = urllib.request.urlopen
 
     def mock_urlopen(req, timeout=None):
         call_args["url"] = req.full_url
@@ -55,8 +56,9 @@ async def test_notify_sends_request_when_webhook_set():
 @pytest.mark.asyncio
 async def test_notify_does_not_raise_on_http_error():
     """HTTP 错误时不抛异常（只记日志）。"""
-    from app.services.notification import notify_human_review
     import urllib.error
+
+    from app.services.notification import notify_human_review
 
     def mock_urlopen_error(req, timeout=None):
         raise urllib.error.HTTPError("url", 500, "Internal Error", {}, None)

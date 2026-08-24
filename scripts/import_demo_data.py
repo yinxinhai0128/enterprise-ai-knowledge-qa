@@ -69,7 +69,7 @@ def _encode_multipart(fields: dict[str, str], files: dict[str, tuple[str, bytes,
 # ---------------------------------------------------------------------------
 
 def upload_file(file_path: Path, base_url: str, token: str) -> dict:
-    """将单个文件 POST 到 /api/documents/upload。
+    """将单个文件 POST 到 /documents/upload。
 
     返回：
         解析后的 JSON 响应字典（成功时包含 id、filename、status 等字段）
@@ -78,7 +78,7 @@ def upload_file(file_path: Path, base_url: str, token: str) -> dict:
         urllib.error.HTTPError：HTTP 错误（4xx/5xx）
         urllib.error.URLError：网络错误
     """
-    url = f"{base_url.rstrip('/')}/api/documents/upload"
+    url = f"{base_url.rstrip('/')}/documents/upload"
     file_data = file_path.read_bytes()
     content_type = mimetypes.guess_type(file_path.name)[0] or "text/plain"
 
@@ -216,7 +216,7 @@ def main() -> int:
 
     print("\n所有文档已上传，Worker 将在后台完成索引（通常数秒内完成）。")
     print("可通过以下命令查看文档状态：")
-    print(f"  curl -H 'Authorization: Bearer <TOKEN>' {args.base_url}/api/documents")
+    print(f"  curl -H 'Authorization: Bearer <TOKEN>' {args.base_url}/documents")
     return 0
 
 

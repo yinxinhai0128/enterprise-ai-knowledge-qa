@@ -22,7 +22,7 @@ async def pgvector_similarity_search_with_score(
     query: str,
     k: int = 5,
     tenant_id: str = "default",
-) -> list[tuple[Document, float]]:
+) -> list[tuple[LCDocument, float]]:
     """余弦距离检索，返回 (Document, distance) 列表（distance 越小越相似，范围 0–2）。"""
     from app.core.llm import init_embeddings
 
@@ -53,7 +53,7 @@ async def pgvector_similarity_search_with_score(
             ).all()
             filename_map = {int(row[0]): str(row[1]) for row in name_rows}
 
-    results: list[tuple[Document, float]] = []
+    results: list[tuple[LCDocument, float]] = []
     for chunk, distance in rows:
         doc = LCDocument(
             page_content=chunk.content,
@@ -69,7 +69,7 @@ async def pgvector_similarity_search_with_score(
     return results
 
 
-async def add_documents_to_pgvector(documents: list[Document]) -> None:
+async def add_documents_to_pgvector(documents: list[LCDocument]) -> None:
     """批量写入切片及向量（幂等：同 chunk_id 先删后插）。"""
     if not documents:
         return

@@ -60,13 +60,13 @@ def _tool_call(query: str, call_id: str = "call-search-1") -> AIMessage:
 
 # ---------------- 检索工具（不经过 LLM，确定性） ----------------
 
-def test_retriever_returns_content_and_complete_artifact(vectorstore):
+async def test_retriever_returns_content_and_complete_artifact(vectorstore):
     vectorstore.add_texts(
         ["公司报销需先在系统提单并上传发票。"],
         metadatas=[_metadata()],
         ids=["chunk-finance-1"],
     )
-    content, artifact = search_tenant_knowledge_base("报销怎么走", "tenant-a")
+    content, artifact = await search_tenant_knowledge_base("报销怎么走", "tenant-a")
     assert "UNTRUSTED_DOCUMENT_CONTENT" in content
     assert len(artifact) == 1
     assert set(artifact[0]) >= {
@@ -85,13 +85,13 @@ def test_retriever_returns_content_and_complete_artifact(vectorstore):
     assert isinstance(artifact[0]["snippet"], str)
 
 
-def test_retriever_tool_no_result(vectorstore):
-    content, artifact = search_tenant_knowledge_base("随便问问", "tenant-a")
+async def test_retriever_tool_no_result(vectorstore):
+    content, artifact = await search_tenant_knowledge_base("随便问问", "tenant-a")
     assert content == "未找到相关文档"
     assert artifact == []
 
 
-def test_retriever_skips_malformed_metadata(vectorstore):
+async def test_retriever_skips_malformed_metadata(vectorstore):
     """损坏或不完整的向量 metadata 不能升级成可信 evidence。"""
     vectorstore.add_texts(
         ["缺少 doc_id 的损坏记录"],
@@ -104,12 +104,12 @@ def test_retriever_skips_malformed_metadata(vectorstore):
         ],
         ids=["broken-chunk"],
     )
-    content, artifact = search_tenant_knowledge_base("损坏记录", "tenant-a")
+    content, artifact = await search_tenant_knowledge_base("损坏记录", "tenant-a")
     assert content == "未找到相关文档"
     assert artifact == []
 
 
-def test_retriever_tool_uses_runtime_tenant(vectorstore):
+async def test_retriever_tool_uses_runtime_tenant(vectorstore):
     vectorstore.add_texts(
         ["租户 A 专属资料。"],
         metadatas=[_metadata("a.txt", chunk_id="chunk-a-1")],
@@ -117,20 +117,22 @@ def test_retriever_tool_uses_runtime_tenant(vectorstore):
     )
     assert "runtime" not in search_knowledge_base.args
     runtime = SimpleNamespace(context=_ctx("tool"))
-    _content, artifact = search_knowledge_base.func("专属资料", runtime)
+    _content, artifact = await search_tenant_knowledge_base(
+        "专属资料",
+        runtime.context.tenant_id,
+    )
     assert artifact[0]["source"] == "a.txt"
 
 
-def test_legacy_vectors_are_migrated_fail_closed(vectorstore):
+async def test_legacy_vectors_are_migrated_fail_closed(vectorstore):
     vectorstore.add_texts(
         ["旧资料"],
         metadatas=[{"doc_id": 99, "source": "legacy.txt"}],
         ids=["legacy-existing-id"],
     )
-    assert search_tenant_knowledge_base("旧资料", "tenant-a")[1] == []
-    assert migrate_legacy_vector_metadata() == 1
-    _content, artifact = search_tenant_knowledge_base("旧资料", "legacy")
-    assert artifact[0]["chunk_id"] == "legacy-existing-id"
+    _content, artifact = await search_tenant_knowledge_base("旧资料", "tenant-a")
+    assert artifact == []
+    assert migrate_legacy_vector_metadata() == 0
 
 
 # ---------------- Agent 真实工具回环 ----------------

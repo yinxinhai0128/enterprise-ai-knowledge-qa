@@ -114,6 +114,7 @@ async def test_submit_feedback_cross_tenant_blocked(client, auth_headers):
 
     # 用 tenant-b 的 token 来访问
     from httpx import ASGITransport, AsyncClient
+
     from app.main import app
 
     async with AsyncClient(

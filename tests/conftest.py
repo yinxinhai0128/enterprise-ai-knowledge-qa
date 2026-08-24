@@ -34,6 +34,7 @@ os.environ["LANGSMITH_API_KEY"] = ""
 os.environ["AUTH_JWT_SECRET"] = "test-only-jwt-secret-at-least-32-characters-long"
 os.environ["AUTH_JWT_ISSUER"] = "test-idp"
 os.environ["AUTH_JWT_AUDIENCE"] = "test-enterprise-kb"
+os.environ["QA_CACHE_TTL_SECONDS"] = "0"
 
 import jwt  # noqa: E402
 import pytest  # noqa: E402
@@ -166,8 +167,10 @@ class FakeChatModel(GenericFakeChatModel):
 
 @pytest.fixture
 def fake_embeddings() -> DeterministicFakeEmbedding:
-    """固定 1536 维的确定性假向量（同一文本 -> 同一向量）。"""
-    return DeterministicFakeEmbedding(size=1536)
+    """固定维度的确定性假向量（同一文本 -> 同一向量）。"""
+    from app.models.document_chunk import EMBED_DIM
+
+    return DeterministicFakeEmbedding(size=EMBED_DIM)
 
 
 @pytest.fixture(autouse=True)
@@ -191,59 +194,86 @@ def mock_llm(monkeypatch):
 
 @pytest.fixture
 def vectorstore(monkeypatch, fake_embeddings):
-    """内存 FAISS，并把各处 FAISS 函数指向它；用例后无需清理（全在内存）。"""
-    from langchain_community.vectorstores import FAISS as LangchainFAISS
+    """pgvector 已替代 FAISS；保留 fixture 名称兼容旧用例签名。"""
     from langchain_core.documents import Document as LCDocument
+    from sqlalchemy import select
 
-    import app.core.faiss_store as _faiss_mod
+    from app.models.document import Document
+    from app.models.document_chunk import DocumentChunk
 
-    # 创建一个只含哨兵文档的内存 FAISS，然后删掉哨兵，得到空 store
-    sentinel = LCDocument(
-        page_content="_init_",
-        metadata={"tenant_id": "__sentinel__", "doc_id": -1},
-    )
-    store = LangchainFAISS.from_documents([sentinel], fake_embeddings)
-    sentinel_ids = list(store.docstore._dict.keys())
-    store.delete(sentinel_ids)
+    class _Docstore:
+        def __init__(self) -> None:
+            self._dict: dict[str, LCDocument] = {}
 
-    # 把模块级单例指向内存 store，get_faiss_store() 直接返回它
-    monkeypatch.setattr(_faiss_mod, "_store", store)
-    # 防止任何磁盘 I/O
-    monkeypatch.setattr(_faiss_mod, "FAISS_INDEX_DIR", Path("/nonexistent_test"))
+    class _VectorStore:
+        def __init__(self) -> None:
+            self.docstore = _Docstore()
 
-    # 补丁 add：写入内存 store，不落盘；用 chunk_id 作显式 ID 保证幂等性
-    def _fake_add(documents):
-        texts = [doc.page_content for doc in documents]
-        metadatas = [doc.metadata for doc in documents]
-        ids = [str(doc.metadata.get("chunk_id")) for doc in documents]
-        existing = [id_ for id_ in ids if id_ in store.docstore._dict]
-        if existing:
-            store.delete(existing)
-        store.add_texts(texts, metadatas=metadatas, ids=ids)
+        def add_texts(self, texts, metadatas=None, ids=None):  # noqa: ANN001
+            metadatas = metadatas or [{} for _ in texts]
+            ids = ids or [
+                str(metadata.get("chunk_id", index))
+                for index, metadata in enumerate(metadatas)
+            ]
+            for text, metadata, chunk_id in zip(texts, metadatas, ids, strict=True):
+                stored_metadata = dict(metadata)
+                stored_metadata.setdefault("chunk_id", str(chunk_id))
+                self.docstore._dict[str(chunk_id)] = LCDocument(
+                    page_content=text,
+                    metadata=stored_metadata,
+                )
+            return list(ids)
 
-    monkeypatch.setattr(_faiss_mod, "add_documents_to_faiss", _fake_add)
-    monkeypatch.setattr("app.services.ingest.add_documents_to_faiss", _fake_add)
+    store = _VectorStore()
 
-    # 补丁 delete：从内存 store 删除，不落盘
-    def _fake_delete(t_id: str, d_id: int) -> int:
-        ids = [
-            vid
-            for vid, doc in store.docstore._dict.items()
-            if str(doc.metadata.get("tenant_id")) == str(t_id)
-            and int(doc.metadata.get("doc_id", -1)) == int(d_id)
-        ]
-        if ids:
-            store.delete(ids)
-        return len(ids)
+    async def _fake_pgvector_search(
+        query: str,  # noqa: ARG001
+        k: int = 5,
+        tenant_id: str = "default",
+    ):
+        results: list[tuple[LCDocument, float]] = []
+        for doc in store.docstore._dict.values():
+            metadata = doc.metadata
+            if str(metadata.get("tenant_id")) == tenant_id:
+                results.append((doc, 0.0))
 
-    monkeypatch.setattr(_faiss_mod, "delete_documents_from_faiss", _fake_delete)
-    monkeypatch.setattr("app.services.vector_ops.delete_documents_from_faiss", _fake_delete)
+        async with database_module.AsyncSessionLocal() as db:
+            rows = (
+                await db.execute(
+                    select(DocumentChunk, Document.filename)
+                    .join(Document, Document.id == DocumentChunk.doc_id)
+                    .where(DocumentChunk.tenant_id == tenant_id)
+                    .limit(k)
+                )
+            ).all()
+        for chunk, filename in rows:
+            results.append(
+                (
+                    LCDocument(
+                        page_content=chunk.content,
+                        metadata={
+                            "chunk_id": chunk.chunk_id,
+                            "doc_id": chunk.doc_id,
+                            "tenant_id": chunk.tenant_id,
+                            "page": chunk.page_number,
+                            "source": filename,
+                        },
+                    ),
+                    0.0,
+                )
+            )
+        return results[:k]
 
-    # 假向量的 l2 距离普遍较大，测试里放开距离阈值，保证有命中能被返回
     monkeypatch.setattr("app.core.retriever_tool.MAX_DISTANCE", float("inf"))
-
-    yield store
-    # monkeypatch 会在用例结束后自动恢复所有 setattr，无需手动清理
+    monkeypatch.setattr(
+        "app.core.retriever_tool.pgvector_similarity_search_with_score",
+        _fake_pgvector_search,
+    )
+    monkeypatch.setattr(
+        "app.core.pgvector_store.pgvector_similarity_search_with_score",
+        _fake_pgvector_search,
+    )
+    return store
 
 
 @pytest.fixture

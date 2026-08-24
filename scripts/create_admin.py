@@ -33,6 +33,7 @@ async def main() -> int:
 
     # 延迟导入，保证 sys.path 已设置
     import bcrypt
+
     from app.core.database import AsyncSessionLocal, init_db
     from app.models.user import User
 

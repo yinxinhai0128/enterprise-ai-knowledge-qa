@@ -5,6 +5,7 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import select
 
 import app.core.database as database_module
+from app.config import settings
 from app.core.retriever_tool import search_tenant_knowledge_base
 from app.models.chat_record import ChatRecord
 
@@ -144,10 +145,11 @@ async def test_tenant_cannot_list_get_or_retrieve_other_tenant_document(
         assert listing.json() == []
         assert (await tenant_b.get(f"/documents/{doc_id}")).status_code == 404
 
-    content_a, evidence_a = search_tenant_knowledge_base("报销口令", "tenant-a")
+    content_a, evidence_a = await search_tenant_knowledge_base("报销口令", "tenant-a")
     assert "青松" in content_a
     assert evidence_a
-    assert search_tenant_knowledge_base("报销口令", "tenant-b")[1] == []
+    _content_b, evidence_b = await search_tenant_knowledge_base("报销口令", "tenant-b")
+    assert evidence_b == []
 
 
 async def test_admin_queries_are_limited_to_token_tenant(
@@ -217,6 +219,22 @@ async def test_login_nonexistent_user(client):
         json={"username": "no_such_user", "password": "whatever"},
     )
     assert resp.status_code == 401
+
+
+async def test_auth_routes_rate_limit_public_login(client, monkeypatch):
+    monkeypatch.setattr(settings, "auth_login_rate_limit_per_minute", 1)
+
+    first = await client.post(
+        "/auth/login",
+        json={"username": "limited_user", "password": "whatever"},
+    )
+    assert first.status_code == 401
+
+    second = await client.post(
+        "/auth/login",
+        json={"username": "limited_user", "password": "whatever"},
+    )
+    assert second.status_code == 429
 
 
 async def test_register_requires_admin(client, auth_headers):

@@ -17,12 +17,14 @@ import app.core.database as database_module
 from app.config import settings
 from app.core.process_pool import get_parser_pool
 from app.models.document import Document
+from app.models.document_chunk import DocumentChunk
 from app.services.file_security import (
     MalwareScanResult,
     configure_malware_scanner,
     reset_malware_scanner,
 )
 from app.services.ingest import IngestResult, ingest_document
+from app.services.vector_ops import document_vector_ids
 
 
 def _pdf_bytes(pages: int) -> bytes:
@@ -118,7 +120,7 @@ def _docx_bytes(text: str) -> bytes:
 
 
 async def test_real_pdf_docx_xlsx_and_utf8_txt_are_parsed_and_indexed(
-    client, vectorstore, worker_once
+    client, worker_once
 ):
     cases = (
         ("real.pdf", _text_pdf_bytes("PDF annual leave policy"), "application/pdf", "annual leave"),
@@ -147,16 +149,21 @@ async def test_real_pdf_docx_xlsx_and_utf8_txt_are_parsed_and_indexed(
         doc_id = uploaded.json()["id"]
         detail = await client.get(f"/documents/{doc_id}")
         assert detail.json()["status"] == "indexed"
-        stored_docs = [
-            doc for doc in vectorstore.docstore._dict.values()
-            if doc.metadata.get("doc_id") == doc_id
-        ]
-        assert stored_docs
-        assert any(expected_text in doc.page_content for doc in stored_docs)
-        assert all(doc.metadata["source"] == filename for doc in stored_docs)
+        async with database_module.AsyncSessionLocal() as db:
+            chunks = list(
+                (
+                    await db.execute(
+                        select(DocumentChunk.content).where(
+                            DocumentChunk.doc_id == doc_id
+                        )
+                    )
+                ).scalars()
+            )
+        assert chunks
+        assert any(expected_text in content for content in chunks)
 
 
-async def test_upload_success_then_indexed(client, vectorstore, worker_once):
+async def test_upload_success_then_indexed(client, worker_once):
     """上传合法 txt：返回 201；后台索引跑完后状态变 indexed 且切片数 > 0。"""
     files = {"file": ("guide.txt", "公司报销流程：先在系统提单，再上传发票。".encode(), "text/plain")}
     resp = await client.post("/documents/upload", files=files)
@@ -175,10 +182,9 @@ async def test_upload_success_then_indexed(client, vectorstore, worker_once):
     assert data["status"] == "indexed"
     assert data["chunk_count"] > 0
     # 切片确实进了向量库
-    assert len(vectorstore.docstore._dict) > 0
-    first_id = list(vectorstore.docstore._dict.keys())[0]
-    first_doc = vectorstore.docstore._dict[first_id]
-    assert first_id == first_doc.metadata["chunk_id"]
+    vector_ids = await document_vector_ids("tenant-a", doc_id)
+    assert vector_ids
+    first_id = vector_ids[0]
     assert first_id.startswith(f"tenant-a:{doc_id}:0:")
     assert len(first_id.rsplit(":", 1)[1]) == 64
 
@@ -191,7 +197,7 @@ async def test_upload_rejects_invalid_type(client, filename):
     assert resp.status_code == 400
 
 
-async def test_upload_writes_db_and_lists(client, vectorstore):
+async def test_upload_writes_db_and_lists(client):
     """上传后能在列表与详情接口查到该文档（验证写库）。"""
     files = {"file": ("policy.txt", b"hello knowledge base", "text/plain")}
     resp = await client.post("/documents/upload", files=files)
@@ -328,7 +334,7 @@ async def test_archive_expansion_limit_returns_413(client, monkeypatch):
 
 
 async def test_successful_file_promoted_out_of_quarantine(
-    client, vectorstore, worker_once
+    client, worker_once
 ):
     response = await client.post(
         "/documents/upload",

@@ -801,6 +801,7 @@ export default function ChatPage() {
                 ) : (
                   <button
                     onClick={() => handleSend()}
+                    aria-label="发送问题"
                     disabled={!input.trim()}
                     className="w-8 h-8 rounded-xl flex items-center justify-center text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90 active:scale-95"
                     style={{ background: input.trim() ? 'linear-gradient(135deg, #5B72F5 0%, #3B4FCC 100%)' : '#D1D5DB' }}

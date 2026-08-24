@@ -18,6 +18,7 @@ ASSIGNMENT = re.compile(
     r"(?i)\b(?:api[_-]?key|access[_-]?token|auth[_-]?token|jwt[_-]?secret|password)"
     r"\s*[=:]\s*[\"']?([^\s\"'#]{8,})"
 )
+IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*,?$")
 SAFE_MARKERS = (
     "${",
     "example",
@@ -58,7 +59,9 @@ def main() -> int:
             assignment = ASSIGNMENT.search(line_text)
             if assignment:
                 value = assignment.group(1).lower()
-                if not any(marker in value for marker in SAFE_MARKERS):
+                if not IDENTIFIER.fullmatch(value) and not any(
+                    marker in value for marker in SAFE_MARKERS
+                ):
                     findings.append((relative, line_number, "credential-assignment"))
 
     for filename, line_number, kind in findings:

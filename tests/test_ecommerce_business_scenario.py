@@ -4,6 +4,8 @@ from __future__ import annotations
 from httpx import ASGITransport, AsyncClient
 from langchain_core.messages import AIMessage
 
+from app.services.vector_ops import document_vector_ids
+
 
 async def test_ecommerce_after_sales_support_flow(
     client,
@@ -33,10 +35,7 @@ async def test_ecommerce_after_sales_support_flow(
     detail = await client.get(f"/documents/{doc_id}")
     assert detail.status_code == 200
     assert detail.json()["status"] == "indexed"
-    assert any(
-        doc.metadata.get("source") == "mallpro-after-sales.txt"
-        for doc in vectorstore.docstore._dict.values()
-    )
+    assert await document_vector_ids("tenant-a", doc_id)
 
     agent_factory(
         [

@@ -133,9 +133,9 @@ async def main():
     # Quick smoke test
     print("\nSmoke test: searching for '龙族主角'...")
     results = store.similarity_search_with_score("龙族主角", k=3)
-    for doc, score in results:
-        print(f"  score={score:.4f} chunk_id={doc.metadata.get('chunk_id','?')[:40]}...")
-        print(f"  snippet: {doc.page_content[:80]}")
+    for result_doc, score in results:
+        print(f"  score={score:.4f} chunk_id={result_doc.metadata.get('chunk_id','?')[:40]}...")
+        print(f"  snippet: {result_doc.page_content[:80]}")
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ from sqlalchemy import select
 
 import app.core.database as database_module
 from app.models.chat_record import ChatRecord
+from app.services.vector_ops import document_vector_ids
 
 
 async def test_health_is_minimal_and_has_security_headers(client):
@@ -49,7 +50,7 @@ async def test_end_to_end_upload_index_ask(
 
     detail = await client.get(f"/documents/{doc_id}")
     assert detail.json()["status"] == "indexed"
-    assert len(vectorstore.docstore._dict) > 0
+    assert await document_vector_ids("tenant-a", doc_id)
 
     # 2) 假模型先真实调用检索工具，再生成不带可信来源的正文。
     agent = agent_factory(
