@@ -55,10 +55,13 @@ def judge(row: dict, resp: dict) -> dict:
         # 仅在证据为空时为 True（架构定义：refused=无据可引）；语义近邻的弱相关
         # chunks 会让标志位为 False，但只要回答明确说明知识库未覆盖/无法办理，
         # 就是合格的客服行为（软拒答），判 pass。
+        # 另一类合格行为：对"是否卖 X"类范围问题给出明确的否定式声明
+        # （"不卖沙发"）——零编造且与商品目录一致，同样判 pass（OOS-001 校准）。
         soft_refuse_marks = (
             "无法", "抱歉", "未收录", "不包含", "不在知识库", "知识库中没",
             "没有收录", "不支持", "不能为您", "无权", "属于您的个人",
             "建议您通过", "不提供", "不含", "暂未开通", "无法直接",
+            "不卖", "不出售", "没有销售", "暂不销售",
         )
         refuse_ok = refused or any(m in answer for m in soft_refuse_marks)
     else:
@@ -128,6 +131,7 @@ def main() -> int:
     parser.add_argument("--base-url", default="http://127.0.0.1:8765")
     parser.add_argument("--token", required=True)
     parser.add_argument("--limit", type=int, default=None)
+    parser.add_argument("--offset", type=int, default=0)
     parser.add_argument("--level", default=None, help="逗号分隔，如 L2,L3")
     parser.add_argument("--category", default=None, help="逗号分隔，如 RT,LG")
     parser.add_argument("--report-dir", default=str(ROOT / "evals" / "reports"))
@@ -144,6 +148,8 @@ def main() -> int:
     if args.category:
         cats = set(args.category.split(","))
         rows = [r for r in rows if r["category"] in cats]
+    if args.offset:
+        rows = rows[args.offset :]
     if args.limit:
         rows = rows[: args.limit]
 
