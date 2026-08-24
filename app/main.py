@@ -27,7 +27,7 @@ from app.api.documents import router as documents_router
 from app.api.qa import router as qa_router
 from app.config import settings
 from app.core.checkpointer import close_checkpointer, init_checkpointer
-from app.core.database import init_db
+from app.core.database import init_schema_for_runtime
 from app.core.observability import (
     normalize_request_id,
     render_metrics,
@@ -36,6 +36,7 @@ from app.core.observability import (
     sanitize_log_record,
 )
 from app.core.process_pool import shutdown_parser_pool
+from app.core.redis_client import close_redis, init_redis
 from app.core.tracing import (
     TracePolicyError,
     configure_langsmith,
@@ -89,12 +90,13 @@ def _configure_logging() -> None:
 async def lifespan(app: FastAPI):
     """应用生命周期：启动时初始化资源，关闭时清理。"""
     settings.ensure_dirs()
+    settings.validate_production_ready()
     _configure_logging()
     logger.info("启动企业级 Agentic RAG 知识库 …")
     logger.info("LLM={} | Embed={} | Base={}", settings.llm_model, settings.embed_model, settings.dashscope_base_url)
 
     # 建表（开发期 create_all；生产改 Alembic）
-    await init_db()
+    await init_schema_for_runtime()
     try:
         trace_decision = configure_langsmith()
     except TracePolicyError as exc:
@@ -103,6 +105,7 @@ async def lifespan(app: FastAPI):
         logger.warning("LangSmith 追踪被治理门拒绝 reason={}", trace_decision.reason)
     await record_trace_decision(trace_decision)
     await init_checkpointer()
+    await init_redis()
     expired_sessions = await cleanup_expired_conversations()
     recovered = await recover_stale_ingest_state()
     migrated_vectors = await asyncio.to_thread(migrate_legacy_vector_metadata)
@@ -119,6 +122,7 @@ async def lifespan(app: FastAPI):
 
     shutdown_parser_pool()
     build_agent.cache_clear()
+    await close_redis()
     await close_checkpointer()
     shutdown_langsmith()
     logger.info("服务关闭，资源已释放。")

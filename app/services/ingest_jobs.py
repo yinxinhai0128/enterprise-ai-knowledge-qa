@@ -266,7 +266,7 @@ async def execute_claimed_ingest_job(
         uploaded_by = document.uploaded_by
 
     if job_type == "reindex":
-        await asyncio.to_thread(delete_document_vectors, tenant_id, document_id)
+        await delete_document_vectors(tenant_id, document_id)
 
     heartbeat = asyncio.create_task(_lease_heartbeat(job_id, worker_id))
     try:
@@ -291,7 +291,7 @@ async def execute_claimed_ingest_job(
             pass
 
     if not result.success:
-        await asyncio.to_thread(delete_document_vectors, tenant_id, document_id)
+        await delete_document_vectors(tenant_id, document_id)
         await _mark_job_failure(job_id, worker_id, result)
         return
 
@@ -303,7 +303,7 @@ async def execute_claimed_ingest_job(
                 raise RuntimeError("finalize target missing")
             if job.status == "cancelled":
                 await db.rollback()
-                await asyncio.to_thread(delete_document_vectors, tenant_id, document_id)
+                await delete_document_vectors(tenant_id, document_id)
                 return
             if job.status != "running" or job.lease_owner != worker_id:
                 await db.rollback()
@@ -323,7 +323,7 @@ async def execute_claimed_ingest_job(
             await db.commit()
     except Exception:  # noqa: BLE001
         logger.exception("摄入完成但数据库状态提交失败 job_id={}", job_id)
-        await asyncio.to_thread(delete_document_vectors, tenant_id, document_id)
+        await delete_document_vectors(tenant_id, document_id)
         await _mark_job_failure(
             job_id,
             worker_id,

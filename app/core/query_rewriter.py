@@ -72,4 +72,6 @@ async def model_rewrite_query(query: str) -> str:
         "不要标点，不要解释）：\n" + query
     )
     result = await llm.ainvoke(prompt)
-    return result.content.strip()
+    if isinstance(result.content, str):
+        return result.content.strip()
+    return json.dumps(result.content, ensure_ascii=False)

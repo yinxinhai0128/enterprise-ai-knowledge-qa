@@ -10,6 +10,7 @@ from sqlalchemy import func, or_, select, text
 
 from app.config import settings
 from app.core.database import AsyncSessionLocal
+from app.models.document_chunk import DocumentChunk
 from app.models.ingest_job import IngestJob
 
 Probe = Callable[[], Awaitable[None]]
@@ -21,21 +22,9 @@ async def probe_database() -> None:
 
 
 async def probe_vectorstore() -> None:
-    """检查 FAISS 索引文件是否存在且大小合理。
-
-    实际向量搜索已切换到 faiss-cpu（ChromaDB 1.5.x HNSW 在本机无法构建）。
-    健康探针也同步对齐到 FAISS，避免"健康绿灯但 QA 静默失败"的误报。
-    """
-    def _check_faiss() -> None:
-        from app.core.faiss_store import FAISS_INDEX_DIR
-        index_file = FAISS_INDEX_DIR / "index.faiss"
-        if not index_file.exists():
-            raise FileNotFoundError(f"FAISS index missing: {index_file}")
-        size = index_file.stat().st_size
-        if size < 4096:
-            raise RuntimeError(f"FAISS index suspiciously small: {size} bytes")
-
-    await asyncio.to_thread(_check_faiss)
+    """检查 pgvector 切片表可读；空向量库不代表服务不可用。"""
+    async with AsyncSessionLocal() as db:
+        await db.execute(select(DocumentChunk.id).limit(1))
 
 
 async def probe_worker_leases() -> None:

@@ -8,6 +8,7 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
+from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 from pydantic import Field, SecretStr
@@ -35,7 +36,7 @@ class Settings(BaseSettings):
     llm_model: str = Field(default="qwen3.6-plus", description="对话大模型")
     embed_model: str = Field(default="text-embedding-v3", description="向量模型")
     llm_max_output_tokens: int = Field(default=2048, ge=1, le=8192)
-    agent_max_steps: int = Field(default=30, ge=3, le=50)
+    agent_max_steps: int = Field(default=200, ge=10, le=500)
     max_model_calls_per_request: int = Field(default=4, ge=1, le=20)
     max_retrieval_calls_per_request: int = Field(default=3, ge=1, le=20)
     llm_input_cost_per_million: float = Field(default=0.0, ge=0.0)
@@ -107,7 +108,20 @@ class Settings(BaseSettings):
     ingest_worker_concurrency: int = Field(default=1, ge=1, le=8)
 
     # ---------- 会话、审计与人工介入 ----------
-    checkpoint_db_path: Path = Path("storage/checkpoints.db")
+    checkpoint_db_path: Path = BASE_DIR / "storage" / "checkpoints.db"
+    pg_checkpoint_url: str = Field(
+        default="postgresql://ekqa:ekqa_dev_password@localhost:5432/ekqa",
+        description="LangGraph Checkpoint PostgreSQL 连接串（psycopg 格式）",
+    )
+    redis_url: str = Field(
+        default="redis://localhost:6379/0",
+        description="Redis 连接串（缓存/限流）",
+    )
+    qa_cache_ttl_seconds: int = Field(
+        default=3600,
+        ge=0,
+        description="QA 响应缓存 TTL（秒）；0 = 禁用缓存",
+    )
     conversation_ttl_days: int = Field(default=30, ge=1, le=3650)
     conversation_max_messages: int = Field(default=100, ge=4, le=1000)
     conversation_lease_seconds: int = Field(default=300, ge=30, le=3600)
@@ -124,6 +138,9 @@ class Settings(BaseSettings):
     )
     auth_jwt_issuer: str = Field(default="enterprise-idp", description="JWT issuer")
     auth_jwt_audience: str = Field(default="enterprise-kb", description="JWT audience")
+    auth_jwt_expire_seconds: int = Field(default=86400, ge=300, le=86400)
+    auth_login_rate_limit_per_minute: int = Field(default=10, ge=1, le=120)
+    auth_login_max_concurrency: int = Field(default=2, ge=1, le=20)
 
     # ---------- 路径（容器内 /app 下，与挂载卷对齐） ----------
     storage_dir: Path = Field(default=BASE_DIR / "storage", description="业务文件存储目录")
@@ -152,6 +169,39 @@ class Settings(BaseSettings):
             self.checkpoint_db_path.parent,
         ):
             path.mkdir(parents=True, exist_ok=True)
+
+    def validate_production_ready(self) -> None:
+        """Fail fast when production starts with development-only settings."""
+        if self.app_env != "production":
+            return
+
+        problems: list[str] = []
+        jwt_value = self.auth_jwt_secret.get_secret_value()
+        dashscope_value = self.dashscope_api_key.strip()
+        database_scheme = urlparse(self.database_url).scheme
+        redis = urlparse(self.redis_url)
+
+        if database_scheme.startswith("sqlite"):
+            problems.append("DATABASE_URL must use PostgreSQL in production")
+        if "ekqa_dev_password" in self.database_url:
+            problems.append("DATABASE_URL must not contain the development password")
+        if not dashscope_value or dashscope_value == "your_dashscope_api_key_here":
+            problems.append("DASHSCOPE_API_KEY must be a real production key")
+        if len(jwt_value) < 32 or jwt_value in {
+            "",
+            "replace_with_at_least_32_random_characters",
+        }:
+            problems.append("AUTH_JWT_SECRET must be a strong production secret")
+        if redis.scheme not in {"redis", "rediss"}:
+            problems.append("REDIS_URL must use redis:// or rediss://")
+        if redis.hostname in {"localhost", "127.0.0.1", "::1"}:
+            problems.append("REDIS_URL must not point at localhost in production")
+        if not self.malware_scan_required:
+            problems.append("MALWARE_SCAN_REQUIRED must be true in production")
+
+        if problems:
+            joined = "; ".join(problems)
+            raise RuntimeError(f"Production configuration is not ready: {joined}")
 
 
 @lru_cache(maxsize=1)

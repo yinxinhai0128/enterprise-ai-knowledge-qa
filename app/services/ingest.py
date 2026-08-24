@@ -24,7 +24,7 @@ from loguru import logger
 from openpyxl import load_workbook
 
 from app.config import settings
-from app.core.faiss_store import add_documents_to_faiss
+from app.core.pgvector_store import add_documents_to_pgvector
 from app.core.process_pool import run_in_parser_process
 
 
@@ -195,7 +195,7 @@ async def ingest_document(
         return IngestResult(success=False, error_msg="文件归档失败")
 
     try:
-        await asyncio.to_thread(add_documents_to_faiss, chunks)
+        await add_documents_to_pgvector(chunks)
 
         logger.info("摄入完成 doc_id={} chunks={}", doc_id, len(chunks))
         return IngestResult(

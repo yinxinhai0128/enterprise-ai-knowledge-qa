@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator
 
-from sqlalchemy import Connection, inspect, text
+from sqlalchemy import Connection, text
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -16,6 +16,8 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.orm import DeclarativeBase
 
 from app.config import settings
+
+CURRENT_SCHEMA_REVISION = "20260704_0001"
 
 # 异步引擎（SQLite 需要 echo=False，连接串见 settings.database_url）
 engine = create_async_engine(settings.database_url, echo=False, future=True)
@@ -31,60 +33,6 @@ AsyncSessionLocal = async_sessionmaker(
 class Base(DeclarativeBase):
     """所有 ORM 模型的声明基类。"""
 
-
-def _migrate_schema(connection: Connection) -> None:
-    """以幂等方式补齐当前阶段需要的列并保留既有数据。"""
-    inspector = inspect(connection)
-    tables = set(inspector.get_table_names())
-    migrations = {
-        "documents": (
-            ("tenant_id", "VARCHAR(128) NOT NULL DEFAULT 'legacy'"),
-            ("uploaded_by", "VARCHAR(128) NOT NULL DEFAULT 'legacy'"),
-            ("content_sha256", "VARCHAR(64) NULL"),
-        ),
-        "chat_records": (
-            ("tenant_id", "VARCHAR(128) NOT NULL DEFAULT 'legacy'"),
-            ("user_id", "VARCHAR(128) NOT NULL DEFAULT 'legacy'"),
-            ("refused", "BOOLEAN NOT NULL DEFAULT 0"),
-            ("tool_used", "BOOLEAN NOT NULL DEFAULT 0"),
-            ("sources", "JSON NOT NULL DEFAULT '[]'"),
-            ("trace_id", "VARCHAR(64) NULL"),
-            ("model", "VARCHAR(128) NULL"),
-            ("input_tokens", "INTEGER NOT NULL DEFAULT 0"),
-            ("output_tokens", "INTEGER NOT NULL DEFAULT 0"),
-            ("total_tokens", "INTEGER NOT NULL DEFAULT 0"),
-            ("latency_ms", "FLOAT NOT NULL DEFAULT 0"),
-            ("audit_status", "VARCHAR(32) NOT NULL DEFAULT 'completed'"),
-            ("audit_error", "TEXT NULL"),
-            ("policy_category", "VARCHAR(64) NULL"),
-            ("policy_rule_version", "VARCHAR(64) NULL"),
-            ("feedback_rating", "VARCHAR(8) NULL"),
-            ("feedback_comment", "TEXT NULL"),
-        ),
-    }
-    for table, columns in migrations.items():
-        if table not in tables:
-            continue
-        existing = {column["name"] for column in inspector.get_columns(table)}
-        for name, ddl in columns:
-            if name not in existing:
-                connection.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {ddl}"))
-                if table == "chat_records" and name == "refused":
-                    # 仅用于一次性迁移旧记录；新请求的 refused 只由真实 evidence 决定。
-                    connection.execute(
-                        text(
-                            "UPDATE chat_records SET refused = 1 "
-                            "WHERE has_source = 0 AND ("
-                            "answer LIKE :m1 OR answer LIKE :m2 OR "
-                            "answer LIKE :m3 OR answer LIKE :m4)"
-                        ),
-                        {
-                            "m1": "%没有找到相关%",
-                            "m2": "%未找到相关%",
-                            "m3": "%知识库中没有%",
-                            "m4": "%无法回答%",
-                        },
-                    )
 
 
 def _ensure_tenant_indexes(connection: Connection) -> None:
@@ -149,13 +97,52 @@ def _ensure_tenant_indexes(connection: Connection) -> None:
 
 async def init_db() -> None:
     """建表（开发期用 create_all；生产应改用 Alembic 迁移）。"""
-    # 导入模型以注册到 Base.metadata
     from app import models  # noqa: F401
 
     async with engine.begin() as conn:
-        await conn.run_sync(_migrate_schema)
+        # pgvector 扩展（PostgreSQL 才有效，SQLite 会跳过）
+        try:
+            await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+        except Exception:
+            pass
         await conn.run_sync(Base.metadata.create_all)
-        await conn.run_sync(_ensure_tenant_indexes)
+        # 传统租户索引（保留兼容性）
+        try:
+            await conn.run_sync(_ensure_tenant_indexes)
+        except Exception:
+            pass
+        # document_chunks 向量列的 HNSW 索引（M1-B 创建该表后生效）
+        try:
+            await conn.execute(text(
+                "CREATE INDEX IF NOT EXISTS ix_doc_chunks_embed_hnsw "
+                "ON document_chunks USING hnsw (embedding vector_cosine_ops) "
+                "WITH (m=16, ef_construction=64)"
+            ))
+        except Exception:
+            pass
+
+
+async def init_schema_for_runtime() -> None:
+    """Initialize local schema; production only verifies Alembic state."""
+    if settings.app_env == "production":
+        try:
+            async with engine.begin() as conn:
+                result = await conn.execute(text("SELECT version_num FROM alembic_version"))
+                revision = result.scalar_one_or_none()
+        except Exception as exc:  # noqa: BLE001
+            raise RuntimeError(
+                "Production database schema is not migrated. "
+                f"Expected Alembic revision {CURRENT_SCHEMA_REVISION}. "
+                "Run `alembic upgrade head` before starting API/worker."
+            ) from exc
+        if revision != CURRENT_SCHEMA_REVISION:
+            raise RuntimeError(
+                "Production database schema is not migrated. "
+                f"Expected Alembic revision {CURRENT_SCHEMA_REVISION}, got {revision!r}. "
+                "Run `alembic upgrade head` before starting API/worker."
+            )
+        return
+    await init_db()
 
 
 async def get_session() -> AsyncIterator[AsyncSession]:

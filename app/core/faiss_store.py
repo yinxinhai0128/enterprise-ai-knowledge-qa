@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import threading
 from pathlib import Path
+from typing import cast
 
 from langchain_community.vectorstores import FAISS as LangchainFAISS
 from langchain_core.documents import Document
@@ -19,6 +20,10 @@ FAISS_INDEX_DIR = Path.home() / "faiss_kb"
 
 _lock = threading.Lock()
 _store: LangchainFAISS | None = None
+
+
+def _docstore_items(store: LangchainFAISS) -> dict[str, Document]:
+    return cast(dict[str, Document], getattr(store.docstore, "_dict", {}))
 
 
 def get_faiss_store() -> LangchainFAISS | None:
@@ -96,7 +101,7 @@ def add_documents_to_faiss(documents: list[Document]) -> None:
                 _store.save_local(str(FAISS_INDEX_DIR))
                 return
         # Idempotency: remove existing vectors with same chunk_ids before re-adding
-        existing = [id_ for id_ in ids if id_ in _store.docstore._dict]
+        existing = [id_ for id_ in ids if id_ in _docstore_items(_store)]
         if existing:
             _store.delete(existing)
         _store.add_texts(texts, metadatas=metadatas, ids=ids)
@@ -119,7 +124,7 @@ def delete_documents_from_faiss(tenant_id: str, doc_id: int) -> int:
             )
         ids_to_delete = [
             vid
-            for vid, doc in _store.docstore._dict.items()
+            for vid, doc in _docstore_items(_store).items()
             if str(doc.metadata.get("tenant_id")) == str(tenant_id)
             and int(doc.metadata.get("doc_id", -1)) == int(doc_id)
         ]

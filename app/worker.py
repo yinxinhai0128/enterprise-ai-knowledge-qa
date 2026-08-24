@@ -6,7 +6,7 @@ import asyncio
 from loguru import logger
 
 from app.config import settings
-from app.core.database import engine, init_db
+from app.core.database import engine, init_schema_for_runtime
 from app.core.process_pool import shutdown_parser_pool
 from app.services.ingest_jobs import new_worker_id, recover_stale_ingest_state, run_worker_once
 
@@ -29,7 +29,8 @@ async def _worker_loop(slot: int) -> None:
 
 async def main() -> None:
     settings.ensure_dirs()
-    await init_db()
+    settings.validate_production_ready()
+    await init_schema_for_runtime()
     recovered = await recover_stale_ingest_state()
     logger.info("启动恢复完成 {}", recovered)
     tasks = [

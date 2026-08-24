@@ -387,11 +387,7 @@ async def delete_document(
     await db.commit()
 
     try:
-        await asyncio.to_thread(
-            delete_document_vectors,
-            document.tenant_id,
-            document.id,
-        )
+        await delete_document_vectors(document.tenant_id, document.id)
         await asyncio.to_thread(Path(document.file_path).unlink, missing_ok=True)
     except Exception as exc:  # noqa: BLE001
         logger.exception("文档三层删除失败 doc_id={}", document.id)
