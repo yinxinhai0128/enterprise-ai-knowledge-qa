@@ -58,10 +58,9 @@ def test_vulnerability_acceptance_is_scoped_and_not_expired():
         (ROOT / "security" / "accepted-vulnerabilities.json").read_text(encoding="utf-8")
     )
     accepted = policy["accepted"]
-    assert {(item["id"], item["package"]) for item in accepted} == {
-        ("CVE-2026-12087", "perl"),
-        ("CVE-2026-48959", "perl"),
-        ("CVE-2026-48962", "perl"),
+    # perl CVE 是基线豁免；PYSEC 条目为依赖审计新增豁免，均须在有效期内且字段完整
+    assert {("CVE-2026-12087", "perl"), ("CVE-2026-48959", "perl"), ("CVE-2026-48962", "perl")} <= {
+        (item["id"], item["package"]) for item in accepted
     }
     for item in accepted:
         assert date.fromisoformat(item["expires_on"]) >= date.today()

@@ -16,7 +16,7 @@ test.describe('视觉升级', () => {
     await mockApi(page)
     await page.goto('/chat')
 
-    await expect(page.getByRole('navigation').or(page.getByText('EKE2'))).toBeVisible()
+    await expect(page.getByRole('navigation').or(page.getByText('EKE2')).first()).toBeVisible()
     await expect(page.getByRole('textbox', { name: '问题输入框' })).toBeVisible()
   })
 })
