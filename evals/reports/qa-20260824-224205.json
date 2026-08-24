@@ -1,0 +1,59 @@
+{
+  "rows": [
+    {
+      "id": "COMP-L1-001",
+      "category": "COMP",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "COMP-L1-002",
+      "category": "COMP",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "COMP-L1-003",
+      "category": "COMP",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "COMP-L1-004",
+      "category": "COMP",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 0,
+    "pass_rate": 0.0,
+    "by_level": {
+      "L1": {
+        "total": 4,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    },
+    "by_category": {
+      "COMP": {
+        "total": 4,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    }
+  }
+}

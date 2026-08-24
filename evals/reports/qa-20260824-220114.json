@@ -1,0 +1,89 @@
+{
+  "rows": [
+    {
+      "id": "COMP-L1-001",
+      "category": "COMP",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "我们公司（云棉家居 CloudCotton Home）成立于 **2019 年**，总部位于中国浙江省杭州市。\n\n参考来源：\n- [来源:01-公司概况与品牌认证.md]",
+      "sources": [
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md"
+      ]
+    },
+    {
+      "id": "COMP-L1-002",
+      "category": "COMP",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库信息，云棉家居（CloudCotton Home）的总部位于**中国浙江省杭州市**。\n\n参考来源：\n- [来源:01-公司概况与品牌认证.md]\n- [来源:06-物流配送政策.md]",
+      "sources": [
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md"
+      ]
+    },
+    {
+      "id": "COMP-L1-003",
+      "category": "COMP",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库，OEKO-TEX STANDARD 100 的证书编号为 **21.HIN.12345**。\n\n参考来源：\n- [来源:01-公司概况与品牌认证.md]\n- [来源:04-材质详解与性能对比.md]",
+      "sources": [
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md"
+      ]
+    },
+    {
+      "id": "COMP-L1-004",
+      "category": "COMP",
+      "level": "L1",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "客服邮箱是：**[REDACTED_EMAIL]**\n\n该邮箱提供 7×24 小时服务，承诺在工作日 12 小时内首次回复，节假日 24 小时内回复（旺季可能延长至 24–48 小时）。\n\n参考来源：\n- [来源:10-客户服务与FAQ.m",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 3,
+    "pass_rate": 0.75,
+    "by_level": {
+      "L1": {
+        "total": 4,
+        "passed": 3,
+        "pass_rate": 0.75
+      }
+    },
+    "by_category": {
+      "COMP": {
+        "total": 4,
+        "passed": 3,
+        "pass_rate": 0.75
+      }
+    }
+  }
+}

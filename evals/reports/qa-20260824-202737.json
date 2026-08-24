@@ -1,0 +1,268 @@
+{
+  "rows": [
+    {
+      "id": "RT-L1-001",
+      "category": "RT",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "RT-L1-002",
+      "category": "RT",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "RT-L1-003",
+      "category": "RT",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "RT-L1-004",
+      "category": "RT",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "RT-L1-005",
+      "category": "RT",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "RT-L1-006",
+      "category": "RT",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "RT-L1-007",
+      "category": "RT",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "RT-L1-008",
+      "category": "RT",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "LG-L1-001",
+      "category": "LG",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "LG-L1-002",
+      "category": "LG",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "LG-L1-003",
+      "category": "LG",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "LG-L1-004",
+      "category": "LG",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "LG-L1-005",
+      "category": "LG",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "LG-L1-006",
+      "category": "LG",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "LG-L1-007",
+      "category": "LG",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "PAY-L1-001",
+      "category": "PAY",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "PAY-L1-002",
+      "category": "PAY",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "PAY-L1-003",
+      "category": "PAY",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "PAY-L1-004",
+      "category": "PAY",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "PAY-L1-005",
+      "category": "PAY",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "PROMO-L1-001",
+      "category": "PROMO",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "PROMO-L1-002",
+      "category": "PROMO",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "PROMO-L1-003",
+      "category": "PROMO",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "PROMO-L1-004",
+      "category": "PROMO",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "PROD-L1-001",
+      "category": "PROD",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 25,
+    "passed": 0,
+    "pass_rate": 0.0,
+    "by_level": {
+      "L1": {
+        "total": 25,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    },
+    "by_category": {
+      "RT": {
+        "total": 8,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "LG": {
+        "total": 7,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "PAY": {
+        "total": 5,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "PROMO": {
+        "total": 4,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "PROD": {
+        "total": 1,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    }
+  }
+}

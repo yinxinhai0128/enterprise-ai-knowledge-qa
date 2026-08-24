@@ -1,0 +1,87 @@
+{
+  "rows": [
+    {
+      "id": "PAY-L3-001",
+      "category": "PAY",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L3-002",
+      "category": "PAY",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L3-003",
+      "category": "PAY",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROMO-L3-001",
+      "category": "PROMO",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROMO-L3-002",
+      "category": "PROMO",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L3-003",
+      "category": "PROD",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 0,
+    "pass_rate": 0.0,
+    "by_level": {
+      "L3": {
+        "total": 6,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    },
+    "by_category": {
+      "PAY": {
+        "total": 3,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "PROMO": {
+        "total": 2,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "PROD": {
+        "total": 1,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    }
+  }
+}

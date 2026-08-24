@@ -1,0 +1,153 @@
+{
+  "rows": [
+    {
+      "id": "LG-L1-001",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据运费政策，各市场的免邮门槛如下：\n\n*   **美国**：订单满 **$49**\n*   **英国**：订单满 **£39**\n*   **德国**：订单满 **€49**\n*   **澳大利亚**：订单满 **A$69**\n*   *",
+      "sources": [
+        "06-物流配送政策.md",
+        "10-客户服务与FAQ.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "LG-L1-002",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据物流配送政策，美国东部的配送时效如下：\n\n*   **平日时效**：一般为 **2–5 个工作日**。\n*   **发货仓库**：通常由美国新泽西州（NJ）仓库发货。\n*   **旺季说明**：在黑五至圣诞季等旺季期间，时效可能会延长 ",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L1-003",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，英国仓发英国的时效如下：\n\n*   **平日标准时效**：**2–4 个工作日**（部分参考数据为 2–3 个工作日）。\n*   **旺季时效**（黑五至圣诞期间）：预计延长 **1–2 天**。\n*   **加急配送**：",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L1-004",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据运费政策，加急配送（Express）的收费标准如下：\n\n*   **费用**：额外收取 **$9.99–$19.99**。\n*   **时效**：**1–2 工作日**送达。\n*   **适用范围**：目前仅支持**美国**和**英国*",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L1-005",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据物流配送政策，能否寄送到 PO Box 取决于具体的承运商：\n\n*   **USPS**：支持寄送到 PO Box。\n*   **UPS / FedEx**：不支持寄送到 PO Box，请使用实际物理地址。\n\n参考来源：\n- [来源:0",
+      "sources": [
+        "06-物流配送政策.md",
+        "10-客户服务与FAQ.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L1-006",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据物流配送政策，订单发货后的物流查询时效如下：\n\n1.  **追踪号获取**：发货后 **24 小时内**会将追踪号发送至您的注册邮箱，您也可以在独立站 \"My Account → Orders\" 页面查看。\n2.  **物流信息更新**",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L1-007",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库中的《物流配送政策》，日本仓（位于东京）发往日本的标准时效为 **2–4 个工作日**。\n\n**补充说明：**\n*   **订单处理**：工作日下午 2 点（当地时间）前下单通常当日处理，之后或周末下单则于次工作日处理。\n*   ",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L1-008",
+      "category": "LG",
+      "level": "L1",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "根据知识库信息，澳洲仓（澳大利亚悉尼）发往澳大利亚的时效如下：\n\n*   **平日参考时效**：3–6 个工作日。\n*   **旺季参考时效**：在黑五至圣诞等旺季期间，时效可能延长 2–3 天。\n\n参考来源：\n- [来源:06-物流配送政",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "passed": 7,
+    "pass_rate": 0.875,
+    "by_level": {
+      "L1": {
+        "total": 8,
+        "passed": 7,
+        "pass_rate": 0.875
+      }
+    },
+    "by_category": {
+      "LG": {
+        "total": 8,
+        "passed": 7,
+        "pass_rate": 0.875
+      }
+    }
+  }
+}

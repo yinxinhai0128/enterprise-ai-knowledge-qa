@@ -1,0 +1,447 @@
+{
+  "rows": [
+    {
+      "id": "RT-L1-001",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，退货期限规定如下：\n\n*   **常规退货期限**：自收货之日起 **30 天**内。\n    *   **独立站**：需在 30 天内发起申请，且产品须为未洗涤、未使用、原包装状态。\n    *   **亚马逊平台**：遵",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L1-002",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，公司的**质量保证期为 180 天**。\n\n具体说明如下：\n*   **适用范围**：即使商品已超过 30 天退货期或已拆封使用，若出现缝线开裂等质量问题，180 天质量保证依然有效。\n*   **批发产品**：180 天质",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L1-003",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，质量问题退货的运费由**云棉家居（公司）承担**。\n\n具体规定如下：\n1.  **退货运费**：若判定为质量问题，退货运费由公司承担；非质量原因（如尺寸不合适、颜色不喜欢等）则由客户自付。\n2.  **退货标签**：客服审核",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L1-004",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库内容，退款到账时间取决于您的支付方式，具体如下：\n\n* **信用卡**：3–5 个工作日\n* **PayPal**：1–3 个工作日\n* **礼品卡**：即时到账（退回至账户余额）\n\n**注意**：上述时间为仓库签收并验收通过后的",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "RT-L1-005",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据公司的退换货政策，亚马逊订单的退货流程如下：\n\n1.  **操作入口**：请通过亚马逊后台的**退货中心（Return Center）**发起退货申请。\n2.  **退货期限**：遵循亚马逊平台政策，通常为收货之日起 **30 天**内",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L1-006",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据《07 · 退换货与退款政策》，标准换货流程共分为以下五步：\n\n1. **申请**：客户需在**收货 30 天内**通过邮件或在线聊天联系客服，说明换货原因（如尺寸或颜色）。\n2. **审核**：客服核对订单号与产品照片，确认符合换货条",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L1-007",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库文档，以下情况**不属于质量问题**，不在质保范围内：\n\n1.  **正常工艺误差与物理特性**\n    *   **尺寸偏差**：正常工艺误差（±2–3cm 内）。\n    *   **缩水**：棉类产品首次缩水 3–5",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L1-008",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "可以换。根据知识库规定，客户买错尺寸属于非质量问题，您可以选择**自费换货**或**退货重拍**。\n\n**换货流程如下：**\n1. **提交申请**：提供订单号等信息，客服将在 1–2 个工作日内审核。\n2. **寄回旧件**：审核通过后，",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "LG-L1-001",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据运费政策，各市场独立站的免邮门槛如下：\n\n*   **美国**：订单满 **$49**\n*   **英国**：订单满 **£39**\n*   **德国**：订单满 **€49**\n*   **澳大利亚**：订单满 **A$69**\n* ",
+      "sources": [
+        "06-物流配送政策.md",
+        "10-客户服务与FAQ.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "LG-L1-002",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据物流配送政策，美国东部的配送时效如下：\n\n*   **平日时效**：一般为 **2–5 个工作日**。\n*   **发货仓库**：通常由美国新泽西州（NJ）仓库发货。\n*   **旺季说明**：在黑五至圣诞季等旺季期间，时效可能会延长 ",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "LG-L1-003",
+      "category": "LG",
+      "level": "L1",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "根据知识库文档，英国仓发英国的时效如下：\n\n*   **平日参考时效**：**2–3 个工作日**（仓库布局表显示范围为 2–4 个工作日）。\n*   **旺季时效（黑五–圣诞）**：预计延长 **1–2 天**。\n\n**补充说明**：\n*",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L1-004",
+      "category": "LG",
+      "level": "L1",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "根据运费政策，加急配送（Express）的收费标准如下：\n\n*   **费用**：额外收费 **$9.99–$19.99**。\n*   **时效**：1–2 个工作日送达。\n*   **适用范围**：目前仅支持**美国**和**英国**的部",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L1-005",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据物流配送政策：\n\n*   **USPS** 支持寄送到 PO Box。\n*   **UPS / FedEx** 不支持寄送到 PO Box，请使用实际物理地址。\n\n参考来源：\n- [来源:06-物流配送政策.md]\n- [来源:10-客",
+      "sources": [
+        "06-物流配送政策.md",
+        "10-客户服务与FAQ.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L1-006",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据物流配送政策，订单发货后的物流查询情况如下：\n\n1. **追踪号获取**：发货后 **24 小时内**会将追踪号发送至您的注册邮箱，您也可以在独立站 \"My Account → Orders\" 页面查看。\n2. **物流信息更新**：收",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L1-007",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，日本仓（位于东京）发往日本的标准时效为 **2-4 个工作日**。\n\n**补充说明：**\n*   **订单处理时间**：工作日下午 2 点（当地时间）前下单当日处理，之后或周末下单则于次工作日处理。\n*   **节假日影响*",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "PAY-L1-001",
+      "category": "PAY",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，独立站支持的支付方式如下：\n\n### 1. 全球通用\n*   **信用卡/借记卡**：Visa、Mastercard、Amex\n*   **电子钱包**：PayPal\n\n### 2. 地区专属支付方式\n*   **美国**：",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "PAY-L1-002",
+      "category": "PAY",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "可以使用 Klarna 分期。根据知识库信息，Klarna（先买后付）目前适用于**美国、英国和德国**市场。\n\n以美国市场为例，Klarna 提供以下几种分期方案：\n*   **4 期免息**：每 2 周付一次，共 4 次，无手续费。\n*",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "PAY-L1-003",
+      "category": "PAY",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，网站（独立站）的价格显示情况如下：\n\n1.  **支持多币种展示**：网站支持展示美元（USD）、英镑（GBP）、欧元（EUR）、澳元（AUD）、加元（CAD）、日元（JPY）等多种货币。\n2.  **可手动切换**：您可以",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "PAY-L1-004",
+      "category": "PAY",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "可以开发票，具体政策如下：\n\n*   **企业客户**：可以申请含税发票（VAT Invoice）。下单后请发送邮件至 [REDACTED_EMAIL]，提供以下信息：\n    1.  订单号\n    2.  公司注册名称（英文）\n    ",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "PAY-L1-005",
+      "category": "PAY",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "是的，日本站的价格已包含 **10% 的消费税**。\n\n参考来源：\n- [来源:08-支付货币与发票.md]\n- [来源:06-物流配送政策.md]\n- [来源:10-客户服务与FAQ.md]",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "PROMO-L1-001",
+      "category": "PROMO",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，**CloudCoins** 是公司的**积分体系**，主要用于订单金额抵扣。以下是其核心规则：\n\n*   **价值与使用**：\n    *   **汇率**：100 CloudCoins = $1。\n    *   **抵",
+      "sources": [
+        "09-促销积分与礼品卡.md",
+        "09-促销积分与礼品卡.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "PROMO-L1-002",
+      "category": "PROMO",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "是的，新用户享有以下专属优惠：\n\n1.  **首单订阅优惠**：注册并订阅邮件，系统将自动发送 **10% off** 折扣码（有效期 30 天）。\n2.  **推荐优惠**：使用老用户的推荐码下单，可享 **10% off**。\n3.  ",
+      "sources": [
+        "09-促销积分与礼品卡.md",
+        "09-促销积分与礼品卡.md",
+        "09-促销积分与礼品卡.md"
+      ]
+    },
+    {
+      "id": "PROMO-L1-003",
+      "category": "PROMO",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，礼品卡的有效期为 **3 年**。\n\n参考来源：\n- [来源:09-促销积分与礼品卡.md]",
+      "sources": [
+        "09-促销积分与礼品卡.md",
+        "09-促销积分与礼品卡.md",
+        "09-促销积分与礼品卡.md"
+      ]
+    },
+    {
+      "id": "PROMO-L1-004",
+      "category": "PROMO",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "积分是会过期的。根据知识库中的规则：\n\n1.  **有效期**：积分有效期为 **12 个月**。\n2.  **重置机制**：每次产生新的消费后，所有未过期积分的有效期会重新计算（重置）。\n3.  **过期处理**：过期的积分会自动清零，无",
+      "sources": [
+        "09-促销积分与礼品卡.md",
+        "09-促销积分与礼品卡.md",
+        "09-促销积分与礼品卡.md"
+      ]
+    },
+    {
+      "id": "PROD-L1-001",
+      "category": "PROD",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据公司产品目录，目前共有 **7 个主要产品系列**，具体如下：\n\n| 系列名称 | 核心材质 | 适用市场 | 价格区间 (USD) |\n| :--- | :--- | :--- | :--- |\n| **Cloud Luxe 云奢系列",
+      "sources": [
+        "02-产品目录与SKU规则.md",
+        "02-产品目录与SKU规则.md",
+        "02-产品目录与SKU规则.md"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 25,
+    "passed": 23,
+    "pass_rate": 0.92,
+    "by_level": {
+      "L1": {
+        "total": 25,
+        "passed": 23,
+        "pass_rate": 0.92
+      }
+    },
+    "by_category": {
+      "RT": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "LG": {
+        "total": 7,
+        "passed": 5,
+        "pass_rate": 0.7142857142857143
+      },
+      "PAY": {
+        "total": 5,
+        "passed": 5,
+        "pass_rate": 1.0
+      },
+      "PROMO": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "PROD": {
+        "total": 1,
+        "passed": 1,
+        "pass_rate": 1.0
+      }
+    }
+  }
+}

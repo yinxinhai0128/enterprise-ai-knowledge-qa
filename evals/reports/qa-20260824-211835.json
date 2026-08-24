@@ -1,0 +1,445 @@
+{
+  "rows": [
+    {
+      "id": "PROD-L1-002",
+      "category": "PROD",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，**旗舰高端线**是 **Cloud Luxe（云奢系列）**。\n\n该系列的规格参数为 **600TC**（Thread Count，即纱线密度），材质为 100% 埃及长绒棉。\n\n参考来源：\n- [来源:02-产品目录与S",
+      "sources": [
+        "02-产品目录与SKU规则.md",
+        "02-产品目录与SKU规则.md",
+        "02-产品目录与SKU规则.md"
+      ]
+    },
+    {
+      "id": "PROD-L1-003",
+      "category": "PROD",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库资料，Queen 尺寸被套的大小因市场标准而异：\n\n*   **美国市场（美标）**：通常为 **90×90 英寸**（该尺寸在美区最畅销）。\n*   **日本市场（日标）**：尺寸为 **210×210 厘米**。\n\n由于不同国",
+      "sources": [
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "PROD-L1-004",
+      "category": "PROD",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，美国大学宿舍标配的床品尺寸是 **Twin XL**。\n\n具体规格与注意事项如下：\n\n*   **尺寸数据**：\n    *   **床单**：66×102 英寸\n    *   **被套**：68×90 英寸\n*   **",
+      "sources": [
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md"
+      ]
+    },
+    {
+      "id": "PROD-L1-005",
+      "category": "PROD",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库资料，白鹅绒被的蓬松度（Fill Power）通常在 **600–800 FP** 之间。\n\n具体规格如下：\n* **常规范围**：白鹅绒填充物的蓬松度标准为 600–800 FP。蓬松度越高，保暖性越好且被子越轻。\n* ",
+      "sources": [
+        "04-材质详解与性能对比.md",
+        "04-材质详解与性能对比.md",
+        "04-材质详解与性能对比.md"
+      ]
+    },
+    {
+      "id": "PROD-L1-006",
+      "category": "PROD",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，我司浴巾的克重为 **700GSM**（采用埃及棉材质，属于厚实档位）。\n\n参考来源：\n- [来源:02-产品目录与SKU规则.md]\n- [来源:05-洗涤护理指南.md]\n- [来源:04-材质详解与性能对比.md]",
+      "sources": [
+        "02-产品目录与SKU规则.md",
+        "05-洗涤护理指南.md",
+        "04-材质详解与性能对比.md"
+      ]
+    },
+    {
+      "id": "PROD-L1-007",
+      "category": "PROD",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库，有机棉采用的是 **GOTS（Global Organic Textile Standard，全球有机纺织品标准）** 认证。\n\n具体信息如下：\n*   **证书编号**：CU12345678\n*   **核查渠道**：",
+      "sources": [
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md",
+        "04-材质详解与性能对比.md"
+      ]
+    },
+    {
+      "id": "PROD-L1-008",
+      "category": "PROD",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，**记忆棉枕头不能整体水洗**，也不可以干洗（干洗溶剂会腐蚀发泡体）。\n\n正确的清洁护理方式如下：\n1.  **仅可点洗**：只能对枕头外壳进行局部点洗，处理污渍。\n2.  **通风晾晒**：清洁后需保持通风。\n3.  **",
+      "sources": [
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md"
+      ]
+    },
+    {
+      "id": "CARE-L1-001",
+      "category": "CARE",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库，埃及棉四件套的洗涤与护理建议如下：\n\n**1. 洗涤方式**\n*   **水温**：建议使用冷水或温水（≤40°C）。\n*   **洗涤剂**：请使用中性、无荧光增白剂的洗涤液，**严禁使用含氯漂白剂**（会损伤纤维并加",
+      "sources": [
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md",
+        "04-材质详解与性能对比.md"
+      ]
+    },
+    {
+      "id": "CARE-L1-002",
+      "category": "CARE",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据《洗涤护理指南》，天丝（Tencel）**可以使用低温烘干**，同时也建议**阴干**。\n\n具体护理建议如下：\n*   **烘干**：若使用烘干机，请务必选择**低温**档位，避免高温导致缩水或纤维损伤。\n*   **水洗**：建议使用",
+      "sources": [
+        "05-洗涤护理指南.md",
+        "04-材质详解与性能对比.md",
+        "05-洗涤护理指南.md"
+      ]
+    },
+    {
+      "id": "CARE-L1-003",
+      "category": "CARE",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库，羽绒被的正确存放方法如下：\n\n1.  **收纳前必须彻底洗净并烘干**：残留的汗渍或油脂会导致被子发黄霉变；羽绒被若未彻底烘干，容易产生异味、发霉或结块。\n2.  **使用透气棉袋存放**：请将羽绒被放入透气的棉袋中进行",
+      "sources": [
+        "05-洗涤护理指南.md",
+        "04-材质详解与性能对比.md",
+        "05-洗涤护理指南.md"
+      ]
+    },
+    {
+      "id": "CARE-L1-004",
+      "category": "CARE",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据现有资料，法兰绒经过拉绒工艺，初期出现**轻微浮毛**属于正常现象，洗涤几次后会消失。此外，首次洗涤轻微掉色也属正常。\n\n关于“起球”，现有资料中未明确提及。\n\n参考来源：\n- [来源:02-产品目录与SKU规则.md]\n- [来源:0",
+      "sources": [
+        "02-产品目录与SKU规则.md",
+        "04-材质详解与性能对比.md",
+        "04-材质详解与性能对比.md"
+      ]
+    },
+    {
+      "id": "CARE-L1-005",
+      "category": "CARE",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库中的洗涤标签说明，我司全线产品**默认禁止氯漂**。\n\n建议您查看产品洗涤标签上的三角形符号：\n* 若三角形内有**叉号**，表示**禁止漂白**。\n\n为保护面料纤维，请勿使用含氯漂白剂清洗产品。\n\n参考来源：\n- [来源:05-",
+      "sources": [
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md"
+      ]
+    },
+    {
+      "id": "B2B-L1-001",
+      "category": "B2B",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库文档，批量采购（B2B）从 **50件** 起开始享受折扣。\n\n具体的折扣梯度（以 Hotel Collection 系列为例）如下：\n*   **50–199 件**：8 折（20% off）\n*   **200–499",
+      "sources": [
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md"
+      ]
+    },
+    {
+      "id": "B2B-L1-002",
+      "category": "B2B",
+      "level": "L1",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "根据《11 · B2B 批发与企业采购》文档，批发折扣最高为 **6 折**（40% off）。\n\n该折扣适用于 **1000 件以上** 的采购量，且支持定制 LOGO。\n\n参考来源：\n- [来源:11-B2B批发与企业采购.md]\n- ",
+      "sources": [
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md"
+      ]
+    },
+    {
+      "id": "B2B-L1-003",
+      "category": "B2B",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，定制 LOGO 刺绣的相关要求如下：\n\n*   **起订量与费用**：刺绣 LOGO **无单独起订量限制**（随批量折扣档执行）；若订单数量达到 **1000 件以上**，则刺绣服务**免费**。\n*   **确认流程**",
+      "sources": [
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md"
+      ]
+    },
+    {
+      "id": "B2B-L1-004",
+      "category": "B2B",
+      "level": "L1",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "批量采购（B2B/批发）请联系邮箱：**[REDACTED_EMAIL]**\n\n根据知识库文档：\n1. **询盘流程**：客户发邮件至该邮箱说明品类、数量及交期，销售团队会在 1 个工作日内响应。\n2. **获取报价**：如需获取其他系列的",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md"
+      ]
+    },
+    {
+      "id": "COMP-L1-001",
+      "category": "COMP",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "我们公司（云棉家居 CloudCotton Home）成立于 **2019 年**，总部位于中国浙江省杭州市。\n\n参考来源：\n- [来源:01-公司概况与品牌认证.md]",
+      "sources": [
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md"
+      ]
+    },
+    {
+      "id": "COMP-L1-002",
+      "category": "COMP",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库信息，云棉家居（CloudCotton Home）的总部位于**中国浙江省杭州市**。\n\n参考来源：\n- [来源:01-公司概况与品牌认证.md]\n- [来源:06-物流配送政策.md]",
+      "sources": [
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md"
+      ]
+    },
+    {
+      "id": "COMP-L1-003",
+      "category": "COMP",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库，OEKO-TEX STANDARD 100 的证书编号为 **21.HIN.12345**。\n\n参考来源：\n- [来源:01-公司概况与品牌认证.md]\n- [来源:04-材质详解与性能对比.md]",
+      "sources": [
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md"
+      ]
+    },
+    {
+      "id": "COMP-L1-004",
+      "category": "COMP",
+      "level": "L1",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "客服邮箱是：**[REDACTED_EMAIL]**\n\n该邮箱提供 7×24 小时服务，承诺在工作日 12 小时内首次回复，节假日 24 小时内回复（旺季可能延长至 24–48 小时）。\n\n参考来源：\n- [来源:10-客户服务与FAQ.m",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "PROMO-L1-005",
+      "category": "PROMO",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，会员等级共分为以下三个档位：\n\n1. **Silver（银卡）**：注册即得。\n2. **Gold（金卡）**：12个月内消费满$300。\n3. **Platinum（白金卡）**：12个月内消费满$800。\n\n等级按滚动1",
+      "sources": [
+        "09-促销积分与礼品卡.md",
+        "12-投诉处理与赔偿标准.md",
+        "02-产品目录与SKU规则.md"
+      ]
+    },
+    {
+      "id": "CS-L1-001",
+      "category": "CS",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，在线聊天的工作时间是**周一至周五 9:00–18:00（EST，美东时间）**。\n\n参考来源：\n- [来源:10-客户服务与FAQ.md]",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "PROD-L1-009",
+      "category": "PROD",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "竹纤维系列（Bamboo Breeze 竹风系列）的混纺比例为 **60% 竹纤维 + 40% 棉**。\n\n参考来源：\n- [来源:04-材质详解与性能对比.md]\n- [来源:02-产品目录与SKU规则.md]",
+      "sources": [
+        "04-材质详解与性能对比.md",
+        "02-产品目录与SKU规则.md",
+        "02-产品目录与SKU规则.md"
+      ]
+    },
+    {
+      "id": "LG-L1-008",
+      "category": "LG",
+      "level": "L1",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "根据知识库信息，澳洲仓（澳大利亚悉尼）发往澳大利亚的时效如下：\n\n*   **平日参考时效**：3–6 个工作日。\n*   **旺季参考时效**：在黑五至圣诞等旺季期间，时效可能延长 2–3 天。\n\n参考来源：\n- [来源:06-物流配送政",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 24,
+    "passed": 20,
+    "pass_rate": 0.8333333333333334,
+    "by_level": {
+      "L1": {
+        "total": 24,
+        "passed": 20,
+        "pass_rate": 0.8333333333333334
+      }
+    },
+    "by_category": {
+      "LG": {
+        "total": 1,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "PROMO": {
+        "total": 1,
+        "passed": 1,
+        "pass_rate": 1.0
+      },
+      "PROD": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      },
+      "CARE": {
+        "total": 5,
+        "passed": 5,
+        "pass_rate": 1.0
+      },
+      "B2B": {
+        "total": 4,
+        "passed": 2,
+        "pass_rate": 0.5
+      },
+      "COMP": {
+        "total": 4,
+        "passed": 3,
+        "pass_rate": 0.75
+      },
+      "CS": {
+        "total": 1,
+        "passed": 1,
+        "pass_rate": 1.0
+      }
+    }
+  }
+}

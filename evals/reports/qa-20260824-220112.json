@@ -1,0 +1,91 @@
+{
+  "rows": [
+    {
+      "id": "B2B-L1-001",
+      "category": "B2B",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库文档，批量采购（B2B）从 **50件** 起开始享受折扣。\n\n具体的折扣梯度（以 Hotel Collection 系列为例）如下：\n*   **50–199 件**：8 折（20% off）\n*   **200–499",
+      "sources": [
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md"
+      ]
+    },
+    {
+      "id": "B2B-L1-002",
+      "category": "B2B",
+      "level": "L1",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "根据《11 · B2B 批发与企业采购》文档，批发折扣最高为 **6 折**（40% off）。\n\n该折扣适用于 **1000 件以上** 的采购量，且支持定制 LOGO。\n\n参考来源：\n- [来源:11-B2B批发与企业采购.md]\n- ",
+      "sources": [
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md"
+      ]
+    },
+    {
+      "id": "B2B-L1-003",
+      "category": "B2B",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，定制 LOGO 刺绣的相关要求如下：\n\n*   **起订量与费用**：刺绣 LOGO **无单独起订量限制**（随批量折扣档执行）；若订单数量达到 **1000 件以上**，则刺绣服务**免费**。\n*   **确认流程**",
+      "sources": [
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md"
+      ]
+    },
+    {
+      "id": "B2B-L1-004",
+      "category": "B2B",
+      "level": "L1",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "批量采购（B2B/批发）请联系邮箱：**[REDACTED_EMAIL]**\n\n根据知识库文档：\n1. **询盘流程**：客户发邮件至该邮箱说明品类、数量及交期，销售团队会在 1 个工作日内响应。\n2. **获取报价**：如需获取其他系列的",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 2,
+    "pass_rate": 0.5,
+    "by_level": {
+      "L1": {
+        "total": 4,
+        "passed": 2,
+        "pass_rate": 0.5
+      }
+    },
+    "by_category": {
+      "B2B": {
+        "total": 4,
+        "passed": 2,
+        "pass_rate": 0.5
+      }
+    }
+  }
+}

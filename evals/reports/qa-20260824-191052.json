@@ -1,0 +1,86 @@
+{
+  "rows": [
+    {
+      "id": "OOS-001",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "refuse_ok": false,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [
+        "refused_mismatch"
+      ],
+      "answer_head": "根据知识库信息，我们**不卖沙发**。\n\n我们主要销售**床品和家居纺织品**，具体产品包括：\n*   **床品套装**（四件套、三件套、五件套及单品）\n*   **枕芯**（羽绒枕、记忆棉枕等）\n*   **被芯**（羽绒被、替代羽绒被、",
+      "sources": [
+        "02-产品目录与SKU规则.md",
+        "02-产品目录与SKU规则.md",
+        "04-材质详解与性能对比.md"
+      ]
+    },
+    {
+      "id": "OOS-002",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 409: Conflict"
+      ]
+    },
+    {
+      "id": "OOS-003",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "reasons": [
+        "http_error:[WinError 10054] 远程主机强迫关闭了一个现有的连接。"
+      ]
+    },
+    {
+      "id": "OOS-004",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "OOS-005",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "OOS-006",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 0,
+    "pass_rate": 0.0,
+    "by_level": {
+      "OOS": {
+        "total": 6,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    },
+    "by_category": {
+      "OOS": {
+        "total": 6,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    }
+  }
+}

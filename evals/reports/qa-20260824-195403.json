@@ -1,0 +1,38 @@
+{
+  "rows": [
+    {
+      "id": "CS-L3-001",
+      "category": "CS",
+      "level": "L3",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": false,
+      "reasons": [
+        "keyword_miss",
+        "source_miss"
+      ],
+      "answer_head": "知识库中没有找到相关资料，无法基于可信证据回答。",
+      "sources": []
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "passed": 0,
+    "pass_rate": 0.0,
+    "by_level": {
+      "L3": {
+        "total": 1,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    },
+    "by_category": {
+      "CS": {
+        "total": 1,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    }
+  }
+}

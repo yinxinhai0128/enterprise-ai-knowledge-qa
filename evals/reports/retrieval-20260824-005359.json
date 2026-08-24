@@ -1,0 +1,176 @@
+{
+  "rows": [
+    {
+      "id": "RT-L1-001",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 21202.49949999925,
+      "top_sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ],
+      "distances": [
+        0.2347,
+        0.2631,
+        0.2896
+      ]
+    },
+    {
+      "id": "RT-L1-002",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7676.1096000009275,
+      "top_sources": [
+        "07-退换货与退款政策.md",
+        "11-B2B批发与企业采购.md",
+        "07-退换货与退款政策.md"
+      ],
+      "distances": [
+        0.3534,
+        0.3834,
+        0.3941
+      ]
+    },
+    {
+      "id": "RT-L1-003",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 8308.562099999108,
+      "top_sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ],
+      "distances": [
+        0.3393,
+        0.3499,
+        0.3632
+      ]
+    },
+    {
+      "id": "RT-L1-004",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7755.15969999833,
+      "top_sources": [
+        "07-退换货与退款政策.md",
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md"
+      ],
+      "distances": [
+        0.298,
+        0.3153,
+        0.3189
+      ]
+    },
+    {
+      "id": "RT-L1-005",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 8018.203299998277,
+      "top_sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ],
+      "distances": [
+        0.2277,
+        0.2957,
+        0.2986
+      ]
+    },
+    {
+      "id": "RT-L1-006",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 9021.94860000236,
+      "top_sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ],
+      "distances": [
+        0.2518,
+        0.2706,
+        0.2765
+      ]
+    },
+    {
+      "id": "RT-L1-007",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 8857.136999999057,
+      "top_sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "12-投诉处理与赔偿标准.md"
+      ],
+      "distances": [
+        0.2554,
+        0.4032,
+        0.4249
+      ]
+    },
+    {
+      "id": "RT-L1-008",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7758.313700000144,
+      "top_sources": [
+        "07-退换货与退款政策.md",
+        "03-尺寸规格对照.md",
+        "10-客户服务与FAQ.md"
+      ],
+      "distances": [
+        0.3482,
+        0.3524,
+        0.3803
+      ]
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "pass_rate": 1.0,
+    "by_level": {
+      "L1": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      }
+    },
+    "by_category": {
+      "RT": {
+        "total": 8,
+        "passed": 8,
+        "pass_rate": 1.0
+      }
+    }
+  },
+  "mrr": 1.0
+}

@@ -1,0 +1,87 @@
+{
+  "rows": [
+    {
+      "id": "COMP-L1-001",
+      "category": "COMP",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "我们公司（云棉家居 CloudCotton Home）成立于 **2019 年**，总部位于中国浙江省杭州市。\n\n参考来源：\n- [来源:01-公司概况与品牌认证.md]",
+      "sources": [
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md"
+      ]
+    },
+    {
+      "id": "COMP-L1-002",
+      "category": "COMP",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库信息，云棉家居（CloudCotton Home）的总部位于**中国浙江省杭州市**。\n\n参考来源：\n- [来源:01-公司概况与品牌认证.md]\n- [来源:06-物流配送政策.md]",
+      "sources": [
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md"
+      ]
+    },
+    {
+      "id": "COMP-L1-003",
+      "category": "COMP",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库，OEKO-TEX 证书编号为 **21.HIN.12345**。\n\n该证书属于 **OEKO-TEX STANDARD 100** 认证，适用范围覆盖全线产品。您可以在 OEKO-TEX 官网（oeko-tex.com）",
+      "sources": [
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md"
+      ]
+    },
+    {
+      "id": "COMP-L1-004",
+      "category": "COMP",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "客服邮箱是：**[REDACTED_EMAIL]**\n\n参考来源：\n- [来源:10-客户服务与FAQ.md]",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "passed": 4,
+    "pass_rate": 1.0,
+    "by_level": {
+      "L1": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      }
+    },
+    "by_category": {
+      "COMP": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      }
+    }
+  }
+}

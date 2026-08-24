@@ -1,0 +1,624 @@
+{
+  "rows": [
+    {
+      "id": "PROD-L2-002",
+      "category": "PROD",
+      "level": "L2",
+      "passed": false,
+      "hit": false,
+      "rr": 0.0,
+      "latency_ms": 24046.02050000176,
+      "top_sources": [
+        "03-尺寸规格对照.md",
+        "10-客户服务与FAQ.md",
+        "05-洗涤护理指南.md"
+      ],
+      "distances": [
+        0.4058,
+        0.4418,
+        0.4492
+      ]
+    },
+    {
+      "id": "PROD-L2-003",
+      "category": "PROD",
+      "level": "L2",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 8956.321099998604,
+      "top_sources": [
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md"
+      ],
+      "distances": [
+        0.326,
+        0.3484,
+        0.3513
+      ]
+    },
+    {
+      "id": "PROD-L2-004",
+      "category": "PROD",
+      "level": "L2",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 9379.388500001369,
+      "top_sources": [
+        "02-产品目录与SKU规则.md",
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md"
+      ],
+      "distances": [
+        0.3622,
+        0.3654,
+        0.4101
+      ]
+    },
+    {
+      "id": "PROD-L2-005",
+      "category": "PROD",
+      "level": "L2",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 9465.743100001418,
+      "top_sources": [
+        "04-材质详解与性能对比.md",
+        "04-材质详解与性能对比.md",
+        "10-客户服务与FAQ.md"
+      ],
+      "distances": [
+        0.2643,
+        0.2943,
+        0.3452
+      ]
+    },
+    {
+      "id": "PROD-L3-001",
+      "category": "PROD",
+      "level": "L3",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 9691.736199998559,
+      "top_sources": [
+        "04-材质详解与性能对比.md",
+        "10-客户服务与FAQ.md",
+        "04-材质详解与性能对比.md"
+      ],
+      "distances": [
+        0.2981,
+        0.2994,
+        0.3082
+      ]
+    },
+    {
+      "id": "PROD-L3-002",
+      "category": "PROD",
+      "level": "L3",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 9045.553899999504,
+      "top_sources": [
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md"
+      ],
+      "distances": [
+        0.3199,
+        0.3386,
+        0.3386
+      ]
+    },
+    {
+      "id": "CARE-L1-001",
+      "category": "CARE",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 8942.437599998811,
+      "top_sources": [
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md"
+      ],
+      "distances": [
+        0.2308,
+        0.3243,
+        0.3358
+      ]
+    },
+    {
+      "id": "CARE-L1-002",
+      "category": "CARE",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 8488.631399999576,
+      "top_sources": [
+        "05-洗涤护理指南.md",
+        "04-材质详解与性能对比.md",
+        "05-洗涤护理指南.md"
+      ],
+      "distances": [
+        0.3688,
+        0.3859,
+        0.3933
+      ]
+    },
+    {
+      "id": "CARE-L1-003",
+      "category": "CARE",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 8514.227899999241,
+      "top_sources": [
+        "05-洗涤护理指南.md",
+        "04-材质详解与性能对比.md",
+        "05-洗涤护理指南.md"
+      ],
+      "distances": [
+        0.3125,
+        0.3277,
+        0.3451
+      ]
+    },
+    {
+      "id": "CARE-L1-004",
+      "category": "CARE",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 0.5,
+      "latency_ms": 7926.9650999995065,
+      "top_sources": [
+        "02-产品目录与SKU规则.md",
+        "04-材质详解与性能对比.md",
+        "04-材质详解与性能对比.md"
+      ],
+      "distances": [
+        0.4106,
+        0.4307,
+        0.4444
+      ]
+    },
+    {
+      "id": "CARE-L1-005",
+      "category": "CARE",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7948.341299997992,
+      "top_sources": [
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md"
+      ],
+      "distances": [
+        0.4027,
+        0.4411,
+        0.4497
+      ]
+    },
+    {
+      "id": "CARE-L2-001",
+      "category": "CARE",
+      "level": "L2",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7996.147200003179,
+      "top_sources": [
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md"
+      ],
+      "distances": [
+        0.3388,
+        0.4115,
+        0.414
+      ]
+    },
+    {
+      "id": "CARE-L2-002",
+      "category": "CARE",
+      "level": "L2",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 8318.59429999895,
+      "top_sources": [
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md",
+        "04-材质详解与性能对比.md"
+      ],
+      "distances": [
+        0.3298,
+        0.3307,
+        0.4212
+      ]
+    },
+    {
+      "id": "CARE-L2-003",
+      "category": "CARE",
+      "level": "L2",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7841.482800002268,
+      "top_sources": [
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md"
+      ],
+      "distances": [
+        0.367,
+        0.4122,
+        0.4398
+      ]
+    },
+    {
+      "id": "CARE-L2-004",
+      "category": "CARE",
+      "level": "L2",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7665.06500000105,
+      "top_sources": [
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md"
+      ],
+      "distances": [
+        0.3342,
+        0.3399,
+        0.3483
+      ]
+    },
+    {
+      "id": "B2B-L1-001",
+      "category": "B2B",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7712.163799998962,
+      "top_sources": [
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md"
+      ],
+      "distances": [
+        0.2465,
+        0.2979,
+        0.3469
+      ]
+    },
+    {
+      "id": "B2B-L1-002",
+      "category": "B2B",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7900.6988000001,
+      "top_sources": [
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md"
+      ],
+      "distances": [
+        0.296,
+        0.3686,
+        0.4005
+      ]
+    },
+    {
+      "id": "B2B-L1-003",
+      "category": "B2B",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7969.968900000822,
+      "top_sources": [
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md"
+      ],
+      "distances": [
+        0.3267,
+        0.4112,
+        0.4332
+      ]
+    },
+    {
+      "id": "B2B-L1-004",
+      "category": "B2B",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7653.807800001232,
+      "top_sources": [
+        "11-B2B批发与企业采购.md",
+        "06-物流配送政策.md",
+        "11-B2B批发与企业采购.md"
+      ],
+      "distances": [
+        0.3965,
+        0.4022,
+        0.4026
+      ]
+    },
+    {
+      "id": "B2B-L2-001",
+      "category": "B2B",
+      "level": "L2",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 9027.783199999249,
+      "top_sources": [
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md"
+      ],
+      "distances": [
+        0.3062,
+        0.3204,
+        0.4063
+      ]
+    },
+    {
+      "id": "B2B-L2-002",
+      "category": "B2B",
+      "level": "L2",
+      "passed": true,
+      "hit": true,
+      "rr": 0.5,
+      "latency_ms": 9637.85579999967,
+      "top_sources": [
+        "07-退换货与退款政策.md",
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md"
+      ],
+      "distances": [
+        0.4472,
+        0.4518,
+        0.4542
+      ]
+    },
+    {
+      "id": "COMP-L1-001",
+      "category": "COMP",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7761.6987000001245,
+      "top_sources": [
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md"
+      ],
+      "distances": [
+        0.3948,
+        0.452,
+        0.5062
+      ]
+    },
+    {
+      "id": "COMP-L1-002",
+      "category": "COMP",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 8097.794400000566,
+      "top_sources": [
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md"
+      ],
+      "distances": [
+        0.4107,
+        0.4426,
+        0.4558
+      ]
+    },
+    {
+      "id": "COMP-L1-003",
+      "category": "COMP",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7823.777599998721,
+      "top_sources": [
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md"
+      ],
+      "distances": [
+        0.2634,
+        0.283,
+        0.3456
+      ]
+    },
+    {
+      "id": "COMP-L1-004",
+      "category": "COMP",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7845.745400001761,
+      "top_sources": [
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md"
+      ],
+      "distances": [
+        0.3386,
+        0.3649,
+        0.3757
+      ]
+    },
+    {
+      "id": "COMP-L2-001",
+      "category": "COMP",
+      "level": "L2",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 8091.739499999676,
+      "top_sources": [
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md",
+        "08-支付货币与发票.md"
+      ],
+      "distances": [
+        0.4431,
+        0.4547,
+        0.4578
+      ]
+    },
+    {
+      "id": "COMP-L2-002",
+      "category": "COMP",
+      "level": "L2",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7905.392699998629,
+      "top_sources": [
+        "10-客户服务与FAQ.md",
+        "06-物流配送政策.md",
+        "10-客户服务与FAQ.md"
+      ],
+      "distances": [
+        0.2655,
+        0.2705,
+        0.2723
+      ]
+    },
+    {
+      "id": "CS-L2-001",
+      "category": "CS",
+      "level": "L2",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7408.512900001369,
+      "top_sources": [
+        "12-投诉处理与赔偿标准.md",
+        "12-投诉处理与赔偿标准.md",
+        "12-投诉处理与赔偿标准.md"
+      ],
+      "distances": [
+        0.3129,
+        0.3373,
+        0.3378
+      ]
+    },
+    {
+      "id": "CS-L2-002",
+      "category": "CS",
+      "level": "L2",
+      "passed": false,
+      "hit": false,
+      "rr": 0.0,
+      "latency_ms": 7772.878800002218,
+      "top_sources": [
+        "06-物流配送政策.md",
+        "10-客户服务与FAQ.md",
+        "06-物流配送政策.md"
+      ],
+      "distances": [
+        0.39,
+        0.4001,
+        0.4092
+      ]
+    },
+    {
+      "id": "CS-L2-003",
+      "category": "CS",
+      "level": "L2",
+      "passed": true,
+      "hit": true,
+      "rr": 0.3333333333333333,
+      "latency_ms": 7665.948699999717,
+      "top_sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "12-投诉处理与赔偿标准.md"
+      ],
+      "distances": [
+        0.3014,
+        0.3392,
+        0.355
+      ]
+    }
+  ],
+  "summary": {
+    "total": 30,
+    "passed": 28,
+    "pass_rate": 0.9333333333333333,
+    "by_level": {
+      "L1": {
+        "total": 13,
+        "passed": 13,
+        "pass_rate": 1.0
+      },
+      "L2": {
+        "total": 15,
+        "passed": 13,
+        "pass_rate": 0.8666666666666667
+      },
+      "L3": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      }
+    },
+    "by_category": {
+      "PROD": {
+        "total": 6,
+        "passed": 5,
+        "pass_rate": 0.8333333333333334
+      },
+      "CARE": {
+        "total": 9,
+        "passed": 9,
+        "pass_rate": 1.0
+      },
+      "B2B": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "COMP": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      },
+      "CS": {
+        "total": 3,
+        "passed": 2,
+        "pass_rate": 0.6666666666666666
+      }
+    }
+  },
+  "mrr": 0.8777777777777778
+}

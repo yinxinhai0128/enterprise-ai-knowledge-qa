@@ -1,0 +1,1416 @@
+{
+  "rows": [
+    {
+      "id": "RT-L1-001",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，退货期限规定如下：\n\n*   **常规退货期限**：自收货之日起 **30 天**内可申请退货。\n    *   **独立站**：需在 30 天内发起，且产品须为未洗涤、未使用、原包装状态。\n    *   **亚马逊平台*",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L1-002",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，公司的**质量保证期为 180 天**。\n\n具体说明如下：\n*   **适用范围**：即使商品已超过 30 天退货期或已拆封使用，若出现缝线开裂等质量问题，180 天质量保证依然有效。\n*   **批发产品**：180 天质",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L1-003",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，质量问题退货的运费由**云棉家居（公司）承担**。\n\n具体规定如下：\n1.  **退货运费**：若判定为质量问题，退货运费由公司承担；非质量原因（如尺寸不合适、颜色不喜欢等）则由客户自付。\n2.  **退货标签**：客服审核",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L1-004",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库内容，退款到账时间取决于您的支付方式，具体如下：\n\n* **信用卡**：3–5 个工作日\n* **PayPal**：1–3 个工作日\n* **礼品卡**：即时到账（退回至账户余额）\n\n**注意**：上述时间为仓库签收并验收通过后的",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "RT-L1-005",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据公司的退换货政策，亚马逊订单的退货流程如下：\n\n1.  **操作入口**：请通过亚马逊后台的**退货中心（Return Center）**发起退货申请。\n2.  **退货期限**：遵循亚马逊平台政策，通常为收货之日起 **30 天**内",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L1-006",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据《07 · 退换货与退款政策》，标准换货流程共分为以下五步：\n\n1. **申请**：客户需在**收货 30 天内**通过邮件或在线聊天联系客服，说明换货原因（如尺寸或颜色）。\n2. **审核**：客服核对订单号与产品照片，确认符合换货条",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L1-007",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库文档，以下情况**不属于质量问题**，不在质保范围内：\n\n1.  **正常工艺误差与物理特性**\n    *   **尺寸偏差**：正常工艺误差（±2–3cm 内）。\n    *   **缩水**：棉类产品首次缩水 3–5",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L1-008",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "可以换。根据知识库规定，客户买错尺寸属于非质量问题，您可以选择**自费换货**或**退货重拍**。\n\n**换货流程如下：**\n1. **提交申请**：提供订单号等信息，客服将在 1–2 个工作日内审核。\n2. **寄回旧件**：审核通过后，",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "RT-L2-001",
+      "category": "RT",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据公司的退换货政策，您的情况**一般无法办理退货**，具体原因如下：\n\n1. **使用状态不符**：退货政策明确要求产品必须处于**未洗涤、未使用、原包装**状态。被子已经使用了一个月，不符合“未使用”的硬性退货条件。\n2. **时效限制",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "RT-L2-002",
+      "category": "RT",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，床单洗完缩水**通常不算质量问题**，具体判定标准如下：\n\n1.  **正常范围（不算质量问题）**：棉类床品首次洗涤缩水 **3–5%** 属于已预留的正常范围，不在质量保证范围内。\n2.  **超标情况（算质量问题）**",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "05-洗涤护理指南.md",
+        "04-材质详解与性能对比.md"
+      ]
+    },
+    {
+      "id": "RT-L2-003",
+      "category": "RT",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据退换货政策，退款到账时间如下：\n\n1.  **退货退款**：仓库收到您退回的商品并验收合格后，**3–5 个工作日**内完成退款，款项将原路退回您的支付账户。\n2.  **礼品卡支付**：若原订单使用礼品卡支付，退款将**即时**退回到",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L2-004",
+      "category": "RT",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库规定，**未发货前可以申请全额取消退款**。\n\n建议您尽快通过邮件联系客服申请取消。\n\n**注意事项：**\n*   如果订单已经进入**打包环节**，则无法取消，您需要等待收货后申请退货（非质量问题退货运费需自理）。\n\n参考来源：",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L2-005",
+      "category": "RT",
+      "level": "L2",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": false,
+      "reasons": [
+        "source_miss"
+      ],
+      "answer_head": "收到枕套颜色与图片不符，请参考以下标准进行处理：\n\n1.  **正常色差范围**：由于屏幕显示差异，实物与图片存在 **±5–10%** 的色差属于正常范围，深色系（如藏青、深灰等）的色差感知通常会更明显。\n2.  **判定标准**：建议您",
+      "sources": [
+        "02-产品目录与SKU规则.md",
+        "05-洗涤护理指南.md",
+        "02-产品目录与SKU规则.md"
+      ]
+    },
+    {
+      "id": "RT-L2-006",
+      "category": "RT",
+      "level": "L2",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": false,
+      "reasons": [
+        "keyword_miss",
+        "source_miss"
+      ],
+      "answer_head": "参考来源：\n- [来源:10-客户服务与FAQ.md]\n- [来源:05-洗涤护理指南.md]\n- [来源:02-产品目录与SKU规则.md]",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md",
+        "05-洗涤护理指南.md"
+      ]
+    },
+    {
+      "id": "RT-L2-007",
+      "category": "RT",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "可以的。根据公司的售后政策，换货是支持更换颜色的。\n\n具体说明如下：\n1. **前提条件**：需要您想更换的目标颜色**库存充足**。\n2. **差价处理**：如果新颜色与原颜色存在价格差异，将实行**差价多退少补**。\n3. **缺货情况",
+      "sources": [
+        "02-产品目录与SKU规则.md",
+        "07-退换货与退款政策.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "RT-L2-008",
+      "category": "RT",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库，收到的四件套有污渍属于产品缺陷或异常情况，**您可以要求赔偿或售后处理**。\n\n具体处理标准如下：\n1. **时效要求**：请在签收后 **48 小时内** 拍照联系客服。\n2. **解决方案**：经核实确认为产品缺陷后",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "05-洗涤护理指南.md",
+        "12-投诉处理与赔偿标准.md"
+      ]
+    },
+    {
+      "id": "RT-L3-001",
+      "category": "RT",
+      "level": "L3",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": false,
+      "reasons": [
+        "source_miss"
+      ],
+      "answer_head": "Final Sale 商品依然享受公司的**180 天质量保证**。只要您遇到的问题属于质保范围，即可按正常质保流程处理。\n\n**质保范围包括**：\n* 缝线开裂\n* 面料严重起球（非正常使用导致）\n* 颜色大量脱落（非正常洗涤导致）\n* ",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L3-002",
+      "category": "RT",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库信息，Klarna 分期订单退货退款时，资金处理规则如下：\n\n1.  **已还款项**：您已还的两期款项会**原路退回**到您的支付账户。\n2.  **未还款项**：剩余未还的期数将由 Klarna 进行**调整或豁免**。\n\n退",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "RT-L3-003",
+      "category": "RT",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库中的《退换货与退款政策》及退款方式规定：\n\n1. **退款去向**：礼品卡支付的订单，退款会**即时退回原礼品卡余额**中。\n2. **转赠规则**：退款不支持直接转入他人的账户或银行卡，但您可以**申请将该余额转为一张新的礼品卡",
+      "sources": [
+        "09-促销积分与礼品卡.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L3-004",
+      "category": "RT",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，退货寄回后的处理时效如下：\n\n1. **确认收到（验收）时间**：仓库签收退货包裹后，会在 **1–2 个工作日**内完成验收。您可以在官网 \"My Account → Returns\" 查看状态，或使用退货底单追踪号查询。",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "10-客户服务与FAQ.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "LG-L1-001",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据运费政策，各市场独立站的免邮门槛如下：\n\n*   **美国**：订单满 **$49**\n*   **英国**：订单满 **£39**\n*   **德国**：订单满 **€49**\n*   **澳大利亚**：订单满 **A$69**\n* ",
+      "sources": [
+        "06-物流配送政策.md",
+        "10-客户服务与FAQ.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "LG-L1-002",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据物流配送政策，美国东部的配送时效如下：\n\n*   **平日时效**：一般为 **2–5 个工作日**。\n*   **发货仓库**：通常由美国新泽西州（NJ）仓库发货。\n*   **旺季说明**：在黑五至圣诞季等旺季期间，时效可能会延长 ",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "LG-L1-003",
+      "category": "LG",
+      "level": "L1",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "根据知识库文档，英国仓发英国的时效如下：\n\n*   **平日参考时效**：**2–3 个工作日**（仓库布局表显示范围为 2–4 个工作日）。\n*   **旺季时效（黑五–圣诞）**：预计延长 **1–2 天**。\n\n**补充说明**：\n*",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L1-004",
+      "category": "LG",
+      "level": "L1",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "根据运费政策，加急配送（Express）的收费标准如下：\n\n*   **费用**：额外收费 **$9.99–$19.99**。\n*   **时效**：1–2 个工作日送达。\n*   **适用范围**：目前仅支持**美国**和**英国**的部",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L1-005",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据物流配送政策：\n\n*   **USPS** 支持寄送到 PO Box。\n*   **UPS / FedEx** 不支持寄送到 PO Box，请使用实际物理地址。\n\n参考来源：\n- [来源:06-物流配送政策.md]\n- [来源:10-客",
+      "sources": [
+        "06-物流配送政策.md",
+        "10-客户服务与FAQ.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L1-006",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据物流配送政策，订单发货后的物流查询情况如下：\n\n1. **追踪号获取**：发货后 **24 小时内**会将追踪号发送至您的注册邮箱，您也可以在独立站 \"My Account → Orders\" 页面查看。\n2. **物流信息更新**：收",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L1-007",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，日本仓（位于东京）发往日本的标准时效为 **2-4 个工作日**。\n\n**补充说明：**\n*   **订单处理时间**：工作日下午 2 点（当地时间）前下单当日处理，之后或周末下单则于次工作日处理。\n*   **节假日影响*",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L2-001",
+      "category": "LG",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据物流配送政策，包裹显示“已投递”但未收到通常有以下几种情况及处理建议：\n\n1.  **可能原因**：\n    *   **延迟扫描**：物流状态更新可能存在延迟，包裹实际尚未送达。\n    *   **代收或误投**：包裹可能被邻居代收",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L2-002",
+      "category": "LG",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "您好！关于您的订单发货情况，根据我们的物流政策，发货时效主要取决于以下因素：\n\n1. **订单处理时间**：\n   - **常规订单**：工作日下午 2 点（当地时间）前下单，当日处理；2 点后或周末/节假日下单，将于次工作日处理。\n   ",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L2-003",
+      "category": "LG",
+      "level": "L2",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "澳洲地区的包裹通常由悉尼仓库发货，配送时效一般为 **3–6 个工作日**。\n\n**补充说明：**\n*   **旺季影响**：如果是黑五至圣诞等旺季，时效可能会延长 **2–3 天**。\n*   **订单处理**：工作日下午 2 点前下单通",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "LG-L2-004",
+      "category": "LG",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库，包裹物流信息停滞数天在以下情况属于**正常现象**：\n\n1.  **国际段运输**：跨太平洋或大西洋的海上干线运输期间，**5–7 天无物流更新**是常见的。\n2.  **揽收初期**：发货后的揽收扫描延迟 **1–2 ",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L2-005",
+      "category": "LG",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "是的，黑五期间下单会比平时慢。根据内部知识库记录，黑五至圣诞属于旺季，时效会有以下变化：\n\n1.  **物流时效延长**：各线路物流时效通常比平日延长 **1–2 个工作日**。\n2.  **处理时效延长**：订单发货前的处理时间从平日的 ",
+      "sources": [
+        "09-促销积分与礼品卡.md",
+        "12-投诉处理与赔偿标准.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L2-006",
+      "category": "LG",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据公司内部政策，关于订单地址修改的规定如下：\n\n1.  **刚下单（1小时内）**：\n    订单确认后的 **1 小时内**，您可以通过邮件联系客服修改收货地址。\n\n2.  **已进入打包环节**：\n    如果订单已经进入打包环节，则",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "LG-L3-001",
+      "category": "LG",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "LG-L3-002",
+      "category": "LG",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L1-001",
+      "category": "PAY",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L1-002",
+      "category": "PAY",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L1-003",
+      "category": "PAY",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L1-004",
+      "category": "PAY",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L1-005",
+      "category": "PAY",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L2-001",
+      "category": "PAY",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L2-002",
+      "category": "PAY",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L2-003",
+      "category": "PAY",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L2-004",
+      "category": "PAY",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROMO-L1-001",
+      "category": "PROMO",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROMO-L1-002",
+      "category": "PROMO",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROMO-L1-003",
+      "category": "PROMO",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROMO-L1-004",
+      "category": "PROMO",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROMO-L2-001",
+      "category": "PROMO",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROMO-L2-002",
+      "category": "PROMO",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROMO-L2-003",
+      "category": "PROMO",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L1-001",
+      "category": "PROD",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L1-002",
+      "category": "PROD",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L1-003",
+      "category": "PROD",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L1-004",
+      "category": "PROD",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L1-005",
+      "category": "PROD",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L1-006",
+      "category": "PROD",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L1-007",
+      "category": "PROD",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L1-008",
+      "category": "PROD",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L2-001",
+      "category": "PROD",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L2-002",
+      "category": "PROD",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L2-003",
+      "category": "PROD",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L2-004",
+      "category": "PROD",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L2-005",
+      "category": "PROD",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L3-001",
+      "category": "PROD",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L3-002",
+      "category": "PROD",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CARE-L1-001",
+      "category": "CARE",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CARE-L1-002",
+      "category": "CARE",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CARE-L1-003",
+      "category": "CARE",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CARE-L1-004",
+      "category": "CARE",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CARE-L1-005",
+      "category": "CARE",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CARE-L2-001",
+      "category": "CARE",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CARE-L2-002",
+      "category": "CARE",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CARE-L2-003",
+      "category": "CARE",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CARE-L2-004",
+      "category": "CARE",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "B2B-L1-001",
+      "category": "B2B",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "B2B-L1-002",
+      "category": "B2B",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "B2B-L1-003",
+      "category": "B2B",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "B2B-L1-004",
+      "category": "B2B",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "B2B-L2-001",
+      "category": "B2B",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "B2B-L2-002",
+      "category": "B2B",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "COMP-L1-001",
+      "category": "COMP",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "COMP-L1-002",
+      "category": "COMP",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "COMP-L1-003",
+      "category": "COMP",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "COMP-L1-004",
+      "category": "COMP",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "COMP-L2-001",
+      "category": "COMP",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "COMP-L2-002",
+      "category": "COMP",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CS-L2-001",
+      "category": "CS",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CS-L2-002",
+      "category": "CS",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CS-L2-003",
+      "category": "CS",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "OOS-001",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "OOS-002",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "OOS-003",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "OOS-004",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "OOS-005",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROMO-L1-005",
+      "category": "PROMO",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CS-L1-001",
+      "category": "CS",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L1-009",
+      "category": "PROD",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "RT-L2-009",
+      "category": "RT",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "LG-L2-007",
+      "category": "LG",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L2-005",
+      "category": "PAY",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROMO-L2-004",
+      "category": "PROMO",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CARE-L2-005",
+      "category": "CARE",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "RT-L3-005",
+      "category": "RT",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "RT-L3-006",
+      "category": "RT",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "LG-L3-004",
+      "category": "LG",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "LG-L3-005",
+      "category": "LG",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L3-001",
+      "category": "PAY",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L3-002",
+      "category": "PAY",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L3-003",
+      "category": "PAY",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROMO-L3-001",
+      "category": "PROMO",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROMO-L3-002",
+      "category": "PROMO",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L3-003",
+      "category": "PROD",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CARE-L3-001",
+      "category": "CARE",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CARE-L3-003",
+      "category": "CARE",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "B2B-L3-001",
+      "category": "B2B",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "COMP-L3-001",
+      "category": "COMP",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CS-L3-001",
+      "category": "CS",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CS-L3-002",
+      "category": "CS",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "LG-L1-008",
+      "category": "LG",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "OOS-006",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 121,
+    "passed": 27,
+    "pass_rate": 0.2231404958677686,
+    "by_level": {
+      "L1": {
+        "total": 49,
+        "passed": 13,
+        "pass_rate": 0.2653061224489796
+      },
+      "L2": {
+        "total": 42,
+        "passed": 11,
+        "pass_rate": 0.2619047619047619
+      },
+      "L3": {
+        "total": 24,
+        "passed": 3,
+        "pass_rate": 0.125
+      },
+      "OOS": {
+        "total": 6,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    },
+    "by_category": {
+      "RT": {
+        "total": 23,
+        "passed": 17,
+        "pass_rate": 0.7391304347826086
+      },
+      "LG": {
+        "total": 19,
+        "passed": 10,
+        "pass_rate": 0.5263157894736842
+      },
+      "PAY": {
+        "total": 13,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "PROMO": {
+        "total": 11,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "PROD": {
+        "total": 17,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "CARE": {
+        "total": 12,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "B2B": {
+        "total": 7,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "COMP": {
+        "total": 7,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "CS": {
+        "total": 6,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "OOS": {
+        "total": 6,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    }
+  }
+}

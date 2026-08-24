@@ -1,0 +1,57 @@
+{
+  "rows": [
+    {
+      "id": "CS-L3-001",
+      "category": "CS",
+      "level": "L3",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "参考来源：\n- [来源:12-投诉处理与赔偿标准.md]\n- [来源:10-客户服务与FAQ.md]",
+      "sources": [
+        "12-投诉处理与赔偿标准.md",
+        "12-投诉处理与赔偿标准.md",
+        "12-投诉处理与赔偿标准.md"
+      ]
+    },
+    {
+      "id": "CS-L3-002",
+      "category": "CS",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据规范，同一个问题客户第三次进线未解决，必须**强制升级主管**处理。具体操作要求如下：\n\n1.  **立即执行升级**\n    *   将案件升级至主管，邮箱为 `[REDACTED_EMAIL]`。\n    *   升级后主管将在 *",
+      "sources": [
+        "12-投诉处理与赔偿标准.md",
+        "12-投诉处理与赔偿标准.md",
+        "12-投诉处理与赔偿标准.md"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 2,
+    "passed": 1,
+    "pass_rate": 0.5,
+    "by_level": {
+      "L3": {
+        "total": 2,
+        "passed": 1,
+        "pass_rate": 0.5
+      }
+    },
+    "by_category": {
+      "CS": {
+        "total": 2,
+        "passed": 1,
+        "pass_rate": 0.5
+      }
+    }
+  }
+}

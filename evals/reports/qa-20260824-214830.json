@@ -1,0 +1,724 @@
+{
+  "rows": [
+    {
+      "id": "RT-L2-001",
+      "category": "RT",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据公司的退换货政策，您的情况**无法办理退货**，主要原因如下：\n\n1.  **不符合退货状态要求**：政策明确规定，退货产品必须处于**未洗涤、未使用、原包装**状态。被子已经使用了一个月，属于“已使用”情形，不符合退货条件。\n2.  ",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "05-洗涤护理指南.md"
+      ]
+    },
+    {
+      "id": "RT-L2-002",
+      "category": "RT",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，床单洗完缩水**通常不算质量问题**，具体判定标准如下：\n\n1.  **正常范围（不算质量问题）**：棉类床品首次洗涤缩水 **3–5%** 属于已预留的正常范围，明确**不在质保范围**内。\n2.  **超标情况（算质量问",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "05-洗涤护理指南.md",
+        "04-材质详解与性能对比.md"
+      ]
+    },
+    {
+      "id": "RT-L2-003",
+      "category": "RT",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据退换货政策，退款到账时间如下：\n\n1.  **处理时效**：仓库收到您退回的商品并验收合格后，**3–5 个工作日**内完成退款。\n2.  **银行处理**：\n    *   **信用卡**：退款发起后，银行通常需要 **3–5 个工作",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "RT-L2-004",
+      "category": "RT",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库规定，**未发货前可以申请全额取消退款**。\n\n建议您尽快通过**邮件联系客服**申请取消。\n\n**注意事项：**\n*   如果订单已经进入**打包环节**，则无法取消，您需要等待收货后申请退货（非质量问题退货运费需自理）。\n\n参",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "06-物流配送政策.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "RT-L2-005",
+      "category": "RT",
+      "level": "L2",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": false,
+      "reasons": [
+        "source_miss"
+      ],
+      "answer_head": "收到枕套颜色与图片不符，请参考以下标准进行处理：\n\n1.  **正常色差范围**：由于显示器差异，实物与图片存在 **±5–10%** 的色差属于正常范围，其中深色系（如藏青、深灰、墨绿等）的色差感知通常会更明显。\n2.  **判定方法**",
+      "sources": [
+        "02-产品目录与SKU规则.md",
+        "05-洗涤护理指南.md",
+        "02-产品目录与SKU规则.md"
+      ]
+    },
+    {
+      "id": "RT-L2-006",
+      "category": "RT",
+      "level": "L2",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": false,
+      "reasons": [
+        "source_miss"
+      ],
+      "answer_head": "被套拉链损坏属于产品缺陷或质量问题，我们**负责处理**。\n\n根据售后政策，具体处理方式如下：\n1. **签收 48 小时内**：请拍照联系客服，确认为产品缺陷后，您可以选择**换货**或**全额退款**，且视情况无需退回原产品。\n2. *",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md",
+        "05-洗涤护理指南.md"
+      ]
+    },
+    {
+      "id": "RT-L2-007",
+      "category": "RT",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "可以的。根据公司的退换货政策，**支持更换颜色**，但需要满足以下条件并遵循相应流程：\n\n1.  **前提条件**：\n    *   **时效**：需在自收货之日起 **30 天内** 发起申请。\n    *   **状态**：产品必须保持",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L2-008",
+      "category": "RT",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库，收到的四件套有污渍属于产品缺陷，**您可以要求赔偿**。\n\n具体处理政策如下：\n1.  **解决方案**：经核实确认为产品缺陷后，您可以选择**换货**或**全额退款**。\n2.  **时效要求**：请在**签收后 48",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "05-洗涤护理指南.md",
+        "12-投诉处理与赔偿标准.md"
+      ]
+    },
+    {
+      "id": "LG-L2-001",
+      "category": "LG",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据物流配送政策，包裹显示“已投递”但未收到通常有以下几种情况及处理建议：\n\n1. **可能原因**：\n   * **延迟扫描**：物流状态更新可能存在延迟，包裹实际尚未送达。\n   * **代收或误投**：包裹可能被邻居代收，或快递员将其",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L2-002",
+      "category": "LG",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "您好！关于您的订单发货情况，根据我们的物流政策，发货时效主要取决于以下因素：\n\n1. **订单处理时间**：\n   - **常规订单**：工作日下午 2 点（当地时间）前下单，当日处理；2 点后或周末/节假日下单，将于次工作日处理。\n   ",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L2-003",
+      "category": "LG",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "澳洲地区的包裹通常由悉尼仓库发货，配送时效一般为 **3–6 个工作日**。\n\n**详细说明：**\n*   **订单处理**：工作日下午 2 点前下单通常当日处理，之后或周末顺延至次工作日。\n*   **特殊情况**：若悉尼仓缺货，可能从中",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "LG-L2-004",
+      "category": "LG",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库，包裹物流信息停滞数天是否正常，主要取决于包裹当前的运输阶段和状态：\n\n**属于正常的情况：**\n*   **国际段运输**：如果是跨境包裹，在跨太平洋或大西洋的海上干线运输期间，**5–7 天无物流更新**是常见且正常的",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L2-005",
+      "category": "LG",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "是的，黑五期间下单确实会比平时慢。根据内部知识库记录，时效会有以下变化：\n\n1.  **处理时效延长**：订单发货前的处理时间从平日的 1 个工作日延长至 **3–4 个工作日**。\n2.  **物流时效延长**：各线路物流时效通常比平日延",
+      "sources": [
+        "12-投诉处理与赔偿标准.md",
+        "09-促销积分与礼品卡.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L2-006",
+      "category": "LG",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据内部政策，刚下的单通常可以修改地址，具体取决于订单当前状态：\n\n1. **下单后 1 小时内**：您可以发送邮件至 **[REDACTED_EMAIL]** 联系客服修改地址。\n2. **已进入打包环节**：无法直接修改地址，需等待收货",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "PAY-L2-001",
+      "category": "PAY",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据支付失败排查手册，刷卡被拒绝（Declined）通常由**余额不足**、**风控拦截**或**信息录入错误**导致。建议您按以下步骤处理：\n\n1.  **核对信息**：请仔细检查输入的卡号、有效期和 CVV 是否正确。\n2.  **联系",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "PAY-L2-002",
+      "category": "PAY",
+      "level": "L2",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": false,
+      "reasons": [
+        "keyword_miss",
+        "source_miss"
+      ],
+      "answer_head": "知识库中没有找到相关资料，无法基于可信证据回答。",
+      "sources": []
+    },
+    {
+      "id": "PAY-L2-003",
+      "category": "PAY",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，重复扣款通常由支付网关重试导致，处理流程如下：\n\n1.  **提供凭证**：请向客服提供两笔扣款的截图。\n2.  **财务核实**：财务部门将在收到截图后的 **3–5 个工作日**内进行核对。\n3.  **退款方式**：核",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "PAY-L2-004",
+      "category": "PAY",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，分期（BNPL）逾期的后果主要取决于您使用的具体服务商（如 Klarna、Afterpay 等），一般包含以下几个方面：\n\n1.  **产生逾期费用**：\n    *   例如 **Afterpay**（澳大利亚/美国）逾期",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "PROMO-L2-001",
+      "category": "PROMO",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "不能，两个折扣码无法叠加使用。\n\n根据规则，**折扣码不可与其他优惠叠加（积分除外）**，且叠加矩阵中明确标注“折扣码 + 折扣码”为不可叠加。\n\n如果您有多个折扣码，每次结账只能选择其中一个使用。\n\n参考来源：\n- [来源:09-促销积分",
+      "sources": [
+        "09-促销积分与礼品卡.md",
+        "09-促销积分与礼品卡.md",
+        "09-促销积分与礼品卡.md"
+      ]
+    },
+    {
+      "id": "PROMO-L2-002",
+      "category": "PROMO",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，推荐朋友下单的奖励规则如下：\n\n*   **奖励内容**：推荐好友成功下单，您可获得 **200 CloudCoins** 积分（另有部分规则提及老用户可获 **$10 积分**，具体以账户实际到账为准）。\n*   **发放",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "09-促销积分与礼品卡.md",
+        "09-促销积分与礼品卡.md"
+      ]
+    },
+    {
+      "id": "PROMO-L2-003",
+      "category": "PROMO",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "可以的。根据公司的价格保护政策，您昨天购买的商品今天降价，在**7 天内**可以申请补差价。\n\n具体政策如下：\n*   **补偿方式**：差价将以**礼品卡**的形式补偿给您。\n*   **申请限制**：每个账户每年最多可申请 **2 次*",
+      "sources": [
+        "09-促销积分与礼品卡.md",
+        "09-促销积分与礼品卡.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "PROD-L2-001",
+      "category": "PROD",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库的选购建议，夏天睡觉出汗多推荐以下两个系列：\n\n1. **首选：Cool Touch 天丝凉感系列**\n   - **定位**：控温体验，专为怕热人群及盗汗困扰者设计。\n   - **特点**：利用天丝纤维实现吸湿快干与丝滑触感，",
+      "sources": [
+        "02-产品目录与SKU规则.md",
+        "04-材质详解与性能对比.md",
+        "04-材质详解与性能对比.md"
+      ]
+    },
+    {
+      "id": "PROD-L2-002",
+      "category": "PROD",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "您好！我们有专为宝宝和儿童设计的产品，安全性是我们非常重视的方面。\n\n**1. 宝宝/儿童产品系列**\n*   **Kids Cloud 儿童系列**：专为婴幼儿及学龄儿童家庭设计，提供婴儿床（Crib）、幼儿床（Toddler）等专用尺寸",
+      "sources": [
+        "03-尺寸规格对照.md",
+        "02-产品目录与SKU规则.md",
+        "04-材质详解与性能对比.md"
+      ]
+    },
+    {
+      "id": "PROD-L2-003",
+      "category": "PROD",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "有的，针对特别厚的床垫，我们有专门的**超深兜款（Extra Deep Pocket）**保护垫。\n\n根据床垫的实际厚度，您可以参考以下适配标准进行选购：\n\n*   **超深兜款**：适配 **18–24 英寸**（约 45–60 厘米）的",
+      "sources": [
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md"
+      ]
+    },
+    {
+      "id": "PROD-L2-004",
+      "category": "PROD",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库信息，酒店同款（Hotel Collection）家用是**划算**的，尤其适合追求性价比和耐用性的用户。具体分析如下：\n\n1.  **价格亲民**：该系列价格区间为 **$29–$69**，属于高性价比产品。\n2.  **耐用易",
+      "sources": [
+        "02-产品目录与SKU规则.md",
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md"
+      ]
+    },
+    {
+      "id": "PROD-L2-005",
+      "category": "PROD",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库信息，优质羽绒被可能会有极少量羽绒透过面料，这属于正常现象。我司采用的是高密防绒面料（Downproof），正常使用下漏绒极少。如果出现大量漏绒，则属于质量问题，建议联系客服处理。\n\n参考来源：\n- [来源:04-材质详解与性能对",
+      "sources": [
+        "04-材质详解与性能对比.md",
+        "04-材质详解与性能对比.md",
+        "04-材质详解与性能对比.md"
+      ]
+    },
+    {
+      "id": "CARE-L2-001",
+      "category": "CARE",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库中的污渍处理速查表，清洗床单上的血渍请参考以下方法：\n\n1.  **核心步骤**：使用**冷水**配合**加酶洗衣液**，将污渍处浸泡 **30 分钟**后再进行清洗。\n2.  **关键禁忌**：**切勿使用热水**。热水会使血渍",
+      "sources": [
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md",
+        "02-产品目录与SKU规则.md"
+      ]
+    },
+    {
+      "id": "CARE-L2-002",
+      "category": "CARE",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "毛巾用久了发硬，通常是因为**柔顺剂残留**或**硬水矿物质沉积**（钙镁离子与洗涤剂结合附着在纤维上）。您可以尝试以下方法恢复：\n\n1.  **白醋空洗法**：在洗衣机中加入**一杯白醋**（替代柔顺剂），进行一轮空洗。白醋能有效溶解纤维",
+      "sources": [
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md"
+      ]
+    },
+    {
+      "id": "CARE-L2-003",
+      "category": "CARE",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库信息，被子晒完有味道通常是因为**羽绒被在晒太阳受热后，内部的绒腥味加重**，这属于正常现象，建议**通风散味**即可。\n\n此外，如果是新被子，可能是出厂包装的气味，通风 1–2 小时通常可以散去。若味道强烈异常或伴有发霉味，建议",
+      "sources": [
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md",
+        "02-产品目录与SKU规则.md"
+      ]
+    },
+    {
+      "id": "CARE-L2-004",
+      "category": "CARE",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "深色床单第一次洗涤时，请注意以下事项：\n\n1. **务必单独洗涤**：深色产品首次洗涤会有明显浮色，必须单独洗涤，避免染色其他衣物（建议前 3 次洗涤均与浅色分开）。\n2. **洗涤剂选择**：请使用中性、无荧光增白剂的洗涤液，**严禁使用",
+      "sources": [
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md"
+      ]
+    },
+    {
+      "id": "B2B-L2-001",
+      "category": "B2B",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，20 套**暂时无法**享受批发价。\n\n具体政策如下：\n*   **起订门槛**：批发折扣的起订量为 **50 件**（50–199 件可享 8 折）。\n*   **建议方案**：您可以先按零售价下单。后续若累计采购或凑单达",
+      "sources": [
+        "11-B2B批发与企业采购.md",
+        "11-B2B批发与企业采购.md",
+        "02-产品目录与SKU规则.md"
+      ]
+    },
+    {
+      "id": "B2B-L2-002",
+      "category": "B2B",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "可以的，我们支持寄送样品，具体政策如下：\n\n*   **面料小样（Swatch）**：提供**免费寄送**服务，时效约为 3–5 个工作日。\n*   **成品样品**：需要**付费购买**（按全价下单）。\n*   **费用抵扣**：如果您后",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "11-B2B批发与企业采购.md"
+      ]
+    },
+    {
+      "id": "COMP-L2-001",
+      "category": "COMP",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "我们的包装是环保的。根据公司的可持续发展政策，我们在包装方面采取了以下措施：\n\n1.  **材质升级**：自 2025 年起，全线包装已改用可回收材料，包括 **FSC 认证纸箱** 和 **玉米淀粉填充物**。\n2.  **可降解包装**",
+      "sources": [
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md",
+        "01-公司概况与品牌认证.md"
+      ]
+    },
+    {
+      "id": "COMP-L2-002",
+      "category": "COMP",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，客服回复邮件的时效承诺如下：\n\n*   **工作日**：12 小时内首次回复。\n*   **节假日**：24 小时内回复。\n*   **旺季（11 月–12 月）**：响应时间可能延长至 24–48 小时（网站会提前公告）。",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "CS-L2-001",
+      "category": "CS",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据《投诉处理与赔偿标准》文档，投诉处理时效如下：\n\n1. **初步回应**：通常在 **12小时内** 给出初步回应，告知已收到并正在处理。\n2. **给出方案**：核实问题后，会在 **48小时内** 提出具体的解决方案（如退款、换货或",
+      "sources": [
+        "12-投诉处理与赔偿标准.md",
+        "12-投诉处理与赔偿标准.md",
+        "12-投诉处理与赔偿标准.md"
+      ]
+    },
+    {
+      "id": "CS-L2-002",
+      "category": "CS",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库中的《赔偿标准表》，包裹丢失的赔偿标准为：\n\n*   **免费补发** 或 **全额退款**（由您选择）。\n\n此外，丢件的理赔申请由我司直接向承运商发起，**您无需自行操作**。\n\n参考来源：\n- [来源:06-物流配送政策.md",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "CS-L2-003",
+      "category": "CS",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "有补偿。根据公司内部规定，物流延误的补偿政策如下：\n\n1.  **补偿标准**：包裹延误超过 **10 个工作日**，可获得 **$10–$20 礼品卡** 补偿，同时公司会继续追踪包裹直到送达。\n2.  **判定依据**：以承运商官方追踪",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "RT-L2-009",
+      "category": "RT",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库中的《退换货与退款政策》，退货标签的使用方法及无打印机时的解决方案如下：\n\n### 退货标签使用方法\n1. **打印并粘贴**：将收到的退货标签打印出来，牢固地贴在包裹外箱上。\n2. **处理原面单**：请务必**覆盖或撕除**包",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "LG-L2-007",
+      "category": "LG",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据公司内部物流配送政策，关于快递柜签收后丢失的责任界定及处理流程如下：\n\n1.  **责任界定**：快递柜或代收点签收后的丢失，公司**视同已投递**。建议客户在下单时选择更安全的收货方式。\n2.  **异常处理**：如果包裹显示已投递（",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "12-投诉处理与赔偿标准.md"
+      ]
+    },
+    {
+      "id": "PAY-L2-005",
+      "category": "PAY",
+      "level": "L2",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "这种情况通常是由于网络中断导致的状态错位。\n\n请按照以下步骤处理：\n1.  **提供凭证**：请向客服提供**银行扣款截图**和**订单号**。\n2.  **财务核销**：客服收到双证据后，会转交财务进行核销。\n3.  **处理时效**：财",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "PROMO-L2-004",
+      "category": "PROMO",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CARE-L2-005",
+      "category": "CARE",
+      "level": "L2",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 42,
+    "passed": 37,
+    "pass_rate": 0.8809523809523809,
+    "by_level": {
+      "L2": {
+        "total": 42,
+        "passed": 37,
+        "pass_rate": 0.8809523809523809
+      }
+    },
+    "by_category": {
+      "RT": {
+        "total": 9,
+        "passed": 7,
+        "pass_rate": 0.7777777777777778
+      },
+      "LG": {
+        "total": 7,
+        "passed": 7,
+        "pass_rate": 1.0
+      },
+      "PAY": {
+        "total": 5,
+        "passed": 4,
+        "pass_rate": 0.8
+      },
+      "PROMO": {
+        "total": 4,
+        "passed": 3,
+        "pass_rate": 0.75
+      },
+      "PROD": {
+        "total": 5,
+        "passed": 5,
+        "pass_rate": 1.0
+      },
+      "CARE": {
+        "total": 5,
+        "passed": 4,
+        "pass_rate": 0.8
+      },
+      "B2B": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "COMP": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "CS": {
+        "total": 3,
+        "passed": 3,
+        "pass_rate": 1.0
+      }
+    }
+  }
+}

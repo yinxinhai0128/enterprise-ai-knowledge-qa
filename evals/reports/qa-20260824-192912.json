@@ -1,0 +1,279 @@
+{
+  "rows": [
+    {
+      "id": "RT-L3-001",
+      "category": "RT",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "RT-L3-002",
+      "category": "RT",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "RT-L3-003",
+      "category": "RT",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "RT-L3-004",
+      "category": "RT",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "LG-L3-001",
+      "category": "LG",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "LG-L3-002",
+      "category": "LG",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "PROD-L3-001",
+      "category": "PROD",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "PROD-L3-002",
+      "category": "PROD",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "RT-L3-005",
+      "category": "RT",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "RT-L3-006",
+      "category": "RT",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "LG-L3-004",
+      "category": "LG",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "LG-L3-005",
+      "category": "LG",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "PAY-L3-001",
+      "category": "PAY",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "PAY-L3-002",
+      "category": "PAY",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "PAY-L3-003",
+      "category": "PAY",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "PROMO-L3-001",
+      "category": "PROMO",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "PROMO-L3-002",
+      "category": "PROMO",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "PROD-L3-003",
+      "category": "PROD",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "CARE-L3-001",
+      "category": "CARE",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "CARE-L3-003",
+      "category": "CARE",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "B2B-L3-001",
+      "category": "B2B",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "COMP-L3-001",
+      "category": "COMP",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "CS-L3-001",
+      "category": "CS",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    },
+    {
+      "id": "CS-L3-002",
+      "category": "CS",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:<urlopen error [WinError 10061] 由于目标计算机积极拒绝，无法连接。>"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 24,
+    "passed": 0,
+    "pass_rate": 0.0,
+    "by_level": {
+      "L3": {
+        "total": 24,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    },
+    "by_category": {
+      "RT": {
+        "total": 6,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "LG": {
+        "total": 4,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "PAY": {
+        "total": 3,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "PROMO": {
+        "total": 2,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "PROD": {
+        "total": 3,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "CARE": {
+        "total": 2,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "B2B": {
+        "total": 1,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "COMP": {
+        "total": 1,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "CS": {
+        "total": 2,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    }
+  }
+}

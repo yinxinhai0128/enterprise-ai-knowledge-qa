@@ -1,0 +1,81 @@
+{
+  "rows": [
+    {
+      "id": "RT-L1-001",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 20293.049200001406,
+      "top_sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ],
+      "distances": [
+        0.2347,
+        0.2631,
+        0.2896
+      ]
+    },
+    {
+      "id": "RT-L1-002",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7713.602099996933,
+      "top_sources": [
+        "07-退换货与退款政策.md",
+        "11-B2B批发与企业采购.md",
+        "07-退换货与退款政策.md"
+      ],
+      "distances": [
+        0.3534,
+        0.3834,
+        0.3941
+      ]
+    },
+    {
+      "id": "RT-L1-003",
+      "category": "RT",
+      "level": "L1",
+      "passed": true,
+      "hit": true,
+      "rr": 1.0,
+      "latency_ms": 7175.782599999366,
+      "top_sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ],
+      "distances": [
+        0.3393,
+        0.3499,
+        0.3632
+      ]
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "pass_rate": 1.0,
+    "by_level": {
+      "L1": {
+        "total": 3,
+        "passed": 3,
+        "pass_rate": 1.0
+      }
+    },
+    "by_category": {
+      "RT": {
+        "total": 3,
+        "passed": 3,
+        "pass_rate": 1.0
+      }
+    }
+  },
+  "mrr": 1.0
+}

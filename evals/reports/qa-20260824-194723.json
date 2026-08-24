@@ -1,0 +1,129 @@
+{
+  "rows": [
+    {
+      "id": "PAY-L3-001",
+      "category": "PAY",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据内部知识库文档，针对德国公司的批量采购、VAT 发票及付款流程如下：\n\n### 1. 批量采购与报价\n*   **联系渠道**：批量采购请联系\n\n参考来源：\n- [来源:08-支付货币与发票.md]\n- [来源:11-B2B批发与企业采",
+      "sources": [
+        "08-支付货币与发票.md",
+        "11-B2B批发与企业采购.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "PAY-L3-002",
+      "category": "PAY",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据公司内部拒付处理流程，**两边不能同时进行**。\n\n拒付（Chargeback）与直接退款申请会产生冲突。在拒付处理期间，订单的售后流程会被冻结，以避免出现双重补偿的情况。\n\n建议您选择其中一种方式进行处理：\n*   **继续走拒付流程",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "PAY-L3-003",
+      "category": "PAY",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，订单支付方式在完成后**不可直接变更**。\n\n针对您的情况，建议按以下步骤操作：\n1. **取消当前订单**：由于订单尚未发货，您可以申请取消订单并全额退款（具体流程参考《07》第八节）。\n2. **重新下单**：取消成功后",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "PROMO-L3-001",
+      "category": "PROMO",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库信息，关于生日福利及领取方式如下：\n\n*   **福利内容**：生日当月可享受 **15% off** 的折扣码（有效期 30 天）。\n*   **如何确保收到**：请务必在**账户资料中填写真实的生日信息**。系统会在生日当月自",
+      "sources": [
+        "09-促销积分与礼品卡.md",
+        "10-客户服务与FAQ.md",
+        "09-促销积分与礼品卡.md"
+      ]
+    },
+    {
+      "id": "PROMO-L3-002",
+      "category": "PROMO",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，CloudCoins 积分与环保行动的联动规则如下：\n\n*   **旧衣回收计划**：每次回收可获得 **100 CloudCoins**（试点期）。\n*   **绿色配送**：选择绿色配送（合并包裹/慢达）每单额外获得 *",
+      "sources": [
+        "09-促销积分与礼品卡.md",
+        "09-促销积分与礼品卡.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "PROD-L3-003",
+      "category": "PROD",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库资料，给新生儿布置婴儿床的建议如下：\n\n### 1. 床品选择\n*   **类型**：婴儿床（Crib）床品应以 **fitted sheet（包边床单）** 为主。\n*   **尺寸**：美标婴儿床通用的床单尺寸通常为 ",
+      "sources": [
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "pass_rate": 1.0,
+    "by_level": {
+      "L3": {
+        "total": 6,
+        "passed": 6,
+        "pass_rate": 1.0
+      }
+    },
+    "by_category": {
+      "PAY": {
+        "total": 3,
+        "passed": 3,
+        "pass_rate": 1.0
+      },
+      "PROMO": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "PROD": {
+        "total": 1,
+        "passed": 1,
+        "pass_rate": 1.0
+      }
+    }
+  }
+}

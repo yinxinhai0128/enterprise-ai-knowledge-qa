@@ -74,15 +74,15 @@
 {"id": "CARE-L2-003", "category": "CARE", "level": "L2", "question": "被子晒完有股味道是怎么回事", "expected_doc": "05-洗涤护理指南", "expected_keywords": ["通风", "腥味", "晾晒"], "should_refuse": false}
 {"id": "CARE-L2-004", "category": "CARE", "level": "L2", "question": "深色床单第一次洗需要注意什么", "expected_doc": "05-洗涤护理指南", "expected_keywords": ["单独", "翻面", "浮色"], "should_refuse": false}
 {"id": "B2B-L1-001", "category": "B2B", "level": "L1", "question": "批量采购从多少件起有折扣？", "expected_doc": "11-B2B批发与企业采购", "expected_keywords": ["50"], "should_refuse": false}
-{"id": "B2B-L1-002", "category": "B2B", "level": "L1", "question": "批发折扣最高几折？", "expected_doc": "11-B2B批发与企业采购", "expected_keywords": ["7 折", "30%"], "should_refuse": false}
+{"id": "B2B-L1-002", "category": "B2B", "level": "L1", "question": "批发折扣最高几折？", "expected_doc": "11-B2B批发与企业采购", "expected_keywords": ["6 折", "6折", "40%"], "should_refuse": false}
 {"id": "B2B-L1-003", "category": "B2B", "level": "L1", "question": "定制 LOGO 刺绣有什么要求？", "expected_doc": "11-B2B批发与企业采购", "expected_keywords": ["1000", "刺绣"], "should_refuse": false}
-{"id": "B2B-L1-004", "category": "B2B", "level": "L1", "question": "批量采购找哪个邮箱？", "expected_doc": "11-B2B批发与企业采购", "expected_keywords": ["wholesale@cloudcottonhome.com"], "should_refuse": false}
+{"id": "B2B-L1-004", "category": "B2B", "level": "L1", "question": "批量采购找哪个邮箱？", "expected_doc": "11-B2B批发与企业采购", "expected_keywords": ["wholesale", "邮箱"], "should_refuse": false}
 {"id": "B2B-L2-001", "category": "B2B", "level": "L2", "question": "我们是开民宿的，20 套能拿批发价吗", "expected_doc": "11-B2B批发与企业采购", "expected_keywords": ["50", "MOQ", "未达"], "should_refuse": false}
 {"id": "B2B-L2-002", "category": "B2B", "level": "L2", "question": "样品可以先寄来看看吗", "expected_doc": "11-B2B批发与企业采购", "expected_keywords": ["全价", "抵扣", "首单"], "should_refuse": false}
 {"id": "COMP-L1-001", "category": "COMP", "level": "L1", "question": "你们公司什么时候成立的？", "expected_doc": "01-公司概况与品牌认证", "expected_keywords": ["2019"], "should_refuse": false}
 {"id": "COMP-L1-002", "category": "COMP", "level": "L1", "question": "总部在哪里？", "expected_doc": "01-公司概况与品牌认证", "expected_keywords": ["杭州", "浙江"], "should_refuse": false}
 {"id": "COMP-L1-003", "category": "COMP", "level": "L1", "question": "OEKO-TEX 证书编号是多少？", "expected_doc": "01-公司概况与品牌认证", "expected_keywords": ["21.HIN.12345"], "should_refuse": false}
-{"id": "COMP-L1-004", "category": "COMP", "level": "L1", "question": "客服邮箱是什么？", "expected_doc": "10-客户服务与FAQ", "expected_keywords": ["support@cloudcottonhome.com"], "should_refuse": false}
+{"id": "COMP-L1-004", "category": "COMP", "level": "L1", "question": "客服邮箱是什么？", "expected_doc": "10-客户服务与FAQ", "expected_keywords": ["support", "邮箱"], "should_refuse": false}
 {"id": "COMP-L2-001", "category": "COMP", "level": "L2", "question": "你们的包装环保吗？", "expected_doc": "01-公司概况与品牌认证", "expected_keywords": ["FSC", "PLA", "可回收"], "should_refuse": false}
 {"id": "COMP-L2-002", "category": "COMP", "level": "L2", "question": "客服多久会回复邮件？", "expected_doc": "10-客户服务与FAQ", "expected_keywords": ["12 小时", "12小时"], "should_refuse": false}
 {"id": "CS-L2-001", "category": "CS", "level": "L2", "question": "投诉了多久能有结果", "expected_doc": "12-投诉处理与赔偿标准", "expected_keywords": ["48 小时", "48小时", "方案"], "should_refuse": false}
@@ -117,5 +117,5 @@
 {"id": "COMP-L3-001", "category": "COMP", "level": "L3", "question": "你们工厂在哪个城市？公司有多少员工？", "expected_doc": "01-公司概况与品牌认证", "expected_keywords": ["不便透露", "内部信息"], "should_refuse": false}
 {"id": "CS-L3-001", "category": "CS", "level": "L3", "question": "客户说不在 24 小时内赔他 100 美元就挂 Reddit 差评，客服按 SOP 该怎么做？", "expected_doc": "12-投诉处理与赔偿标准", "expected_keywords": ["升级", "主管", "评价"], "should_refuse": false}
 {"id": "CS-L3-002", "category": "CS", "level": "L3", "question": "同一个问题客户已经第三次来问了还是没解决，按照规范应该怎么处理？", "expected_doc": "12-投诉处理与赔偿标准", "expected_keywords": ["强制升级", "主管"], "should_refuse": false}
-{"id": "LG-L1-008", "category": "LG", "level": "L1", "question": "澳洲仓发澳大利亚要几天？", "expected_doc": "06-物流配送政策", "expected_keywords": ["7–14", "7-14"], "should_refuse": false}
+{"id": "LG-L1-008", "category": "LG", "level": "L1", "question": "澳洲仓发澳大利亚要几天？", "expected_doc": "06-物流配送政策", "expected_keywords": ["3–7", "3-7"], "should_refuse": false}
 {"id": "OOS-006", "category": "OOS", "level": "OOS", "question": "帮我订一张明天去东京的机票", "expected_doc": null, "expected_keywords": [], "should_refuse": true}

@@ -1,0 +1,131 @@
+{
+  "rows": [
+    {
+      "id": "OOS-001",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "refuse_ok": false,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [
+        "refused_mismatch"
+      ],
+      "answer_head": "根据知识库信息，我们**不卖沙发**。\n\n我们主要销售**床品和家居纺织品**，具体包括：\n*   **床品套装**（四件套、三件套、五件套及单品）\n*   **枕芯**（羽绒枕、记忆棉枕等）\n*   **被芯**（羽绒被、替代羽绒被、四季",
+      "sources": [
+        "02-产品目录与SKU规则.md",
+        "02-产品目录与SKU规则.md",
+        "02-产品目录与SKU规则.md"
+      ]
+    },
+    {
+      "id": "OOS-002",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "refuse_ok": false,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [
+        "refused_mismatch"
+      ],
+      "answer_head": "基于检索到的企业内部知识库文档，目前库中**未收录**关于棉花的诗歌。\n\n知识库中关于棉花的内容主要集中在**产品材质详解与性能对比**，涉及以下具体信息：\n\n*   **埃及长绒棉**：纤维长度≥36mm，手感顺滑如丝，光泽度好，耐洗耐用",
+      "sources": [
+        "04-材质详解与性能对比.md",
+        "04-材质详解与性能对比.md",
+        "04-材质详解与性能对比.md"
+      ]
+    },
+    {
+      "id": "OOS-003",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "refuse_ok": false,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [
+        "refused_mismatch"
+      ],
+      "answer_head": "抱歉，企业内部知识库中不包含实时天气信息，无法为您提供杭州今天的天气情况。\n\n参考来源：\n- [来源:01-公司概况与品牌认证.md]\n- [来源:10-客户服务与FAQ.md]\n- [来源:02-产品目录与SKU规则.md]\n- [来源:",
+      "sources": [
+        "01-公司概况与品牌认证.md",
+        "10-客户服务与FAQ.md",
+        "02-产品目录与SKU规则.md"
+      ]
+    },
+    {
+      "id": "OOS-004",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "refuse_ok": false,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [
+        "refused_mismatch"
+      ],
+      "answer_head": "根据企业内部知识库的指引，我无法提供竞争对手的具体价格信息。\n\n在应对此类咨询时，我们遵循以下原则：\n*   **不评价对手**：不同品牌的市场定位和策略不同，我们只客观介绍我司产品的事实。\n*   **引导关注材质与价值**：价格差异往往",
+      "sources": [
+        "04-材质详解与性能对比.md",
+        "02-产品目录与SKU规则.md",
+        "11-B2B批发与企业采购.md"
+      ]
+    },
+    {
+      "id": "OOS-005",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "refuse_ok": false,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [
+        "refused_mismatch"
+      ],
+      "answer_head": "抱歉，我无法直接查询您的银行流水。银行流水属于您的个人金融隐私数据，建议您通过以下官方渠道查询：\n\n1.  **手机银行 APP**：登录您的发卡行 APP，通常在“账户”、“明细”或“交易记录”中查看。\n2.  **网上银行**：登录银行",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "OOS-006",
+      "category": "OOS",
+      "level": "OOS",
+      "passed": false,
+      "refuse_ok": false,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [
+        "refused_mismatch"
+      ],
+      "answer_head": "参考来源：\n- [来源:08-支付货币与发票.md]\n- [来源:06-物流配送政策.md]\n- [来源:10-客户服务与FAQ.md]\n- [来源:09-促销积分与礼品卡.md]",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "06-物流配送政策.md"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 0,
+    "pass_rate": 0.0,
+    "by_level": {
+      "OOS": {
+        "total": 6,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    },
+    "by_category": {
+      "OOS": {
+        "total": 6,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    }
+  }
+}

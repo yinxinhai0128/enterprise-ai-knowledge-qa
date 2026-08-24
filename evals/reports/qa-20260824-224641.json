@@ -1,0 +1,39 @@
+{
+  "rows": [
+    {
+      "id": "LG-L1-008",
+      "category": "LG",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库信息，澳洲仓（澳大利亚悉尼）发往澳大利亚的时效如下：\n\n*   **平日参考时效**：3–7 个工作日。\n*   **旺季参考时效**：在黑五至圣诞等旺季期间，时效可能延长 2–3 天。\n*   **超时判定**：揽收后超过 18",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "passed": 1,
+    "pass_rate": 1.0,
+    "by_level": {
+      "L1": {
+        "total": 1,
+        "passed": 1,
+        "pass_rate": 1.0
+      }
+    },
+    "by_category": {
+      "LG": {
+        "total": 1,
+        "passed": 1,
+        "pass_rate": 1.0
+      }
+    }
+  }
+}

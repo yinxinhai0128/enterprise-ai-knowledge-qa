@@ -1,0 +1,367 @@
+{
+  "rows": [
+    {
+      "id": "RT-L3-001",
+      "category": "RT",
+      "level": "L3",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": false,
+      "reasons": [
+        "source_miss"
+      ],
+      "answer_head": "Final Sale 商品依然适用公司的质量保证政策。根据内部规定，**所有产品均提供自收货日起 180 天的质量保证**，该权益不因促销标签（如 Final Sale）而免除。\n\n只要您的被芯问题属于质保范围，即可正常按质保流程处理：\n*",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "02-产品目录与SKU规则.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L3-002",
+      "category": "RT",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库信息，Klarna 分期订单发生退货退款时，资金将按原分期计划路径退回：\n\n1. **已还款项**：您已经还的两期款项会**原路退回**到您的支付账户。\n2. **未还款项**：剩余未还的期数将由 Klarna 进行**调整或豁免",
+      "sources": [
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md",
+        "08-支付货币与发票.md"
+      ]
+    },
+    {
+      "id": "RT-L3-003",
+      "category": "RT",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库中的《退换货与退款政策》及退款方式规定：\n\n1. **退款去向**：礼品卡支付的订单，退款会**即时退回原礼品卡余额**中。\n2. **转赠规则**：退款不支持直接转入他人的账户或银行卡，但您可以**申请将该余额转为一张新的礼品卡",
+      "sources": [
+        "09-促销积分与礼品卡.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L3-004",
+      "category": "RT",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，时效如下：\n\n1.  **确认收到（验收）时间**：仓库签收退货包裹后，会在 **1–2 个工作日**内完成验收。您可以在官网 \"My Account → Returns\" 查看状态。\n2.  **打款（退款）时间**：验收",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "10-客户服务与FAQ.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "LG-L3-001",
+      "category": "LG",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库文档，德国客户购买 150 欧元的商品**通常不会被额外收取关税或 VAT**，具体说明如下：\n\n1.  **关于 VAT（增值税）**：\n    德国及欧盟市场的商品价格**已包含当地 VAT**（德国税率为 19%），",
+      "sources": [
+        "08-支付货币与发票.md",
+        "06-物流配送政策.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "LG-L3-002",
+      "category": "LG",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，从杭州直发的跨境订单与海外仓（如美、英、德、澳、日等本地仓）订单的主要区别如下：\n\n1.  **发货时效**\n    *   **海外仓订单**：时效较快，通常为 **2–7 个工作日**（视具体仓库及目的地而定）。\n   ",
+      "sources": [
+        "06-物流配送政策.md",
+        "06-物流配送政策.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "PROD-L3-001",
+      "category": "PROD",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库中的材质特性与选购建议，针对您“敏感肌又怕热”的情况，建议如下：\n\n*   **若敏感症状较重（首选安全）：建议选【有机棉】**\n    *   **依据**：有机棉无农药化肥残留，亲肤哑光，是敏感肌和婴幼儿的**首选**材质，能",
+      "sources": [
+        "04-材质详解与性能对比.md",
+        "04-材质详解与性能对比.md",
+        "02-产品目录与SKU规则.md"
+      ]
+    },
+    {
+      "id": "PROD-L3-002",
+      "category": "PROD",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库中的欧洲市场床品尺寸对照表，德国客户床宽 155cm 应推荐 **155×220** 规格（德国常见/主流尺寸）。\n\n具体配置如下：\n*   **被套**：155×220 cm\n*   **床单**：200×260 cm\n*   ",
+      "sources": [
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md"
+      ]
+    },
+    {
+      "id": "RT-L3-005",
+      "category": "RT",
+      "level": "L3",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "可以申请补差价。\n\n根据公司价格保护政策，订单在 **7 天内**若发生降价，您可以申请差价补偿（通常以礼品卡形式发放）。该权益每年每账户最多可使用 2 次，差价金额将以官网商品页快照价格为准进行核算。\n\n请您提供订单号，我们将为您核实具体",
+      "sources": [
+        "09-促销积分与礼品卡.md",
+        "09-促销积分与礼品卡.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "RT-L3-006",
+      "category": "RT",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库规定，当申请换货的目标颜色（或款式）缺货时，您有以下三种选择：\n\n1.  **等补货**：登记您的联系方式，商品到货后优先为您发出（客服会告知预计等待时长）。\n2.  **换其他款式**：您可以选择其他有货的款式，差价实行“多退少",
+      "sources": [
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md",
+        "07-退换货与退款政策.md"
+      ]
+    },
+    {
+      "id": "LG-L3-004",
+      "category": "LG",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库规定，如果是承运商原因导致 Express 配送未按时效（如晚了一天），您可以申请退还加急费；但如果是天气等不可抗力因素导致的延误，则无法退款。建议您联系客服核实具体延误原因并办理退款申请。\n\n参考来源：\n- [来源:10-客户服",
+      "sources": [
+        "10-客户服务与FAQ.md",
+        "10-客户服务与FAQ.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "LG-L3-005",
+      "category": "LG",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库内容，跨境直发包裹清关如需补充收件人身份信息，您可以按以下方式配合：\n\n1. **留意承运商通知**：通常情况下，承运商会直接联系收件人告知需补充的具体信息，请保持电话畅通或留意相关邮件/短信。\n2. **联系客服协助传递**：您",
+      "sources": [
+        "06-物流配送政策.md",
+        "10-客户服务与FAQ.md",
+        "06-物流配送政策.md"
+      ]
+    },
+    {
+      "id": "PAY-L3-001",
+      "category": "PAY",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L3-002",
+      "category": "PAY",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PAY-L3-003",
+      "category": "PAY",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROMO-L3-001",
+      "category": "PROMO",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROMO-L3-002",
+      "category": "PROMO",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "PROD-L3-003",
+      "category": "PROD",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CARE-L3-001",
+      "category": "CARE",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CARE-L3-003",
+      "category": "CARE",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "B2B-L3-001",
+      "category": "B2B",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "COMP-L3-001",
+      "category": "COMP",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CS-L3-001",
+      "category": "CS",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    },
+    {
+      "id": "CS-L3-002",
+      "category": "CS",
+      "level": "L3",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 429: Too Many Requests"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 24,
+    "passed": 10,
+    "pass_rate": 0.4166666666666667,
+    "by_level": {
+      "L3": {
+        "total": 24,
+        "passed": 10,
+        "pass_rate": 0.4166666666666667
+      }
+    },
+    "by_category": {
+      "RT": {
+        "total": 6,
+        "passed": 4,
+        "pass_rate": 0.6666666666666666
+      },
+      "LG": {
+        "total": 4,
+        "passed": 4,
+        "pass_rate": 1.0
+      },
+      "PAY": {
+        "total": 3,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "PROMO": {
+        "total": 2,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "PROD": {
+        "total": 3,
+        "passed": 2,
+        "pass_rate": 0.6666666666666666
+      },
+      "CARE": {
+        "total": 2,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "B2B": {
+        "total": 1,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "COMP": {
+        "total": 1,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "CS": {
+        "total": 2,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    }
+  }
+}

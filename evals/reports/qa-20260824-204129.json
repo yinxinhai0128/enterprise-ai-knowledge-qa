@@ -1,0 +1,290 @@
+{
+  "rows": [
+    {
+      "id": "PROD-L1-002",
+      "category": "PROD",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，**旗舰高端线**是 **Cloud Luxe（云奢系列）**。\n\n该系列的规格参数为 **600TC**（Thread Count，即纱线密度），材质为 100% 埃及长绒棉。\n\n参考来源：\n- [来源:02-产品目录与S",
+      "sources": [
+        "02-产品目录与SKU规则.md",
+        "02-产品目录与SKU规则.md",
+        "02-产品目录与SKU规则.md"
+      ]
+    },
+    {
+      "id": "PROD-L1-003",
+      "category": "PROD",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库资料，Queen 尺寸被套的大小因市场标准而异：\n\n*   **美国市场（美标）**：通常为 **90×90 英寸**（该尺寸在美区最畅销）。\n*   **日本市场（日标）**：尺寸为 **210×210 厘米**。\n\n由于不同国",
+      "sources": [
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md",
+        "10-客户服务与FAQ.md"
+      ]
+    },
+    {
+      "id": "PROD-L1-004",
+      "category": "PROD",
+      "level": "L1",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，美国大学宿舍标配的床品尺寸是 **Twin XL**。\n\n具体规格与注意事项如下：\n\n*   **尺寸数据**：\n    *   **床单**：66×102 英寸\n    *   **被套**：68×90 英寸\n*   **",
+      "sources": [
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md",
+        "03-尺寸规格对照.md"
+      ]
+    },
+    {
+      "id": "PROD-L1-005",
+      "category": "PROD",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "PROD-L1-006",
+      "category": "PROD",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "PROD-L1-007",
+      "category": "PROD",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "PROD-L1-008",
+      "category": "PROD",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "CARE-L1-001",
+      "category": "CARE",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "CARE-L1-002",
+      "category": "CARE",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "CARE-L1-003",
+      "category": "CARE",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "CARE-L1-004",
+      "category": "CARE",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "CARE-L1-005",
+      "category": "CARE",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "B2B-L1-001",
+      "category": "B2B",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "B2B-L1-002",
+      "category": "B2B",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "B2B-L1-003",
+      "category": "B2B",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "B2B-L1-004",
+      "category": "B2B",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "COMP-L1-001",
+      "category": "COMP",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "COMP-L1-002",
+      "category": "COMP",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "COMP-L1-003",
+      "category": "COMP",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "COMP-L1-004",
+      "category": "COMP",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "PROMO-L1-005",
+      "category": "PROMO",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "CS-L1-001",
+      "category": "CS",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "PROD-L1-009",
+      "category": "PROD",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    },
+    {
+      "id": "LG-L1-008",
+      "category": "LG",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 503: Service Unavailable"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 24,
+    "passed": 3,
+    "pass_rate": 0.125,
+    "by_level": {
+      "L1": {
+        "total": 24,
+        "passed": 3,
+        "pass_rate": 0.125
+      }
+    },
+    "by_category": {
+      "LG": {
+        "total": 1,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "PROMO": {
+        "total": 1,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "PROD": {
+        "total": 8,
+        "passed": 3,
+        "pass_rate": 0.375
+      },
+      "CARE": {
+        "total": 5,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "B2B": {
+        "total": 4,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "COMP": {
+        "total": 4,
+        "passed": 0,
+        "pass_rate": 0.0
+      },
+      "CS": {
+        "total": 1,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    }
+  }
+}

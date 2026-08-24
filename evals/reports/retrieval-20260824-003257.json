@@ -1,0 +1,119 @@
+{
+  "rows": [
+    {
+      "id": "RT-L1-001",
+      "category": "RT",
+      "level": "L1",
+      "passed": false,
+      "hit": false,
+      "rr": 0.0,
+      "latency_ms": 20949.635200000557,
+      "top_sources": [
+        "",
+        "",
+        ""
+      ],
+      "distances": [
+        0.2347,
+        0.2631,
+        0.2896
+      ]
+    },
+    {
+      "id": "RT-L1-002",
+      "category": "RT",
+      "level": "L1",
+      "passed": false,
+      "hit": false,
+      "rr": 0.0,
+      "latency_ms": 7604.316299999482,
+      "top_sources": [
+        "",
+        "",
+        ""
+      ],
+      "distances": [
+        0.3534,
+        0.3834,
+        0.3941
+      ]
+    },
+    {
+      "id": "RT-L1-003",
+      "category": "RT",
+      "level": "L1",
+      "passed": false,
+      "hit": false,
+      "rr": 0.0,
+      "latency_ms": 7871.7410000008385,
+      "top_sources": [
+        "",
+        "",
+        ""
+      ],
+      "distances": [
+        0.3393,
+        0.3499,
+        0.3632
+      ]
+    },
+    {
+      "id": "RT-L1-004",
+      "category": "RT",
+      "level": "L1",
+      "passed": false,
+      "hit": false,
+      "rr": 0.0,
+      "latency_ms": 7708.267300000443,
+      "top_sources": [
+        "",
+        "",
+        ""
+      ],
+      "distances": [
+        0.298,
+        0.3153,
+        0.3189
+      ]
+    },
+    {
+      "id": "RT-L1-005",
+      "category": "RT",
+      "level": "L1",
+      "passed": false,
+      "hit": false,
+      "rr": 0.0,
+      "latency_ms": 7354.7672999993665,
+      "top_sources": [
+        "",
+        "",
+        ""
+      ],
+      "distances": [
+        0.2277,
+        0.2957,
+        0.2986
+      ]
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "passed": 0,
+    "pass_rate": 0.0,
+    "by_level": {
+      "L1": {
+        "total": 5,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    },
+    "by_category": {
+      "RT": {
+        "total": 5,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    }
+  },
+  "mrr": 0.0
+}

@@ -1,0 +1,136 @@
+{
+  "rows": [
+    {
+      "id": "CARE-L3-001",
+      "category": "CARE",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据企业内部知识库文档，白鹅绒被在收纳前和取出使用时的注意事项如下：\n\n### 一、 收进衣柜前（收纳前与收纳中）\n1. **彻底洗净并烘干**：收纳前必须彻底清洗并烘干。残留的汗渍和油脂会导致被子发黄霉变；若未彻底烘干，羽绒会霉变结块。\n",
+      "sources": [
+        "04-材质详解与性能对比.md",
+        "05-洗涤护理指南.md",
+        "04-材质详解与性能对比.md"
+      ]
+    },
+    {
+      "id": "CARE-L3-003",
+      "category": "CARE",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库的污渍处理速查表，圆珠笔漏墨是有机会救回来的，建议尽快在 **24 小时内** 处理：\n\n1. **处理方法**：使用酒精棉球，从污渍外围向中心拍打擦拭。\n2. **注意事项**：在使用酒精前，建议先在被子的边角处试色，确认不会导",
+      "sources": [
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md",
+        "05-洗涤护理指南.md"
+      ]
+    },
+    {
+      "id": "B2B-L3-001",
+      "category": "B2B",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库中的 B2B 批发与企业采购文档，针对 200 间房酒店的整房床品配置，合作模式与交付条款通常如下：\n\n### 1. 常见合作模式与配置建议\n*   **整房配置组合**：通常采用“床品四件套 + 保护垫 + 浴巾浴袍”的组合。\n",
+      "sources": [
+        "11-B2B批发与企业采购.md",
+        "02-产品目录与SKU规则.md",
+        "11-B2B批发与企业采购.md"
+      ]
+    },
+    {
+      "id": "COMP-L3-001",
+      "category": "COMP",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据知识库文档，回答如下：\n\n1.  **关于工厂位置**：文档中仅提及公司**总部位于杭州**，并未明确说明工厂所在的具体城市（文档指出工厂参观属于 B2B 合作事项）。\n2.  **关于员工人数**：文档明确说明具体规模（员工人数）属于",
+      "sources": [
+        "01-公司概况与品牌认证.md",
+        "12-投诉处理与赔偿标准.md",
+        "11-B2B批发与企业采购.md"
+      ]
+    },
+    {
+      "id": "CS-L3-001",
+      "category": "CS",
+      "level": "L3",
+      "passed": false,
+      "refuse_ok": true,
+      "kw_ok": false,
+      "src_ok": true,
+      "reasons": [
+        "keyword_miss"
+      ],
+      "answer_head": "参考来源：\n- [来源:12-投诉处理与赔偿标准.md]\n- [来源:10-客户服务与FAQ.md]",
+      "sources": [
+        "12-投诉处理与赔偿标准.md",
+        "12-投诉处理与赔偿标准.md",
+        "12-投诉处理与赔偿标准.md"
+      ]
+    },
+    {
+      "id": "CS-L3-002",
+      "category": "CS",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据规范，同一个问题客户第三次进线未解决，必须**强制升级主管**处理。具体操作要求如下：\n\n1.  **立即执行升级**\n    *   将案件升级至主管，邮箱为 `[REDACTED_EMAIL]`。\n    *   升级后主管将在 *",
+      "sources": [
+        "12-投诉处理与赔偿标准.md",
+        "12-投诉处理与赔偿标准.md",
+        "12-投诉处理与赔偿标准.md"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 5,
+    "pass_rate": 0.8333333333333334,
+    "by_level": {
+      "L3": {
+        "total": 6,
+        "passed": 5,
+        "pass_rate": 0.8333333333333334
+      }
+    },
+    "by_category": {
+      "CARE": {
+        "total": 2,
+        "passed": 2,
+        "pass_rate": 1.0
+      },
+      "B2B": {
+        "total": 1,
+        "passed": 1,
+        "pass_rate": 1.0
+      },
+      "COMP": {
+        "total": 1,
+        "passed": 1,
+        "pass_rate": 1.0
+      },
+      "CS": {
+        "total": 2,
+        "passed": 1,
+        "pass_rate": 0.5
+      }
+    }
+  }
+}

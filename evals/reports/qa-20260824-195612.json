@@ -1,0 +1,39 @@
+{
+  "rows": [
+    {
+      "id": "CS-L3-001",
+      "category": "CS",
+      "level": "L3",
+      "passed": true,
+      "refuse_ok": true,
+      "kw_ok": true,
+      "src_ok": true,
+      "reasons": [],
+      "answer_head": "根据《12 · 投诉处理与赔偿标准》及客服培训案例，针对“客户威胁 24 小时内不赔 100 美元就挂 Reddit 差评”的场景，客服应按以下 SOP 执行：\n\n### 1. 核心原则\n* **不被威胁改变标准流程**：$100 的赔偿诉",
+      "sources": [
+        "12-投诉处理与赔偿标准.md",
+        "12-投诉处理与赔偿标准.md",
+        "12-投诉处理与赔偿标准.md"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "passed": 1,
+    "pass_rate": 1.0,
+    "by_level": {
+      "L3": {
+        "total": 1,
+        "passed": 1,
+        "pass_rate": 1.0
+      }
+    },
+    "by_category": {
+      "CS": {
+        "total": 1,
+        "passed": 1,
+        "pass_rate": 1.0
+      }
+    }
+  }
+}

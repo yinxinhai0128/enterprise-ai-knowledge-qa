@@ -1,0 +1,50 @@
+{
+  "rows": [
+    {
+      "id": "B2B-L1-002",
+      "category": "B2B",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "B2B-L1-003",
+      "category": "B2B",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    },
+    {
+      "id": "B2B-L1-004",
+      "category": "B2B",
+      "level": "L1",
+      "passed": false,
+      "reasons": [
+        "http_error:HTTP Error 401: Unauthorized"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "passed": 0,
+    "pass_rate": 0.0,
+    "by_level": {
+      "L1": {
+        "total": 3,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    },
+    "by_category": {
+      "B2B": {
+        "total": 3,
+        "passed": 0,
+        "pass_rate": 0.0
+      }
+    }
+  }
+}
