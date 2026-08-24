@@ -780,6 +780,7 @@ export default function ChatPage() {
                 onKeyDown={e => {
                   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() }
                 }}
+                aria-label="问题输入框"
                 placeholder="输入您的问题…"
                 maxLength={4000}
                 rows={2}

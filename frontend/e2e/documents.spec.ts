@@ -10,13 +10,13 @@ test.describe('文档管理页面', () => {
   test('文档页面展示文档列表', async ({ page }) => {
     await page.goto('/documents')
     // 文件名在桌面表格和移动卡片中都会出现，取第一个即可
-    await expect(page.getByText('ai-knowledge-guide.md').first()).toBeVisible({ timeout: 10_000 })
+    const docName = page.getByText('ai-knowledge-guide.md').locator('visible=true').first(); await expect(docName).toBeVisible({ timeout: 10_000 })
   })
 
   test('文档状态标签显示 indexed', async ({ page }) => {
     await page.goto('/documents')
     // 等待文档列表加载（文件名出现即可）
-    await expect(page.getByText('ai-knowledge-guide.md').first()).toBeVisible({ timeout: 10_000 })
+    const docName = page.getByText('ai-knowledge-guide.md').locator('visible=true').first(); await expect(docName).toBeVisible({ timeout: 10_000 })
     // 页面上应有状态展示区域（包含 indexed / 已索引 / 完成 等文字或进度条）
     const page_ = page
     const hasStatus = await page_.locator('body').textContent()
@@ -26,7 +26,7 @@ test.describe('文档管理页面', () => {
   test('页面顶部有导航栏', async ({ page }) => {
     await page.goto('/documents')
     // NavBar 应该存在
-    await expect(page.locator('nav, header').first()).toBeVisible({ timeout: 5_000 })
+    await expect(page.locator('nav').locator('visible=true').first()).toBeVisible({ timeout: 5_000 })
   })
 })
 
