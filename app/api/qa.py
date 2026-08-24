@@ -22,20 +22,22 @@ from langchain_core.messages import (
     SystemMessage,
     ToolMessage,
 )
+from langgraph.errors import GraphRecursionError
 from loguru import logger
+from pydantic import BaseModel
+from sqlalchemy import select as _select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.agent.agent import build_agent
 from app.agent.middleware import EnterpriseContext
 from app.config import settings
 from app.core.auth import build_thread_id
 from app.core.checkpointer import get_checkpointer
-from app.core.evidence import validated_evidence_list
 from app.core.database import get_session
+from app.core.evidence import validated_evidence_list
 from app.core.limits import QAAuth, reserve_daily_model_budget
+from app.core.qa_cache import get_cached_qa, set_cached_qa
 from app.models.chat_record import ChatRecord as _ChatRecord
-from pydantic import BaseModel
-from sqlalchemy import select as _select
-from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.qa import (
     AskRequest,
     AskResponse,
@@ -168,11 +170,22 @@ async def ask(req: AskRequest, auth: QAAuth) -> AskResponse:
             },
         )
 
+    # Redis 缓存检查放在预算预留之前：命中缓存说明本次未调用任何模型，
+    # 不应消耗每日预算（否则纯缓存流量也会被计入 200 次/天的护栏）。
+    _cached = await get_cached_qa(auth.tenant_id, req.question)
+    if _cached:
+        try:
+            await fail_audit(audit_id, "cache_hit", (perf_counter() - started) * 1000)
+        except AuditWriteError:
+            pass
+        return AskResponse(**_cached)
+
     try:
         await reserve_daily_model_budget(auth, req.question)
     except HTTPException:
         await _fail_audit_safely(audit_id, "请求预算限制", started)
         raise
+
     agent = build_agent()
     try:
         lease = await acquire_conversation(
@@ -226,6 +239,15 @@ async def ask(req: AskRequest, auth: QAAuth) -> AskResponse:
     except AuditWriteError as exc:
         logger.exception("审计完成失败，响应 fail-closed trace={}", trace_id)
         raise HTTPException(status_code=503, detail="审计写入失败，请稍后重试") from exc
+    except GraphRecursionError as exc:
+        await _fail_audit_safely(audit_id, "Agent 步数超限", started)
+        logger.exception("Agent 步数超限 trace={}", trace_id)
+        # 清除受污染的 checkpoint，确保下次重试从干净状态开始
+        try:
+            await get_checkpointer().adelete_thread(thread_id)
+        except Exception:  # noqa: BLE001
+            pass
+        raise HTTPException(status_code=503, detail="问答服务暂不可用") from exc
     except Exception as exc:  # noqa: BLE001
         await _fail_audit_safely(audit_id, "Agent 执行失败", started)
         logger.exception("Agent 执行失败 trace={}", trace_id)
@@ -239,6 +261,20 @@ async def ask(req: AskRequest, auth: QAAuth) -> AskResponse:
     refused = bool(result.get("refused", not sources))
     need_human = bool(result.get("need_human", False))
     human_task_id = result.get("human_task_id")
+
+    # 写入缓存（仅缓存有来源的成功响应）
+    if not refused and sources:
+        await set_cached_qa(
+            auth.tenant_id,
+            req.question,
+            {
+                "answer": answer,
+                "sources": sources,  # list[dict]
+                "refused": refused,
+                "need_human": need_human,
+                "human_task_id": human_task_id,
+            },
+        )
 
     return AskResponse(
         answer=answer,
@@ -436,6 +472,18 @@ async def stream(req: AskRequest, auth: QAAuth, request: Request) -> StreamingRe
             yield _sse_frame(
                 "error",
                 {"detail": "审计写入失败，请稍后重试", "error_code": "audit_write_failed"},
+            )
+            return
+        except GraphRecursionError:
+            await _fail_audit_safely(audit_id, "Agent 步数超限", started)
+            logger.exception("流式 Agent 步数超限 trace={}", trace_id)
+            try:
+                await get_checkpointer().adelete_thread(thread_id)
+            except Exception:  # noqa: BLE001
+                pass
+            yield _sse_frame(
+                "error",
+                {"detail": "问答服务暂不可用", "error_code": "qa_unavailable"},
             )
             return
         except Exception:  # noqa: BLE001
