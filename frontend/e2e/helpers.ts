@@ -37,13 +37,23 @@ export async function injectAuth(page: Page): Promise<void> {
   )
 }
 
-// 后端 API 基础 URL（与 frontend/src/api/client.ts 的默认值一致）
-const API_BASE = 'http://127.0.0.1:8765'
+// API 拦截模式：同时覆盖 dev（http://127.0.0.1:8765）与 preview（同源 /api）两种 baseURL
+// 同时匹配 preview 同源 /api 与 dev 绝对地址 127.0.0.1:8765
+const API_RE = (suffix: string) => new RegExp(`(\/api|http://127\.0\.0\.1:8765)${suffix}`)
+const API_PATTERNS = {
+  documents: API_RE('/documents'),
+  stream: API_RE('/qa/stream'),
+  ask: API_RE('\/qa\/ask'),
+  history: API_RE('/qa/history/'),
+  adminUsers: API_RE('/admin/users'),
+  admin: API_RE('/admin/'),
+  health: API_RE('/health/'),
+}
 
 /** 拦截所有 API 请求并返回测试用假数据 */
 export async function mockApi(page: Page): Promise<void> {
   // 文档列表（GET /documents 和 POST /documents/upload）
-  await page.route(`${API_BASE}/documents*`, (route) => {
+  await page.route(API_PATTERNS.documents, (route) => {
     if (route.request().method() === 'GET') {
       route.fulfill({
         status: 200,
@@ -71,7 +81,7 @@ export async function mockApi(page: Page): Promise<void> {
   })
 
   // 流式问答 POST /qa/stream
-  await page.route(`${API_BASE}/qa/stream`, (route) => {
+  await page.route(API_PATTERNS.stream, (route) => {
     const sseBody =
       'event: token\ndata: {"text":"根据"}\n\n' +
       'event: token\ndata: {"text":"知识库内容，"}\n\n' +
@@ -108,13 +118,24 @@ export async function mockApi(page: Page): Promise<void> {
   })
 
   // 非流式问答（兜底）POST /qa/ask
-  await page.route(`${API_BASE}/qa/ask`, (route) => {
+  await page.route(API_PATTERNS.ask, (route) => {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({
         answer: '根据知识库内容，这是测试回答。',
-        sources: [],
+        sources: [
+          {
+            doc_id: 1,
+            chunk_id: 'e2e-tenant:1:0:abc12345',
+            source: 'ai-knowledge-guide.md',
+            page: null,
+            sheet_name: null,
+            distance: 0.3,
+            relevance: 0.77,
+            snippet: '这是被引用的原文片段，用于展示引用高亮功能是否正常工作。',
+          },
+        ],
         refused: false,
         need_human: false,
         human_task_id: null,
@@ -123,7 +144,7 @@ export async function mockApi(page: Page): Promise<void> {
   })
 
   // 会话历史 GET /qa/history/:session_id
-  await page.route(`${API_BASE}/qa/history/**`, (route) => {
+  await page.route(API_PATTERNS.history, (route) => {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -132,7 +153,7 @@ export async function mockApi(page: Page): Promise<void> {
   })
 
   // 用户列表
-  await page.route(`${API_BASE}/admin/users`, (route) => {
+  await page.route(API_PATTERNS.adminUsers, (route) => {
     if (route.request().method() === 'GET') {
       route.fulfill({
         status: 200,
@@ -165,7 +186,7 @@ export async function mockApi(page: Page): Promise<void> {
   })
 
   // 管理统计（其余 admin 路由兜底）
-  await page.route(`${API_BASE}/admin/**`, (route) => {
+  await page.route(API_PATTERNS.admin, (route) => {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -177,7 +198,7 @@ export async function mockApi(page: Page): Promise<void> {
   })
 
   // 健康检查
-  await page.route(`${API_BASE}/health/**`, (route) => {
+  await page.route(API_PATTERNS.health, (route) => {
     route.fulfill({ status: 200, contentType: 'application/json', body: '{"status":"ok"}' })
   })
 }
