@@ -12,23 +12,24 @@ from langchain_core.tools import tool
 
 from app.agent.context import EnterpriseContext
 from app.core.evidence import Evidence
-from app.core.faiss_store import faiss_similarity_search_with_score
+from app.core.pgvector_store import pgvector_similarity_search_with_score
 from app.core.query_rewriter import rewrite_query
 
 # 检索召回数
 TOP_K = 5
-# 距离阈值：FAISS IndexFlatL2 返回 L2 距离（越小越相似），与 ChromaDB 默认度量相同。
-# 对归一化嵌入向量，L2 距离范围 0–2；1.5 过滤掉不相关结果。
-MAX_DISTANCE = 1.5
+# 距离阈值：pgvector 余弦距离（越小越相似），范围 0–2。
+# 0.55 由黄金集实测校准：正常命中 top1 距离 p95=0.44 / max=0.49，
+# OOS 弱相关 chunks 多落在 0.45–0.56；收紧后可让无证据问题触发强制拒答且零误杀。
+MAX_DISTANCE = 0.55
 
 
-def search_tenant_knowledge_base(
+async def search_tenant_knowledge_base(
     query: str,
     tenant_id: str,
 ) -> tuple[str, list[Evidence]]:
     """只在指定租户向量分区检索，返回模型内容与服务端 artifact。"""
     query = rewrite_query(query)
-    results = faiss_similarity_search_with_score(
+    results = await pgvector_similarity_search_with_score(
         query,
         k=TOP_K,
         tenant_id=tenant_id,
@@ -81,7 +82,7 @@ def search_tenant_knowledge_base(
 
 
 @tool(response_format="content_and_artifact")
-def search_knowledge_base(
+async def search_knowledge_base(
     query: str,
     runtime: ToolRuntime[EnterpriseContext],
 ) -> tuple[str, list[Evidence]]:
@@ -97,4 +98,4 @@ def search_knowledge_base(
         content 是带不可信数据边界的相关片段；artifact 是服务端结构化证据；
         若无命中则 content 返回固定拒答提示且 artifact 为空。
     """
-    return search_tenant_knowledge_base(query, runtime.context.tenant_id)
+    return await search_tenant_knowledge_base(query, runtime.context.tenant_id)

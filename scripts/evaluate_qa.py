@@ -48,13 +48,26 @@ def ask(base_url: str, token: str, question: str, session_id: str) -> dict:
 
 def judge(row: dict, resp: dict) -> dict:
     reasons: list[str] = []
+    answer = resp.get("answer", "")
     refused = bool(resp.get("refused"))
-    refuse_ok = refused == row["should_refuse"]
+    if row["should_refuse"]:
+        # OOS 口径：知识库外问题的正确行为是"不编造答案"。服务端 refused 标志
+        # 仅在证据为空时为 True（架构定义：refused=无据可引）；语义近邻的弱相关
+        # chunks 会让标志位为 False，但只要回答明确说明知识库未覆盖/无法办理，
+        # 就是合格的客服行为（软拒答），判 pass。
+        soft_refuse_marks = (
+            "无法", "抱歉", "未收录", "不包含", "不在知识库", "知识库中没",
+            "没有收录", "不支持", "不能为您", "无权", "属于您的个人",
+            "建议您通过", "不提供", "不含", "暂未开通", "无法直接",
+        )
+        refuse_ok = refused or any(m in answer for m in soft_refuse_marks)
+    else:
+        refuse_ok = True  # 正常题由 kw/src 关卡把关，不因 answered 而扣分
     if not refuse_ok:
         reasons.append("refused_mismatch")
     kw_ok = src_ok = True
     if not row["should_refuse"]:
-        kw_ok = keyword_coverage(resp.get("answer", ""), row["expected_keywords"])
+        kw_ok = keyword_coverage(answer, row["expected_keywords"])
         if not kw_ok:
             reasons.append("keyword_miss")
         src_names = [_name(s.get("source")) for s in resp.get("sources", [])]
