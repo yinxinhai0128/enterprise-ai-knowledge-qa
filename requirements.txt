@@ -1,6 +1,6 @@
 # Runtime dependencies are exact top-level constraints.  requirements.lock pins
 # the complete transitive graph (including hashes) used by Docker/production.
-langchain==1.3.10
+langchain==1.3.11
 langchain-core==1.4.8
 langchain-community==0.4.2
 langchain-openai==1.3.2
